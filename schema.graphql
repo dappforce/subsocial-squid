@@ -1,0 +1,262 @@
+enum EventName {
+  PostCreated
+  PostDeleted # synthetic
+  PostUpdated
+  PostShared # synthetic
+  PostMoved
+  PostFollowed # synthetic
+  PostUnfollowed # synthetic
+  PostReactionCreated
+  PostReactionUpdated
+  PostReactionDeleted
+
+  SpaceCreated
+  SpaceUpdated
+  SpaceFollowed
+  SpaceUnfollowed
+  SpaceOwnershipTransferAccepted
+
+  AccountFollowed
+  AccountUnfollowed
+  ProfileUpdated
+
+  CommentCreated # synthetic
+  CommentDeleted # synthetic
+  CommentUpdated # synthetic
+  CommentShared # synthetic
+  CommentReactionCreated # synthetic
+  CommentReactionUpdated # synthetic
+  CommentReactionDeleted # synthetic
+  CommentReplyCreated # synthetic
+  CommentReplyDeleted # synthetic
+  CommentReplyUpdated # synthetic
+  CommentReplyShared # synthetic
+  CommentReplyReactionCreated # synthetic
+  CommentReplyReactionUpdated # synthetic
+  CommentReplyReactionDeleted # synthetic
+}
+
+enum PostKind {
+  Comment
+  SharedPost
+  RegularPost
+}
+enum ReactionKind {
+  Upvote
+  Downvote
+}
+
+enum Status {
+  Active
+  Deleted
+}
+
+type Account @entity {
+  id: ID!
+  profileSpace: Space
+
+  followers: [AccountFollowers]! @derivedFrom(field: "followingAccount")
+  followersCount: Int!
+
+  followingAccounts: [AccountFollowers]! @derivedFrom(field: "followerAccount")
+  followingAccountsCount: Int!
+
+  posts: [Post] @derivedFrom(field: "createdByAccount")
+  followingPostsCount: Int!
+
+  spacesCreated: [Space!] @derivedFrom(field: "createdByAccount")
+  spacesOwned: [Space!] @derivedFrom(field: "ownedByAccount")
+  spacesFollowed: [SpaceFollowers!] @derivedFrom(field: "followerAccount")
+  followingSpacesCount: Int!
+
+  feeds: [NewsFeed]! @derivedFrom(field: "account")
+  notifications: [Notification]! @derivedFrom(field: "account")
+  activities: [Activity]! @derivedFrom(field: "account")
+  reactions: [Reaction]! @derivedFrom(field: "account")
+
+  updatedAtTime: DateTime
+  updatedAtBlock: BigInt
+}
+
+type Post @entity {
+  id: ID!
+  parentPost: Post
+  rootPost: Post
+  sharedPost: Post
+  isComment: Boolean! @index
+  hidden: Boolean! @index
+
+  ownedByAccount: Account!
+  createdByAccount: Account!
+  createdAtBlock: BigInt
+  createdAtTime: DateTime @index
+  createdOnDay: DateTime
+  updatedAtTime: DateTime
+  space: Space
+  kind: PostKind @index
+
+  postFollowers: [PostFollowers] @derivedFrom(field: "followingPost")
+  commentFollowers: [CommentFollowers] @derivedFrom(field: "followingComment")
+  followersCount: Int! @index
+
+  repliesCount: Int!
+  publicRepliesCount: Int! @index
+  hiddenRepliesCount: Int!
+  sharesCount: Int! @index
+  upvotesCount: Int! @index
+  downvotesCount: Int! @index
+  reactionsCount: Int! @index
+  reactions: [Reaction] @derivedFrom(field: "post")
+  #  score: Int
+
+  title: String
+  image: String
+  link: String
+  canonical: String
+  content: String
+  slug: String
+  body: String
+  summary: String
+  isShowMore: Boolean
+  meta: String
+  tagsOriginal: String
+  format: String
+
+  proposalIndex: Int # postContent.meta[0]
+}
+
+type Reaction @entity {
+  id: ID!
+  post: Post!
+  account: Account!
+  kind: ReactionKind! @index
+  status: Status! @index
+  createdAtBlock: BigInt!
+  createdAtTime: DateTime!
+  updatedAtBlock: BigInt
+  updatedAtTime: DateTime
+}
+
+type Space @entity {
+  id: ID!
+  createdByAccount: Account!
+  ownedByAccount: Account!
+  profileSpace: Account
+
+  createdAtBlock: BigInt
+  createdAtTime: DateTime @index
+  createdOnDay: DateTime
+  updatedAtTime: DateTime
+  updatedAtBlock: BigInt
+
+  posts: [Post]! @derivedFrom(field: "space")
+  postsCount: Int!
+  publicPostsCount: Int! @index
+  hiddenPostsCount: Int!
+
+  hidden: Boolean! @index
+  content: String
+  name: String
+  image: String
+  about: String
+  summary: String
+  isShowMore: Boolean
+  email: String
+  tagsOriginal: String
+  linksOriginal: String
+  format: String
+  handle: String
+
+  canFollowerCreatePosts: Boolean
+  canEveryoneCreatePosts: Boolean
+
+  nonePermissions: SpacePermissions
+  everyonePermissions: SpacePermissions
+  followerPermissions: SpacePermissions
+  spaceOwnerPermissions: SpacePermissions
+
+  followersCount: Int! @index
+  followers: [SpaceFollowers]! @derivedFrom(field: "followingSpace")
+}
+
+type Activity @entity {
+  id: ID!
+  account: Account!
+  blockNumber: BigInt!
+  eventIndex: Int!
+  event: EventName! @index
+  followingAccount: Account
+  space: Space
+  spacePrev: Space
+  newOwner: Account
+  oldOwner: Account
+  post: Post
+  reaction: Reaction
+  date: DateTime!
+  aggregated: Boolean @index
+  aggCount: BigInt!
+}
+
+type AccountFollowers @entity {
+  followerAccount: Account!
+  followingAccount: Account!
+}
+
+type SpaceFollowers @entity {
+  followerAccount: Account!
+  followingSpace: Space!
+}
+
+type PostFollowers @entity {
+  followerAccount: Account!
+  followingPost: Post!
+}
+
+type CommentFollowers @entity {
+  followerAccount: Account!
+  followingComment: Post!
+}
+
+type NewsFeed @entity {
+  account: Account!
+  activity: Activity!
+}
+
+type Notification @entity {
+  account: Account!
+  activity: Activity!
+}
+
+type SpacePermissions {
+  manageRoles: Boolean
+  representSpaceInternally: Boolean
+  representSpaceExternally: Boolean
+  updateSpace: Boolean
+  createSubspaces: Boolean
+  updateOwnSubspaces: Boolean
+  deleteOwnSubspaces: Boolean
+  hideOwnSubspaces: Boolean
+  updateAnySubspace: Boolean
+  deleteAnySubspace: Boolean
+  hideAnySubspace: Boolean
+  createPosts: Boolean
+  updateOwnPosts: Boolean
+  deleteOwnPosts: Boolean
+  hideOwnPosts: Boolean
+  updateAnyPost: Boolean
+  deleteAnyPost: Boolean
+  hideAnyPost: Boolean
+  createComments: Boolean
+  updateOwnComments: Boolean
+  deleteOwnComments: Boolean
+  hideOwnComments: Boolean
+  hideAnyComment: Boolean
+  upvote: Boolean
+  downvote: Boolean
+  share: Boolean
+  overrideSubspacePermissions: Boolean
+  overridePostPermissions: Boolean
+  suggestEntityStatus: Boolean
+  updateEntityStatus: Boolean
+  updateSpaceSettings: Boolean
+}
