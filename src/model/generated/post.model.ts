@@ -123,6 +123,9 @@ export class Post {
     slug!: string | undefined | null
 
     @Column_("text", {nullable: true})
+    tweet!: string | undefined | null
+
+    @Column_("text", {nullable: true})
     body!: string | undefined | null
 
     @Column_("text", {nullable: true})

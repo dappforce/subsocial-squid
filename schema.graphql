@@ -115,6 +115,7 @@ type Post @entity {
   canonical: String
   content: String
   slug: String
+  tweet: String
   body: String
   summary: String
   isShowMore: Boolean

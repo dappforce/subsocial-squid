@@ -79,12 +79,20 @@ export type ContentSrcDecorated = {
 };
 export type ContentDataIpfs = CommonContent;
 
-type SpaceWithInterests = {
+type SpaceContentWithInterests = {
   interests?: string[];
 };
 
-export type IpfsSpaceContentSummarized = IpfsSpaceContent & SummarizedContent & SpaceWithInterests;
-export type IpfsPostContentSummarized = IpfsPostContent & SummarizedContent;
+type PostContentWithTweet = {
+  tweet?: string;
+};
+
+export type IpfsSpaceContentSummarized = IpfsSpaceContent &
+  SummarizedContent &
+  SpaceContentWithInterests;
+export type IpfsPostContentSummarized = IpfsPostContent &
+  SummarizedContent &
+  PostContentWithTweet;
 
 export type SpaceStorageData = {
   handle: string | null;

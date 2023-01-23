@@ -174,6 +174,7 @@ export const ensurePost = async ({
     // post.format = postIpfsContent.format ?? null; // TODO check is it actual property
     post.format = null;
     post.canonical = postIpfsContent.canonical ?? null;
+    post.tweet = postIpfsContent.tweet ?? null;
     post.body = postIpfsContent.body;
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;

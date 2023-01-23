@@ -56,6 +56,7 @@ export async function postUpdated(
     // post.format = postIpfsContent.format ?? null; // TODO check is it actual property
     post.format = null;
     post.canonical = postIpfsContent.canonical ?? null;
+    post.tweet = postIpfsContent.tweet ?? null;
     post.body = postIpfsContent.body ?? null;
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
