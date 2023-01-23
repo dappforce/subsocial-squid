@@ -65,8 +65,14 @@ export async function postCreated(
 
   if (post.sharedPost) return;
 
-  if (!post.isComment || (post.isComment && !post.parentPost)) {
+  if (!post.isComment) {
     await addNotificationForAccount(post.ownedByAccount, activity, ctx);
+  } else if (post.isComment && post.rootPost && !post.parentPost) {
+    await addNotificationForAccount(
+      post.rootPost.ownedByAccount,
+      activity,
+      ctx
+    );
   } else if (post.isComment && post.parentPost && post.rootPost) {
     /**
      * Notifications should not be added for owner followers if post is reply
