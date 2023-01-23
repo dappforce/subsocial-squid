@@ -87,6 +87,9 @@ export class Space {
     linksOriginal!: string | undefined | null
 
     @Column_("text", {nullable: true})
+    interestsOriginal!: string | undefined | null
+
+    @Column_("text", {nullable: true})
     format!: string | undefined | null
 
     @Column_("text", {nullable: true})

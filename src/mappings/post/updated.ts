@@ -1,4 +1,8 @@
-import { getBodySummary, getSyntheticEventName } from '../../common/utils';
+import {
+  getBodySummary,
+  getJoinedList,
+  getSyntheticEventName
+} from '../../common/utils';
 import { Post, Account, EventName, Space } from '../../model';
 import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
@@ -58,9 +62,7 @@ export async function postUpdated(
     post.slug = null;
 
     if (postIpfsContent.tags) {
-      post.tagsOriginal = Array.isArray(postIpfsContent.tags)
-        ? postIpfsContent.tags.join(',')
-        : postIpfsContent.tags;
+      post.tagsOriginal = getJoinedList(postIpfsContent.tags);
     }
 
     // TODO Implementation is needed

@@ -164,6 +164,7 @@ type Space @entity {
   email: String
   tagsOriginal: String
   linksOriginal: String
+  interestsOriginal: String
   format: String
   handle: String
 

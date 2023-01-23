@@ -1,4 +1,8 @@
-import { getDateWithoutTime, getBodySummary } from '../../common/utils';
+import {
+  getDateWithoutTime,
+  getBodySummary,
+  getJoinedList
+} from '../../common/utils';
 import { Post, PostKind, Space } from '../../model';
 import { getOrCreateAccount } from '../account';
 import { PostCreatedData } from '../../common/types';
@@ -175,9 +179,7 @@ export const ensurePost = async ({
     post.isShowMore = bodySummary.isShowMore;
     post.slug = null;
     if (postIpfsContent.tags) {
-      post.tagsOriginal = Array.isArray(postIpfsContent.tags)
-        ? postIpfsContent.tags.join(',')
-        : postIpfsContent.tags;
+      post.tagsOriginal = getJoinedList(postIpfsContent.tags);
     }
 
     // TODO Implementation is needed

@@ -79,7 +79,11 @@ export type ContentSrcDecorated = {
 };
 export type ContentDataIpfs = CommonContent;
 
-export type IpfsSpaceContentSummarized = IpfsSpaceContent & SummarizedContent;
+type SpaceWithInterests = {
+  interests?: string[];
+};
+
+export type IpfsSpaceContentSummarized = IpfsSpaceContent & SummarizedContent & SpaceWithInterests;
 export type IpfsPostContentSummarized = IpfsPostContent & SummarizedContent;
 
 export type SpaceStorageData = {
@@ -312,7 +316,8 @@ export interface SpaceOwnershipTransferAcceptedEventParsedData {
   spaceId: string;
 }
 
-export type SpaceOwnershipTransferAcceptedData = EventData & SpaceOwnershipTransferAcceptedEventParsedData;
+export type SpaceOwnershipTransferAcceptedData = EventData &
+  SpaceOwnershipTransferAcceptedEventParsedData;
 
 /**
  * :::::: ACCOUNT FOLLOWED ::::::

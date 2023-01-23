@@ -8,6 +8,7 @@ import { EventHandlerContext } from './contexts';
 import { EventName, PostKind, Post } from '../model';
 import { EventData } from './types';
 import { summarizeMd } from '@subsocial/utils';
+import { NamedLink } from '@subsocial/api/types/ipfs';
 
 let subsocialSs58CodecInst: ss58.Codec | null = null;
 
@@ -229,4 +230,11 @@ export function getBodySummary(body: string | undefined | null): {
   if (!body) return sum;
 
   return summarizeMd(body);
+}
+
+export function getJoinedList(src: string[] | NamedLink[] | string) {
+  if (!Array.isArray(src)) return src;
+  return src
+    .map((item) => (typeof item === 'string' ? item : JSON.stringify(item)))
+    .join(',');
 }

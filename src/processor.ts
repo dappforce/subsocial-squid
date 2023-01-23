@@ -25,7 +25,7 @@ import { ElasticSearchIndexerManager } from './elasticsearch';
 
 export const processor = new SubstrateBatchProcessor()
   .setDataSource({
-    archive: lookupArchive('subsocial-parachain' as KnownArchives, {
+    archive: lookupArchive('subsocial-parachain', {
       release: 'FireSquid'
     }),
     chain: envConfig.chainNode
