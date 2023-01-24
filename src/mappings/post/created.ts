@@ -69,15 +69,25 @@ export async function postCreated(
     await addNotificationForAccount(post.ownedByAccount, activity, ctx);
   } else if (post.isComment && post.rootPost && !post.parentPost) {
     await addNotificationForAccount(
+      post.ownedByAccount,
+      activity,
+      ctx
+    );
+    await addNotificationForAccount(
       post.rootPost.ownedByAccount,
       activity,
       ctx
     );
+    // TODO do we need send notification for comment creator as well?
   } else if (post.isComment && post.parentPost && post.rootPost) {
     /**
      * Notifications should not be added for owner followers if post is reply
      */
-
+    await addNotificationForAccount(
+      post.ownedByAccount,
+      activity,
+      ctx
+    );
     await addNotificationForAccount(
       post.rootPost.ownedByAccount,
       activity,
@@ -107,7 +117,7 @@ async function handlePostShare(
 
   const activity = await setActivity({
     account: callerAccount,
-    post: originPost,
+    post: sharedPost,
     syntheticEventName: getSyntheticEventName(EventName.PostShared, originPost),
     ctx,
     eventData
