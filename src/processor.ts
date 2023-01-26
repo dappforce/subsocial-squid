@@ -33,6 +33,7 @@ export const processor = new SubstrateBatchProcessor()
   // .setBlockRange({ from: 1093431 }) // PostCreated
   // .setBlockRange({ from: 1093209 }) // SpaceCreated
   // .setBlockRange({ from: 1368300 }) // SpaceOwnershipTransferAccepted
+  // .setBlockRange({ from: 2071296 }) // Tweet post
   .setTypesBundle('subsocial')
   .addEvent('Posts.PostCreated', {
     data: { event: { args: true, call: true, indexInBlock: true } }

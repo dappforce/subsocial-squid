@@ -6,6 +6,7 @@ import {PostKind} from "./_postKind"
 import {PostFollowers} from "./postFollowers.model"
 import {CommentFollowers} from "./commentFollowers.model"
 import {Reaction} from "./reaction.model"
+import {TweetDetails} from "./_tweetDetails"
 
 @Entity_()
 export class Post {
@@ -123,9 +124,6 @@ export class Post {
     slug!: string | undefined | null
 
     @Column_("text", {nullable: true})
-    tweet!: string | undefined | null
-
-    @Column_("text", {nullable: true})
     body!: string | undefined | null
 
     @Column_("text", {nullable: true})
@@ -142,6 +140,12 @@ export class Post {
 
     @Column_("text", {nullable: true})
     format!: string | undefined | null
+
+    @Column_("text", {nullable: true})
+    tweetId!: string | undefined | null
+
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new TweetDetails(undefined, obj)}, nullable: true})
+    tweetDetails!: TweetDetails | undefined | null
 
     @Column_("int4", {nullable: true})
     proposalIndex!: number | undefined | null

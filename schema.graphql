@@ -115,13 +115,14 @@ type Post @entity {
   canonical: String
   content: String
   slug: String
-  tweet: String
   body: String
   summary: String
   isShowMore: Boolean
   meta: String
   tagsOriginal: String
   format: String
+  tweetId: String
+  tweetDetails: TweetDetails
 
   proposalIndex: Int # postContent.meta[0]
 }
@@ -261,4 +262,34 @@ type SpacePermissions {
   suggestEntityStatus: Boolean
   updateEntityStatus: Boolean
   updateSpaceSettings: Boolean
+}
+
+type TweetDetails {
+  id: String
+  createdAt: String
+  username: String
+  authorId: String
+  editHistoryTweetIds: [String]
+  conversationId: String
+  inReplyToUserId: String
+  referencedTweets: [ReferencedTweetDetails]
+  attachments: TweetAttachmentsDetails
+  lang: String
+}
+
+type ReferencedTweetDetails {
+  id: String
+  type: String
+}
+
+type TweetAttachmentsDetails {
+  mediaKeys: [String]
+  pollIds: [String]
+}
+
+type IpfsDebugLog @entity {
+  id: ID!
+  cid: String
+  blockHeight: Int!
+  errorMsg: String
 }

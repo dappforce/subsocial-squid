@@ -1,9 +1,10 @@
 import {
   getBodySummary,
   getJoinedList,
-  getSyntheticEventName
+  getSyntheticEventName,
+  getTweetDetailsEntity
 } from '../../common/utils';
-import { Post, Account, EventName, Space } from '../../model';
+import { Post, Account, EventName, Space, IpfsDebugLog } from '../../model';
 import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
@@ -35,7 +36,17 @@ export async function postUpdated(
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
   const postIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'post',
-    eventData.ipfsSrc
+    eventData.ipfsSrc,
+    async (errorMsg: string | null) => {
+      await ctx.store.save(
+        new IpfsDebugLog({
+          id: eventData.postId,
+          cid: eventData.ipfsSrc,
+          blockHeight: eventData.blockNumber,
+          errorMsg: errorMsg
+        })
+      );
+    }
   );
 
   const ownedByAccount = await getOrCreateAccount(
@@ -56,7 +67,6 @@ export async function postUpdated(
     // post.format = postIpfsContent.format ?? null; // TODO check is it actual property
     post.format = null;
     post.canonical = postIpfsContent.canonical ?? null;
-    post.tweet = postIpfsContent.tweet ?? null;
     post.body = postIpfsContent.body ?? null;
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
@@ -64,6 +74,10 @@ export async function postUpdated(
 
     if (postIpfsContent.tags) {
       post.tagsOriginal = getJoinedList(postIpfsContent.tags);
+    }
+    if (postIpfsContent.tweet) {
+      post.tweetDetails = getTweetDetailsEntity(postIpfsContent.tweet);
+      post.tweetId = postIpfsContent.tweet.id;
     }
 
     // TODO Implementation is needed

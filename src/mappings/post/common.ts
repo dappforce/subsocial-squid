@@ -1,11 +1,12 @@
 import {
   getDateWithoutTime,
   getBodySummary,
-  getJoinedList
+  getJoinedList,
+  getTweetDetailsEntity
 } from '../../common/utils';
-import { Post, PostKind, Space } from '../../model';
+import { Post, PostKind, Space, IpfsDebugLog } from '../../model';
 import { getOrCreateAccount } from '../account';
-import { PostCreatedData } from '../../common/types';
+import { PostCreatedData, PostTweetDetailsIPFS } from '../../common/types';
 import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
@@ -68,7 +69,17 @@ export const ensurePost = async ({
 
   const postIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'post',
-    eventData.ipfsSrc
+    eventData.ipfsSrc,
+    async (errorMsg: string | null) => {
+      await ctx.store.save(
+        new IpfsDebugLog({
+          id: postId,
+          cid: eventData.ipfsSrc,
+          blockHeight: eventData.blockNumber,
+          errorMsg: errorMsg
+        })
+      );
+    }
   );
 
   let space = null;
@@ -174,13 +185,16 @@ export const ensurePost = async ({
     // post.format = postIpfsContent.format ?? null; // TODO check is it actual property
     post.format = null;
     post.canonical = postIpfsContent.canonical ?? null;
-    post.tweet = postIpfsContent.tweet ?? null;
     post.body = postIpfsContent.body;
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
     post.slug = null;
     if (postIpfsContent.tags) {
       post.tagsOriginal = getJoinedList(postIpfsContent.tags);
+    }
+    if (postIpfsContent.tweet) {
+      post.tweetDetails = getTweetDetailsEntity(postIpfsContent.tweet);
+      post.tweetId = postIpfsContent.tweet.id;
     }
 
     // TODO Implementation is needed

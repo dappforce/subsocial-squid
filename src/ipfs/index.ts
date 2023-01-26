@@ -33,7 +33,10 @@ export class IpfsDataManager {
     });
   }
 
-  async fetchOneByIdHttp(ipfsCid: IpfsCid): Promise<IpfsCommonContent | null> {
+  async fetchOneByIdHttp(
+    ipfsCid: IpfsCid,
+    logger?: (msg: string | null) => Promise<void>
+  ): Promise<IpfsCommonContent | null> {
     let res = null;
 
     if (this.fetchedCidsList.has(ipfsCid.toString())) {
@@ -57,6 +60,7 @@ export class IpfsDataManager {
         .child('ipfs')
         .info(`Response by CID - ${ipfsCid.toString()} => with ERROR`);
       console.log(e);
+      if (logger) await logger(e ? e.toString() : null);
     }
     // @ts-ignore
     return res;

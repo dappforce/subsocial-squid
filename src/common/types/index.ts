@@ -1,5 +1,3 @@
-import { Block } from '../processor';
-
 import {
   Space,
   Account,
@@ -15,20 +13,18 @@ import {
   ReactionKind,
   EventName,
   PostKind
-} from '../model';
+} from '../../model';
 import { PostWithAllDetails, PostData, PostStruct } from '@subsocial/types/dto';
 import { Store } from '@subsquid/typeorm-store';
 import { EventHandlerContext } from '@subsquid/substrate-processor';
-import {
-  SpacePermissionMap,
-  SummarizedContent
-} from '@subsocial/api/types/dto';
-import { CommonContent } from '@subsocial/api/types';
-import {
-  IpfsCommonContent,
-  IpfsPostContent,
-  IpfsSpaceContent
-} from '@subsocial/api/types/ipfs';
+import { SpacePermissionMap } from '@subsocial/api/types/dto';
+
+export {
+  IpfsSpaceContentSummarized,
+  IpfsPostContentSummarized,
+  PostTweetDetailsIPFS
+} from './post';
+import { IpfsPostContentSummarized } from './post';
 
 export type DbEntity =
   | typeof Account
@@ -49,20 +45,6 @@ export enum SpaceCountersAction {
   PostDeleted = 'PostDeleted'
 }
 
-// export enum SpacePermissionRoot {
-//   nonePermissions = 'nonePermissions',
-//   everyonePermissions = 'everyonePermissions',
-//   followerPermissions = 'followerPermissions',
-//   spaceOwnerPermissions = 'spaceOwnerPermissions'
-// }
-
-// export enum SpacePermissionRoot {
-//   none = 'none',
-//   everyone = 'everyone',
-//   follower = 'follower',
-//   spaceOwner = 'spaceOwner'
-// }
-
 export interface EventData {
   id: string; // Event ID
   blockNumber: number;
@@ -77,26 +59,9 @@ export type ContentSrcDecorated = {
   otherSrc: string | null;
   none: boolean;
 };
-export type ContentDataIpfs = CommonContent;
-
-type SpaceContentWithInterests = {
-  interests?: string[];
-};
-
-type PostContentWithTweet = {
-  tweet?: string;
-};
-
-export type IpfsSpaceContentSummarized = IpfsSpaceContent &
-  SummarizedContent &
-  SpaceContentWithInterests;
-export type IpfsPostContentSummarized = IpfsPostContent &
-  SummarizedContent &
-  PostContentWithTweet;
 
 export type SpaceStorageData = {
   handle: string | null;
-  // ipfsContent: IpfsSpaceContentSummarized | null;
 };
 export type PostStorageData = {
   ipfsContent: IpfsPostContentSummarized | null;
