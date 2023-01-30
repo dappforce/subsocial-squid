@@ -265,7 +265,6 @@ type SpacePermissions {
 }
 
 type TweetDetails {
-  id: String
   createdAt: String
   username: String
   authorId: String
@@ -287,7 +286,7 @@ type TweetAttachmentsDetails {
   pollIds: [String]
 }
 
-type IpfsDebugLog @entity {
+type IpfsFetchLog @entity {
   id: ID!
   cid: String
   blockHeight: Int!

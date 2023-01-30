@@ -2,9 +2,10 @@ import {
   getDateWithoutTime,
   getBodySummary,
   getJoinedList,
-  getTweetDetailsEntity
+  getTweetDetailsEntity,
+  isTweetDetailsIPFSValid
 } from '../../common/utils';
-import { Post, PostKind, Space, IpfsDebugLog } from '../../model';
+import { Post, PostKind, Space, IpfsFetchLog } from '../../model';
 import { getOrCreateAccount } from '../account';
 import { PostCreatedData, PostTweetDetailsIPFS } from '../../common/types';
 import { Ctx } from '../../processor';
@@ -72,7 +73,7 @@ export const ensurePost = async ({
     eventData.ipfsSrc,
     async (errorMsg: string | null) => {
       await ctx.store.save(
-        new IpfsDebugLog({
+        new IpfsFetchLog({
           id: postId,
           cid: eventData.ipfsSrc,
           blockHeight: eventData.blockNumber,
@@ -194,7 +195,9 @@ export const ensurePost = async ({
     }
     if (postIpfsContent.tweet) {
       post.tweetDetails = getTweetDetailsEntity(postIpfsContent.tweet);
-      post.tweetId = postIpfsContent.tweet.id;
+      post.tweetId = isTweetDetailsIPFSValid(postIpfsContent.tweet)
+        ? postIpfsContent.tweet.id
+        : null;
     }
 
     // TODO Implementation is needed

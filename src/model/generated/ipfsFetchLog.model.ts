@@ -1,8 +1,8 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
 
 @Entity_()
-export class IpfsDebugLog {
-    constructor(props?: Partial<IpfsDebugLog>) {
+export class IpfsFetchLog {
+    constructor(props?: Partial<IpfsFetchLog>) {
         Object.assign(this, props)
     }
 

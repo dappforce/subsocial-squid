@@ -2,9 +2,10 @@ import {
   getBodySummary,
   getJoinedList,
   getSyntheticEventName,
-  getTweetDetailsEntity
+  getTweetDetailsEntity,
+  isTweetDetailsIPFSValid
 } from '../../common/utils';
-import { Post, Account, EventName, Space, IpfsDebugLog } from '../../model';
+import { Post, Account, EventName, Space, IpfsFetchLog } from '../../model';
 import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
@@ -39,7 +40,7 @@ export async function postUpdated(
     eventData.ipfsSrc,
     async (errorMsg: string | null) => {
       await ctx.store.save(
-        new IpfsDebugLog({
+        new IpfsFetchLog({
           id: eventData.postId,
           cid: eventData.ipfsSrc,
           blockHeight: eventData.blockNumber,
@@ -77,7 +78,9 @@ export async function postUpdated(
     }
     if (postIpfsContent.tweet) {
       post.tweetDetails = getTweetDetailsEntity(postIpfsContent.tweet);
-      post.tweetId = postIpfsContent.tweet.id;
+      post.tweetId = isTweetDetailsIPFSValid(postIpfsContent.tweet)
+        ? postIpfsContent.tweet.id
+        : null;
     }
 
     // TODO Implementation is needed

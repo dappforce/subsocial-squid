@@ -246,13 +246,16 @@ export function getJoinedList(src: string[] | NamedLink[] | string) {
     .join(',');
 }
 
+export function isTweetDetailsIPFSValid(srcData: PostTweetDetailsIPFS | null) {
+  return srcData && typeof srcData !== 'string';
+}
+
 export function getTweetDetailsEntity(
   srcData: PostTweetDetailsIPFS | null
 ): TweetDetails | null {
-  if (!srcData || typeof srcData === 'string') return null;
+  if (!srcData || !isTweetDetailsIPFSValid(srcData)) return null;
 
   return new TweetDetails({
-    id: srcData.id ?? null,
     createdAt: srcData.created_at,
     username: srcData.username ?? null,
     authorId: srcData.author_id ?? null,

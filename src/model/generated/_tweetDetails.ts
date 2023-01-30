@@ -4,7 +4,6 @@ import {ReferencedTweetDetails} from "./_referencedTweetDetails"
 import {TweetAttachmentsDetails} from "./_tweetAttachmentsDetails"
 
 export class TweetDetails {
-    private _id!: string | undefined | null
     private _createdAt!: string | undefined | null
     private _username!: string | undefined | null
     private _authorId!: string | undefined | null
@@ -18,7 +17,6 @@ export class TweetDetails {
     constructor(props?: Partial<Omit<TweetDetails, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._id = json.id == null ? undefined : marshal.string.fromJSON(json.id)
             this._createdAt = json.createdAt == null ? undefined : marshal.string.fromJSON(json.createdAt)
             this._username = json.username == null ? undefined : marshal.string.fromJSON(json.username)
             this._authorId = json.authorId == null ? undefined : marshal.string.fromJSON(json.authorId)
@@ -29,14 +27,6 @@ export class TweetDetails {
             this._attachments = json.attachments == null ? undefined : new TweetAttachmentsDetails(undefined, json.attachments)
             this._lang = json.lang == null ? undefined : marshal.string.fromJSON(json.lang)
         }
-    }
-
-    get id(): string | undefined | null {
-        return this._id
-    }
-
-    set id(value: string | undefined | null) {
-        this._id = value
     }
 
     get createdAt(): string | undefined | null {
@@ -113,7 +103,6 @@ export class TweetDetails {
 
     toJSON(): object {
         return {
-            id: this.id,
             createdAt: this.createdAt,
             username: this.username,
             authorId: this.authorId,

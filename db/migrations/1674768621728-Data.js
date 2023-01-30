@@ -1,5 +1,5 @@
-module.exports = class Data1674672189287 {
-    name = 'Data1674672189287'
+module.exports = class Data1674768621728 {
+    name = 'Data1674768621728'
 
     async up(db) {
         await db.query(`CREATE TABLE "post_followers" ("id" character varying NOT NULL, "follower_account_id" character varying, "following_post_id" character varying, CONSTRAINT "PK_ced73560f09ff759cf0d7590c8d" PRIMARY KEY ("id"))`)
@@ -63,7 +63,7 @@ module.exports = class Data1674672189287 {
         await db.query(`CREATE INDEX "IDX_894ef2df998c9dbbdd45e39d88" ON "notification" ("activity_id") `)
         await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "followers_count" integer NOT NULL, "following_accounts_count" integer NOT NULL, "following_posts_count" integer NOT NULL, "following_spaces_count" integer NOT NULL, "updated_at_time" TIMESTAMP WITH TIME ZONE, "updated_at_block" numeric, "profile_space_id" character varying, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_eecbf4763369e9e77cfd277aa7" ON "account" ("profile_space_id") `)
-        await db.query(`CREATE TABLE "ipfs_debug_log" ("id" character varying NOT NULL, "cid" text, "block_height" integer NOT NULL, "error_msg" text, CONSTRAINT "PK_1ad725d9b8174a5afbca0b94d8b" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "ipfs_fetch_log" ("id" character varying NOT NULL, "cid" text, "block_height" integer NOT NULL, "error_msg" text, CONSTRAINT "PK_4fa8c11108e720d810f1c4c9f6f" PRIMARY KEY ("id"))`)
         await db.query(`ALTER TABLE "post_followers" ADD CONSTRAINT "FK_5ba125d95c053ba440ac801ae1f" FOREIGN KEY ("follower_account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "post_followers" ADD CONSTRAINT "FK_2c149f02ff36804d93937095280" FOREIGN KEY ("following_post_id") REFERENCES "post"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "comment_followers" ADD CONSTRAINT "FK_68bdb5fb30fa4a780b637a431c1" FOREIGN KEY ("follower_account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -160,7 +160,7 @@ module.exports = class Data1674672189287 {
         await db.query(`DROP INDEX "public"."IDX_894ef2df998c9dbbdd45e39d88"`)
         await db.query(`DROP TABLE "account"`)
         await db.query(`DROP INDEX "public"."IDX_eecbf4763369e9e77cfd277aa7"`)
-        await db.query(`DROP TABLE "ipfs_debug_log"`)
+        await db.query(`DROP TABLE "ipfs_fetch_log"`)
         await db.query(`ALTER TABLE "post_followers" DROP CONSTRAINT "FK_5ba125d95c053ba440ac801ae1f"`)
         await db.query(`ALTER TABLE "post_followers" DROP CONSTRAINT "FK_2c149f02ff36804d93937095280"`)
         await db.query(`ALTER TABLE "comment_followers" DROP CONSTRAINT "FK_68bdb5fb30fa4a780b637a431c1"`)
