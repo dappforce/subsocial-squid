@@ -38,10 +38,10 @@ export class Account {
     posts!: Post[]
 
     @OneToMany_(() => Post, e => e.ownedByAccount)
-    postsOwned!: Post[]
+    ownedPosts!: Post[]
 
     @Column_("int4", {nullable: false})
-    postsOwnedCount!: number
+    ownedPostsCount!: number
 
     @Column_("int4", {nullable: false})
     followingPostsCount!: number

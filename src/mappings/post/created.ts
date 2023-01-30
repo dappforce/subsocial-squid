@@ -34,7 +34,7 @@ export async function postCreated(
 
   ElasticSearchIndexerManager.getInstance(ctx).addToQueue(post);
 
-  post.ownedByAccount.postsOwnedCount += 1;
+  post.ownedByAccount.ownedPostsCount += 1;
 
   await ctx.store.save(post.ownedByAccount);
 
