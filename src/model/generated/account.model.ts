@@ -37,6 +37,12 @@ export class Account {
     @OneToMany_(() => Post, e => e.createdByAccount)
     posts!: Post[]
 
+    @OneToMany_(() => Post, e => e.ownedByAccount)
+    postsOwned!: Post[]
+
+    @Column_("int4", {nullable: false})
+    postsOwnedCount!: number
+
     @Column_("int4", {nullable: false})
     followingPostsCount!: number
 

@@ -1,5 +1,5 @@
-module.exports = class Data1674768621728 {
-    name = 'Data1674768621728'
+module.exports = class Data1675076531279 {
+    name = 'Data1675076531279'
 
     async up(db) {
         await db.query(`CREATE TABLE "post_followers" ("id" character varying NOT NULL, "follower_account_id" character varying, "following_post_id" character varying, CONSTRAINT "PK_ced73560f09ff759cf0d7590c8d" PRIMARY KEY ("id"))`)
@@ -61,7 +61,7 @@ module.exports = class Data1674768621728 {
         await db.query(`CREATE TABLE "notification" ("id" character varying NOT NULL, "account_id" character varying, "activity_id" character varying, CONSTRAINT "PK_705b6c7cdf9b2c2ff7ac7872cb7" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_6bfa96ab97f1a09d73091294ef" ON "notification" ("account_id") `)
         await db.query(`CREATE INDEX "IDX_894ef2df998c9dbbdd45e39d88" ON "notification" ("activity_id") `)
-        await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "followers_count" integer NOT NULL, "following_accounts_count" integer NOT NULL, "following_posts_count" integer NOT NULL, "following_spaces_count" integer NOT NULL, "updated_at_time" TIMESTAMP WITH TIME ZONE, "updated_at_block" numeric, "profile_space_id" character varying, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "followers_count" integer NOT NULL, "following_accounts_count" integer NOT NULL, "posts_owned_count" integer NOT NULL, "following_posts_count" integer NOT NULL, "following_spaces_count" integer NOT NULL, "updated_at_time" TIMESTAMP WITH TIME ZONE, "updated_at_block" numeric, "profile_space_id" character varying, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_eecbf4763369e9e77cfd277aa7" ON "account" ("profile_space_id") `)
         await db.query(`CREATE TABLE "ipfs_fetch_log" ("id" character varying NOT NULL, "cid" text, "block_height" integer NOT NULL, "error_msg" text, CONSTRAINT "PK_4fa8c11108e720d810f1c4c9f6f" PRIMARY KEY ("id"))`)
         await db.query(`ALTER TABLE "post_followers" ADD CONSTRAINT "FK_5ba125d95c053ba440ac801ae1f" FOREIGN KEY ("follower_account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)

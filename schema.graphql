@@ -62,6 +62,8 @@ type Account @entity {
   followingAccountsCount: Int!
 
   posts: [Post] @derivedFrom(field: "createdByAccount")
+  postsOwned: [Post] @derivedFrom(field: "ownedByAccount")
+  postsOwnedCount: Int!
   followingPostsCount: Int!
 
   spacesCreated: [Space!] @derivedFrom(field: "createdByAccount")
