@@ -20,6 +20,7 @@ export async function getOrCreateAccount(
   account.followingAccountsCount = 0;
   account.followingSpacesCount = 0;
   account.followingPostsCount = 0;
+  account.postsOwnedCount = 0;
 
   await ctx.store.save(account);
 
