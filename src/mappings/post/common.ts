@@ -1,7 +1,13 @@
-import { getDateWithoutTime, getBodySummary } from '../../common/utils';
-import { Post, PostKind, Space } from '../../model';
+import {
+  getDateWithoutTime,
+  getBodySummary,
+  getJoinedList,
+  getTweetDetailsEntity,
+  isTweetDetailsIPFSValid
+} from '../../common/utils';
+import { Post, PostKind, Space, IpfsFetchLog } from '../../model';
 import { getOrCreateAccount } from '../account';
-import { PostCreatedData } from '../../common/types';
+import { PostCreatedData, PostTweetDetailsIPFS } from '../../common/types';
 import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
@@ -64,7 +70,17 @@ export const ensurePost = async ({
 
   const postIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'post',
-    eventData.ipfsSrc
+    eventData.ipfsSrc,
+    async (errorMsg: string | null) => {
+      await ctx.store.save(
+        new IpfsFetchLog({
+          id: postId,
+          cid: eventData.ipfsSrc,
+          blockHeight: eventData.blockNumber,
+          errorMsg: errorMsg
+        })
+      );
+    }
   );
 
   let space = null;
@@ -175,9 +191,13 @@ export const ensurePost = async ({
     post.isShowMore = bodySummary.isShowMore;
     post.slug = null;
     if (postIpfsContent.tags) {
-      post.tagsOriginal = Array.isArray(postIpfsContent.tags)
-        ? postIpfsContent.tags.join(',')
-        : postIpfsContent.tags;
+      post.tagsOriginal = getJoinedList(postIpfsContent.tags);
+    }
+    if (postIpfsContent.tweet) {
+      post.tweetDetails = getTweetDetailsEntity(postIpfsContent.tweet);
+      post.tweetId = isTweetDetailsIPFSValid(postIpfsContent.tweet)
+        ? postIpfsContent.tweet.id
+        : null;
     }
 
     // TODO Implementation is needed

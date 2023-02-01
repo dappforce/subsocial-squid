@@ -1,7 +1,8 @@
 import {
   ensurePositiveOrZeroValue,
   getBodySummary,
-  getDateWithoutTime
+  getDateWithoutTime,
+  getJoinedList
 } from '../../common/utils';
 import {
   SpaceCountersAction,
@@ -106,14 +107,13 @@ export const ensureSpace = async ({
     spaceInst.linksOriginal = null;
 
     if (spaceIpfsContent.tags) {
-      spaceInst.tagsOriginal = Array.isArray(spaceIpfsContent.tags)
-        ? spaceIpfsContent.tags.join(',')
-        : spaceIpfsContent.tags;
+      spaceInst.tagsOriginal = getJoinedList(spaceIpfsContent.tags);
     }
     if (spaceIpfsContent.links) {
-      spaceInst.linksOriginal = Array.isArray(spaceIpfsContent.links)
-        ? spaceIpfsContent.links.join(',')
-        : spaceIpfsContent.links;
+      spaceInst.linksOriginal = getJoinedList(spaceIpfsContent.links);
+    }
+    if (spaceIpfsContent.interests) {
+      spaceInst.interestsOriginal = getJoinedList(spaceIpfsContent.interests);
     }
   }
 

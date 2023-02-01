@@ -7,7 +7,7 @@ import {
   SpaceStorageData,
   PostStorageData,
   SpaceCreatedData,
-  SpaceUpdatedData,
+  SpaceUpdatedData
 } from '../common/types';
 import * as v7 from '../types/generated/v7';
 import { addressStringToSs58 } from '../common/utils';
@@ -66,10 +66,14 @@ export class StorageDataManager {
 
   public async fetchIpfsContentByCid<T extends StorageSection>(
     section: T,
-    cid: string | null
+    cid: string | null,
+    fetchErrorLogger?: (msg: string | null) => Promise<void>
   ): Promise<IpfsContent<T> | null> {
     if (!cid) return null;
-    const res = await this.ipfsDataManager.fetchOneByIdHttp(cid);
+    const res = await this.ipfsDataManager.fetchOneByIdHttp(
+      cid,
+      fetchErrorLogger
+    );
     if (!res) return null;
     return res as IpfsContent<T>;
   }

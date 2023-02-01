@@ -34,6 +34,10 @@ export async function postCreated(
 
   ElasticSearchIndexerManager.getInstance(ctx).addToQueue(post);
 
+  post.ownedByAccount.ownedPostsCount += 1;
+
+  await ctx.store.save(post.ownedByAccount);
+
   if (post.sharedPost) await handlePostShare(post, account, ctx, eventData);
 
   await updatePostsCountersInSpace({
@@ -44,7 +48,7 @@ export async function postCreated(
   });
 
   /**
-   * Currently each post/comment/comment reply has initial follower as it's creator.
+   * Currently each post/comment/comment reply has initial follower as its creator.
    */
   await postFollowed(post, ctx);
 
@@ -65,13 +69,21 @@ export async function postCreated(
 
   if (post.sharedPost) return;
 
-  if (!post.isComment || (post.isComment && !post.parentPost)) {
+  if (!post.isComment) {
     await addNotificationForAccount(post.ownedByAccount, activity, ctx);
+  } else if (post.isComment && post.rootPost && !post.parentPost) {
+    await addNotificationForAccount(post.ownedByAccount, activity, ctx);
+    await addNotificationForAccount(
+      post.rootPost.ownedByAccount,
+      activity,
+      ctx
+    );
+    // TODO do we need send notification for comment creator as well?
   } else if (post.isComment && post.parentPost && post.rootPost) {
     /**
      * Notifications should not be added for owner followers if post is reply
      */
-
+    await addNotificationForAccount(post.ownedByAccount, activity, ctx);
     await addNotificationForAccount(
       post.rootPost.ownedByAccount,
       activity,
@@ -101,7 +113,7 @@ async function handlePostShare(
 
   const activity = await setActivity({
     account: callerAccount,
-    post: originPost,
+    post: sharedPost,
     syntheticEventName: getSyntheticEventName(EventName.PostShared, originPost),
     ctx,
     eventData

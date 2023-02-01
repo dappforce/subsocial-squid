@@ -108,5 +108,6 @@ export async function postMoved(
   await addPostToFeeds(post, activity, ctx);
 
   if (prevSpaceInst)
+    // TODO account.id should be replaced to post.ownedByAccount.id
     await deleteSpacePostsFromFeedForAccount(account.id, prevSpaceInst, ctx);
 }

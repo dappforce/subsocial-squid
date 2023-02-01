@@ -5,9 +5,17 @@ dayjs.extend(localizedFormat);
 import * as ss58 from '@subsquid/ss58';
 import md5 from 'md5';
 import { EventHandlerContext } from './contexts';
-import { EventName, PostKind, Post } from '../model';
-import { EventData } from './types';
+import {
+  EventName,
+  PostKind,
+  Post,
+  TweetDetails,
+  ReferencedTweetDetails,
+  TweetAttachmentsDetails
+} from '../model';
+import { EventData, PostTweetDetailsIPFS } from './types';
 import { summarizeMd } from '@subsocial/utils';
+import { NamedLink } from '@subsocial/api/types/ipfs';
 
 let subsocialSs58CodecInst: ss58.Codec | null = null;
 
@@ -229,4 +237,46 @@ export function getBodySummary(body: string | undefined | null): {
   if (!body) return sum;
 
   return summarizeMd(body);
+}
+
+export function getJoinedList(src: string[] | NamedLink[] | string) {
+  if (!Array.isArray(src)) return src;
+  return src
+    .map((item) => (typeof item === 'string' ? item : JSON.stringify(item)))
+    .join(',');
+}
+
+export function isTweetDetailsIPFSValid(srcData: PostTweetDetailsIPFS | null) {
+  return srcData && typeof srcData !== 'string';
+}
+
+export function getTweetDetailsEntity(
+  srcData: PostTweetDetailsIPFS | null
+): TweetDetails | null {
+  if (!srcData || !isTweetDetailsIPFSValid(srcData)) return null;
+
+  return new TweetDetails({
+    createdAt: srcData.created_at,
+    username: srcData.username ?? null,
+    authorId: srcData.author_id ?? null,
+    conversationId: srcData.conversation_id ?? null,
+    inReplyToUserId: srcData.in_reply_to_user_id ?? null,
+    lang: srcData.lang ?? null,
+    editHistoryTweetIds: srcData.edit_history_tweet_ids ?? null,
+    referencedTweets:
+      srcData.referenced_tweets && Array.isArray(srcData.referenced_tweets)
+        ? srcData.referenced_tweets.map(
+            (i) => new ReferencedTweetDetails({ id: i.id, type: i.type })
+          )
+        : null,
+    attachments:
+      srcData.attachments &&
+      (srcData.attachments.hasOwnProperty('media_keys') ||
+        srcData.attachments.hasOwnProperty('poll_ids'))
+        ? new TweetAttachmentsDetails({
+            mediaKeys: srcData.attachments.media_keys ?? null,
+            pollIds: srcData.attachments.poll_ids ?? null
+          })
+        : null
+  });
 }

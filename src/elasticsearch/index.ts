@@ -91,28 +91,30 @@ export class ElasticSearchIndexerManager {
    * be sure that entities are saved in DB after previous DB transaction commit.
    */
   async processIndexingQueue() {
-    for (const [entityType, contentScope] of this.indexingQueue.entries()) {
-      switch (entityType) {
-        case 'post':
-          await this.indexListInBatches(
-            contentScope,
-            this.esClient.indexPostContent.bind(this.esClient)
-          );
-          break;
-        case 'space':
-          await this.indexListInBatches(
-            contentScope,
-            this.esClient.indexSpaceContent.bind(this.esClient)
-          );
-          break;
-        default:
+    if (process.env.ELASTIC_SEARCH_MODE !== 'develop') {
+      for (const [entityType, contentScope] of this.indexingQueue.entries()) {
+        switch (entityType) {
+          case 'post':
+            await this.indexListInBatches(
+              contentScope,
+              this.esClient.indexPostContent.bind(this.esClient)
+            );
+            break;
+          case 'space':
+            await this.indexListInBatches(
+              contentScope,
+              this.esClient.indexSpaceContent.bind(this.esClient)
+            );
+            break;
+          default:
+        }
       }
+      this.processorContext.log.info(
+        `Added to ElasticSearch: ${
+          this.indexingQueue.get('post')!.size
+        } posts | ${this.indexingQueue.get('space')!.size} spaces`
+      );
     }
-    this.processorContext.log.info(
-      `Added to ElasticSearch: ${
-        this.indexingQueue.get('post')!.size
-      } posts | ${this.indexingQueue.get('space')!.size} spaces`
-    );
     this.indexingQueue.get('post')!.clear();
     this.indexingQueue.get('space')!.clear();
   }

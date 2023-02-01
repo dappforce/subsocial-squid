@@ -10,7 +10,7 @@ import { StorageDataManager } from '../../storage';
 import { setActivity } from '../activity';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
-import { getBodySummary } from '../../common/utils';
+import { getBodySummary, getJoinedList } from '../../common/utils';
 
 export async function spaceUpdated(
   ctx: Ctx,
@@ -55,14 +55,13 @@ export async function spaceUpdated(
     space.image = spaceIpfsContent.image ?? null;
 
     if (spaceIpfsContent.tags) {
-      space.tagsOriginal = Array.isArray(spaceIpfsContent.tags)
-        ? spaceIpfsContent.tags.join(',')
-        : spaceIpfsContent.tags;
+      space.tagsOriginal = getJoinedList(spaceIpfsContent.tags);
     }
     if (spaceIpfsContent.links) {
-      space.linksOriginal = Array.isArray(spaceIpfsContent.links)
-        ? spaceIpfsContent.links.join(',')
-        : spaceIpfsContent.links;
+      space.linksOriginal = getJoinedList(spaceIpfsContent.links);
+    }
+    if (spaceIpfsContent.interests) {
+      space.interestsOriginal = getJoinedList(spaceIpfsContent.interests);
     }
   }
 

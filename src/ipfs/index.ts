@@ -13,8 +13,6 @@ export class IpfsDataManager {
 
   private ipfsReadOnlyNodeUrl: string = envConfig.ipfsReadOnlyNodeUrl;
 
-  public fetchedCidsList: Set<string> = new Set();
-
   constructor(private processorContext: Ctx) {
     this.createIpfsClient();
   }
@@ -33,30 +31,24 @@ export class IpfsDataManager {
     });
   }
 
-  async fetchOneByIdHttp(ipfsCid: IpfsCid): Promise<IpfsCommonContent | null> {
+  async fetchOneByIdHttp(
+    ipfsCid: IpfsCid,
+    logger?: (msg: string | null) => Promise<void>
+  ): Promise<IpfsCommonContent | null> {
     let res = null;
-
-    if (this.fetchedCidsList.has(ipfsCid.toString())) {
-      this.processorContext.log
-        .child('ipfs')
-        .warn(
-          `CID ${ipfsCid.toString()} has been already fetched. No duplicated fetches.`
-        );
-      return res;
-    }
 
     try {
       res = await this.fetchContent(ipfsCid, 10000);
       this.processorContext.log
         .child('ipfs')
         .info(`Response by CID - ${ipfsCid.toString()} => SUCCESSFUL`);
-      this.fetchedCidsList.add(ipfsCid.toString());
       await new Promise((res) => setTimeout(res, 50));
     } catch (e) {
       this.processorContext.log
         .child('ipfs')
         .info(`Response by CID - ${ipfsCid.toString()} => with ERROR`);
       console.log(e);
+      if (logger) await logger(e ? e.toString() : null);
     }
     // @ts-ignore
     return res;
