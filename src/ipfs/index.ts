@@ -5,13 +5,15 @@ import { create, IPFSHTTPClient } from 'ipfs-http-client';
 import { CID_KIND, IpfsCid, Headers } from './types';
 import { asIpfsCid } from './utils';
 import { Ctx } from '../processor';
+import { getChain } from '../chains';
+const chainConfig = getChain();
 
 export class IpfsDataManager {
   private static instance: IpfsDataManager;
 
   private ipfsClient!: IPFSHTTPClient;
 
-  private ipfsReadOnlyNodeUrl: string = envConfig.ipfsReadOnlyNodeUrl;
+  private ipfsReadOnlyNodeUrl: string = chainConfig.config.ipfsReadOnlyNodeUrl;
 
   constructor(private processorContext: Ctx) {
     this.createIpfsClient();

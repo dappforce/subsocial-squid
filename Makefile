@@ -26,7 +26,7 @@ codegen:
 
 
 typegen:
-	@npx squid-substrate-typegen typegen/typegen.json
+	@sh ./scripts/typegen.sh
 
 
 up:

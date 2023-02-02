@@ -21,8 +21,8 @@ import {
   PostReactionUpdatedData,
   PostReactionDeletedData
 } from '../common/types';
-import argsParsers from './argsParsers';
 import { SubstrateEvent } from '@subsquid/substrate-processor';
+import { getChain } from '../chains';
 
 type EventDataType<T> = T extends EventName.SpaceCreated
   ? SpaceCreatedData
@@ -53,6 +53,8 @@ type EventDataType<T> = T extends EventName.SpaceCreated
   : T extends EventName.PostReactionDeleted
   ? PostReactionDeletedData
   : never;
+
+const { getApiDecorated } = getChain();
 
 export class ParsedEventsDataScope {
   private scope: ParsedEventsDataMap;
@@ -102,6 +104,7 @@ function getEventMetadata(block: Block, event: SubstrateEvent): EventData {
 export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
   const parsedData = new ParsedEventsDataScope();
   let totalEventsNumber = 0;
+  const api = getApiDecorated('subsocial');
 
   for (let block of ctx.blocks) {
     for (let item of block.items) {
@@ -116,9 +119,9 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
       switch (item.name) {
         case 'Posts.PostCreated': {
           const callData =
-            argsParsers.call.parsePostCreatedCallArgs(eventHandlerContext);
+            api.calls.parsePostCreatedCallArgs(eventHandlerContext);
           const eventData =
-            argsParsers.event.parsePostCreatedEventArgs(eventHandlerContext);
+            api.events.parsePostCreatedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.PostCreated, {
             ...getEventMetadata(block, item.event as SubstrateEvent),
@@ -131,9 +134,9 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'Posts.PostUpdated': {
           const callData =
-            argsParsers.call.parsePostUpdatedCallArgs(eventHandlerContext);
+            api.calls.parsePostUpdatedCallArgs(eventHandlerContext);
           const eventData =
-            argsParsers.event.parsePostUpdatedEventArgs(eventHandlerContext);
+            api.events.parsePostUpdatedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.PostUpdated, {
             ...getEventMetadata(block, item.event as SubstrateEvent),
@@ -147,9 +150,9 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'Posts.PostMoved': {
           const callData =
-            argsParsers.call.parsePostMoveCallArgs(eventHandlerContext);
+            api.calls.parsePostMoveCallArgs(eventHandlerContext);
           const eventData =
-            argsParsers.event.parsePostMovedEventArgs(eventHandlerContext);
+            api.events.parsePostMovedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.PostMoved, {
             ...getEventMetadata(block, item.event as SubstrateEvent),
@@ -162,9 +165,9 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'Spaces.SpaceCreated': {
           const callData =
-            argsParsers.call.parseSpaceCreateCallArgs(eventHandlerContext);
+            api.calls.parseSpaceCreateCallArgs(eventHandlerContext);
           const eventData =
-            argsParsers.event.parseSpaceCreatedEventArgs(eventHandlerContext);
+            api.events.parseSpaceCreatedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.SpaceCreated, {
             ...getEventMetadata(block, item.event as SubstrateEvent),
@@ -177,9 +180,9 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'Spaces.SpaceUpdated': {
           const callData =
-            argsParsers.call.parseSpaceUpdateCallArgs(eventHandlerContext);
+            api.calls.parseSpaceUpdateCallArgs(eventHandlerContext);
           const eventData =
-            argsParsers.event.parseSpaceUpdatedEventArgs(eventHandlerContext);
+            api.events.parseSpaceUpdatedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.SpaceUpdated, {
             ...getEventMetadata(block, item.event as SubstrateEvent),
@@ -192,11 +195,11 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'Reactions.PostReactionCreated': {
           const callData =
-            argsParsers.call.parsePostReactionCreateCallArgs(
+            api.calls.parsePostReactionCreateCallArgs(
               eventHandlerContext
             );
           const eventData =
-            argsParsers.event.parsePostReactionCreatedEventArgs(
+            api.events.parsePostReactionCreatedEventArgs(
               eventHandlerContext
             );
 
@@ -212,11 +215,11 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'Reactions.PostReactionUpdated': {
           const callData =
-            argsParsers.call.parsePostReactionUpdateCallArgs(
+            api.calls.parsePostReactionUpdateCallArgs(
               eventHandlerContext
             );
           const eventData =
-            argsParsers.event.parsePostReactionUpdatedEventArgs(
+            api.events.parsePostReactionUpdatedEventArgs(
               eventHandlerContext
             );
 
@@ -232,11 +235,11 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'Reactions.PostReactionDeleted': {
           const callData =
-            argsParsers.call.parsePostReactionDeleteCallArgs(
+            api.calls.parsePostReactionDeleteCallArgs(
               eventHandlerContext
             );
           const eventData =
-            argsParsers.event.parsePostReactionDeletedEventArgs(
+            api.events.parsePostReactionDeletedEventArgs(
               eventHandlerContext
             );
 
@@ -252,7 +255,7 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'Profiles.ProfileUpdated': {
           const eventData =
-            argsParsers.event.parseProfileUpdatedEventArgs(eventHandlerContext);
+            api.events.parseProfileUpdatedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.ProfileUpdated, {
             ...getEventMetadata(block, item.event as SubstrateEvent),
@@ -265,7 +268,7 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'SpaceFollows.SpaceFollowed': {
           const eventData =
-            argsParsers.event.parseSpaceFollowedEventArgs(eventHandlerContext);
+            api.events.parseSpaceFollowedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.SpaceFollowed, {
             ...getEventMetadata(block, item.event as SubstrateEvent),
@@ -278,7 +281,7 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'SpaceFollows.SpaceUnfollowed': {
           const eventData =
-            argsParsers.event.parseSpaceUnfollowedEventArgs(
+            api.events.parseSpaceUnfollowedEventArgs(
               eventHandlerContext
             );
 
@@ -292,7 +295,7 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
         case 'SpaceOwnership.SpaceOwnershipTransferAccepted': {
           const eventData =
-            argsParsers.event.parseSpaceOwnershipTransferAcceptedEventArgs(
+            api.events.parseSpaceOwnershipTransferAcceptedEventArgs(
               eventHandlerContext
             );
 
@@ -307,7 +310,7 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'AccountFollows.AccountFollowed': {
           const eventData =
-            argsParsers.event.parseAccountFollowedEventArgs(
+            api.events.parseAccountFollowedEventArgs(
               eventHandlerContext
             );
 
@@ -321,7 +324,7 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
         case 'AccountFollows.AccountUnfollowed': {
           const eventData =
-            argsParsers.event.parseAccountUnfollowedEventArgs(
+            api.events.parseAccountUnfollowedEventArgs(
               eventHandlerContext
             );
 

@@ -22,13 +22,14 @@ import { handleSpacesFollowing } from './mappings/spaceFollows';
 import { handlePostReactions } from './mappings/reaction';
 import { splitIntoBatches } from './common/utils';
 import { ElasticSearchIndexerManager } from './elasticsearch';
+import { getChain } from './chains';
+
+const chainConfig = getChain();
 
 export const processor = new SubstrateBatchProcessor()
   .setDataSource({
-    archive: lookupArchive('subsocial-parachain', {
-      release: 'FireSquid'
-    }),
-    chain: envConfig.chainNode
+    archive: chainConfig.config.dataSource.archive,
+    chain: chainConfig.config.dataSource.chain
   })
   // .setBlockRange({ from: 1093431 }) // PostCreated
   // .setBlockRange({ from: 1093209 }) // SpaceCreated

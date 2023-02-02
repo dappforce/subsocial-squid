@@ -12,8 +12,8 @@ import {
   SpacesCreateSpaceCall,
   SpacesForceCreateSpaceCall,
   SpacesUpdateSpaceCall
-} from '../../types/generated/calls';
-import { PostKind, ReactionKind } from '../../model';
+} from '../types/calls';
+import { PostKind, ReactionKind } from '../../../model';
 
 import {
   CreatePostCallParsedData,
@@ -25,14 +25,14 @@ import {
   PostReactionCreateCallParsedData,
   PostReactionUpdateCallParsedData,
   PostReactionDeleteCallParsedData
-} from '../../common/types';
+} from '../../../common/types';
 import {
   getContentSrcDecorated,
   getReactionKindDecorated,
   getSpacePermissionsDecorated
-} from '../decorators';
-import * as v13 from '../../types/generated/v13';
-import { addressSs58ToString } from '../../common/utils';
+} from './decorators';
+import * as v13 from '../types/v13';
+import { addressSs58ToString } from '../../../common/utils';
 
 function ensureSpaceId(srcVal: bigint | undefined) {
   return srcVal !== null && srcVal !== undefined ? srcVal.toString() : srcVal;
@@ -114,6 +114,7 @@ export function parsePostCreatedCallArgs(
 
   return response;
 }
+
 export function parsePostUpdatedCallArgs(
   ctx: EventContext
 ): UpdatePostCallParsedData {

@@ -1,6 +1,5 @@
 import { Ctx } from '../processor';
 import { EventName } from '../model';
-import { resolveSpacesHandleStorage } from './space';
 import { ParsedEventsDataScope } from '../eventsCallsData';
 
 import {
@@ -9,7 +8,7 @@ import {
   SpaceCreatedData,
   SpaceUpdatedData
 } from '../common/types';
-import * as v7 from '../types/generated/v7';
+import { InnerValue } from '../chains/interfaces/sharedTypes';
 import { addressStringToSs58 } from '../common/utils';
 import { IpfsDataManager } from '../ipfs';
 import {
@@ -19,13 +18,16 @@ import {
   StorageData,
   IpfsContent
 } from './types';
+import { getChain } from '../chains';
+
+const { getApiDecorated } = getChain();
 
 export class StorageDataManager {
   private static instance: StorageDataManager;
 
   public idsForFetchStorage: Map<
     StorageSection,
-    Map<BlochHash, Set<[EntityId, string | null] | [Uint8Array, v7.InnerValue]>>
+    Map<BlochHash, Set<[EntityId, string | null] | [Uint8Array, InnerValue]>>
   > = new Map();
 
   public storageDataCache: Map<
@@ -100,6 +102,8 @@ export class StorageDataManager {
   async fetchStorageDataByEventsData(
     parsedEvents: ParsedEventsDataScope
   ): Promise<void> {
+    const api = getApiDecorated('subsocial');
+
     for (const [eventName, eventsData] of [...parsedEvents.entries()]) {
       switch (eventName) {
         case EventName.SpaceCreated:
@@ -130,15 +134,14 @@ export class StorageDataManager {
           for (const [blockHash, idsPairs] of [...idsListByBlock.entries()]) {
             const idPairsList = [...idsPairs.values()] as [
               Uint8Array,
-              v7.InnerValue
+              InnerValue
             ][];
-            const spacesHandlesResp = await resolveSpacesHandleStorage(
-              idPairsList.map((d) => {
-                return [d[0], d[1]] as [Uint8Array, v7.InnerValue];
-              }),
+            const spacesHandlesResp = await api.storage.getSpacesHandle(
               this.context,
-              // @ts-ignore
-              { header: { hash: blockHash } }
+              { hash: blockHash },
+              idPairsList.map((d) => {
+                return [d[0], d[1]] as [Uint8Array, InnerValue];
+              })
             );
 
             this.ensureStorageDataCacheContainer(section, blockHash);
