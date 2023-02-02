@@ -51,32 +51,69 @@ enum Status {
   Deleted
 }
 
+"""
+Account entity
+"""
 type Account @entity {
+      """ Account public key converted to ss58 format for Subsocial chain (prefix "28") """
   id: ID!
+
+      """ One-To-One relationship with Space entity which is defined as Account Profile  """
   profileSpace: Space
 
+      """ One-To-Many relationship with Account followers (foreign key - "followingAccount") """
   followers: [AccountFollowers]! @derivedFrom(field: "followingAccount")
+
+      """ Total number of all Account followers (followers.length) """
   followersCount: Int!
 
+      """ One-To-Many relationship with following accounts by current Account (foreign key - "followerAccount") """
   followingAccounts: [AccountFollowers]! @derivedFrom(field: "followerAccount")
+
+      """ Total number of all following accounts by current Account (followingAccounts.length) """
   followingAccountsCount: Int!
 
+      """ One-To-Many relationship with Posts which are created by Account (foreign key - "createdByAccount") """
   posts: [Post] @derivedFrom(field: "createdByAccount")
+
+      """ One-To-Many relationship with Posts which are owned by Account (foreign key - "ownedByAccount") """
   ownedPosts: [Post] @derivedFrom(field: "ownedByAccount")
+
+      """ Total number of all owned by Account Posts (ownedPosts.length) """
   ownedPostsCount: Int!
+
+      """ Total number of all Posts which Account is following (currently only post creator is it's follower) """
   followingPostsCount: Int!
 
+      """ One-To-Many relationship with Spaces which are created by Account (foreign key - "createdByAccount") """
   spacesCreated: [Space!] @derivedFrom(field: "createdByAccount")
+
+      """ One-To-Many relationship with Spaces which are owned by Account (foreign key - "ownedByAccount") """
   spacesOwned: [Space!] @derivedFrom(field: "ownedByAccount")
+
+      """ Many-To-Many relationship between Account and followed Spaces via SpaceFollowers (foreign key - "followerAccount") """
   spacesFollowed: [SpaceFollowers!] @derivedFrom(field: "followerAccount")
+
+      """ Total number of all Spaces which Account is following """
   followingSpacesCount: Int!
 
+      """ Many-To-Many relationship between Account and done Activity in network via NewsFeed (foreign key - "account").
+      Each Activity has "event<EventName>" and "post" fields which can be used for adding created Posts to user's Feed.  """
   feeds: [NewsFeed]! @derivedFrom(field: "account")
+
+      """ Many-To-Many relationship between Account and done Activity in network via Notification (foreign key - "account"). """
   notifications: [Notification]! @derivedFrom(field: "account")
+
+      """ One-To-Many relationship with Activity which are done by Account (foreign key - "account") """
   activities: [Activity]! @derivedFrom(field: "account")
+
+      """ One-To-Many relationship with Reaction which are done by Account (foreign key - "account") """
   reactions: [Reaction]! @derivedFrom(field: "account")
 
+      """ DateTime when Account has been updated by Profiles.ProfileUpdated event """
   updatedAtTime: DateTime
+
+      """ Block height when Account has been updated by Profiles.ProfileUpdated event """
   updatedAtBlock: BigInt
 }
 
