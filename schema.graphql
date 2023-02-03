@@ -1,3 +1,59 @@
+"""
+Event name. Squid tracks next on-chain events:
+  - "Posts.PostCreated",
+  - "Posts.PostUpdated",
+  - "Posts.PostMoved",
+  - "Reactions.PostReactionCreated",
+  - "Reactions.PostReactionUpdated",
+  - "Reactions.PostReactionDeleted",
+  - "Spaces.SpaceCreated",
+  - "Spaces.SpaceUpdated",
+  - "Profiles.ProfileUpdated",
+  - "SpaceFollows.SpaceFollowed",
+  - "SpaceFollows.SpaceUnfollowed",
+  - "SpaceOwnership.SpaceOwnershipTransferAccepted",
+  - "AccountFollows.AccountFollowed",
+  - "AccountFollows.AccountUnfollowed"
+
+But some of on-chain events have multiple logical meanings.
+As result squid uses synthetic events in addition to native on-chain events.
+Full list of on-squid events is provided below:
+  - PostCreated
+  - PostDeleted - synthetic
+  - PostUpdated
+  - PostShared -  synthetic
+  - PostMoved
+  - PostFollowed - synthetic
+  - PostUnfollowed - synthetic
+  - PostReactionCreated
+  - PostReactionUpdated
+  - PostReactionDeleted
+
+  - SpaceCreated
+  - SpaceUpdated
+  - SpaceFollowed
+  - SpaceUnfollowed
+  - SpaceOwnershipTransferAccepted
+
+  - AccountFollowed
+  - AccountUnfollowed
+  - ProfileUpdated
+
+  - CommentCreated - synthetic
+  - CommentDeleted - synthetic
+  - CommentUpdated - synthetic
+  - CommentShared - synthetic
+  - CommentReactionCreated - synthetic
+  - CommentReactionUpdated - synthetic
+  - CommentReactionDeleted - synthetic
+  - CommentReplyCreated - synthetic
+  - CommentReplyDeleted - synthetic
+  - CommentReplyUpdated - synthetic
+  - CommentReplyShared - synthetic
+  - CommentReplyReactionCreated - synthetic
+  - CommentReplyReactionUpdated - synthetic
+  - CommentReplyReactionDeleted - synthetic
+"""
 enum EventName {
   PostCreated
   PostDeleted # synthetic
@@ -36,6 +92,12 @@ enum EventName {
   CommentReplyReactionDeleted # synthetic
 }
 
+"""
+Post kind.
+  - Comment - Post is a Comment or Comment Reply
+  - SharedPost - Post has been created as sharing of another Post
+  - RegularPost - Regular top level post
+"""
 enum PostKind {
   Comment
   SharedPost
@@ -66,7 +128,7 @@ type Account @entity {
   profileSpace: Space
 
   """
-  One-To-Many relationship with Account followers (foreign key - "followingAccount")
+  Many-To-Many relationship between current Account and follower Account through AccountFollowers (foreign key - "followingAccount")
   """
   followers: [AccountFollowers]! @derivedFrom(field: "followingAccount")
 
@@ -76,7 +138,7 @@ type Account @entity {
   followersCount: Int!
 
   """
-  One-To-Many relationship with following accounts by current Account (foreign key - "followerAccount")
+  Many-To-Many relationship between current Account and following Account through AccountFollowers (foreign key - "followerAccount")
   """
   followingAccounts: [AccountFollowers]! @derivedFrom(field: "followerAccount")
 
@@ -116,7 +178,7 @@ type Account @entity {
   spacesOwned: [Space!] @derivedFrom(field: "ownedByAccount")
 
   """
-  Many-To-Many relationship between Account and followed Spaces via SpaceFollowers (foreign key - "followerAccount")
+  Many-To-Many relationship between Account and followed Spaces through SpaceFollowers (foreign key - "followerAccount")
   """
   spacesFollowed: [SpaceFollowers!] @derivedFrom(field: "followerAccount")
 
@@ -126,13 +188,13 @@ type Account @entity {
   followingSpacesCount: Int!
 
   """
-  Many-To-Many relationship between Account and done Activity in network via NewsFeed (foreign key - "account").
+  Many-To-Many relationship between Account and done Activity in network through NewsFeed (foreign key - "account").
   Each Activity has "event<EventName>" and "post" fields which can be used for adding created Posts to user's Feed.
   """
   feeds: [NewsFeed]! @derivedFrom(field: "account")
 
   """
-  Many-To-Many relationship between Account and done Activity in network via Notification (foreign key - "account").
+  Many-To-Many relationship between Account and done Activity in network through Notification (foreign key - "account").
   """
   notifications: [Notification]! @derivedFrom(field: "account")
 
@@ -327,7 +389,7 @@ type Post @entity {
   """
   meta: String
   """
-  List of Post's tags converted to string with "comma" as separator (IPFS content)
+  List of Post's tags converted to string with "comma" as a separator (IPFS content)
   """
   tagsOriginal: String
   """
@@ -399,96 +461,299 @@ type Reaction @entity {
 }
 
 type Space @entity {
+  """
+  Space ID. Has the same value and Space ID in blockchain.
+  """
   id: ID!
+
+  """
+  One-To-One relationship with Space's creator Account entity
+  """
   createdByAccount: Account!
+
+  """
+  One-To-One relationship with Space's owner Account entity
+  """
   ownedByAccount: Account!
+
+  """
+  One-To-One relationship with Account which uses current Space as it's profile
+  """
   profileSpace: Account
 
+  """
+  Block height when Space has been created
+  """
   createdAtBlock: BigInt
+
+  """
+  DateTime height when Post has been created
+  """
   createdAtTime: DateTime @index
+
+  """
+  Day when Post has been created
+  """
   createdOnDay: DateTime
+
+  """
+  DateTime when Post has been created
+  """
   updatedAtTime: DateTime
+
+  """
+  Block height when Space has been updated
+  """
   updatedAtBlock: BigInt
 
+  """
+  One-To-Many relationship with Posts which are created within current Space (foreign key - "space")
+  """
   posts: [Post]! @derivedFrom(field: "space")
+
+  """
+  Total number of all Posts (hidden and public) in current Space (post.length)
+  """
   postsCount: Int!
+
+  """
+  Total number of non-hidden Posts in current Space (post.length)
+  """
   publicPostsCount: Int! @index
+
+  """
+  Total number of hidden Posts in current Space (post.length)
+  """
   hiddenPostsCount: Int!
 
+  """
+  Is Space hidden.
+  """
   hidden: Boolean! @index
+
+  """
+  IPFS content CID
+  """
   content: String
+  """
+  Name of Space (IPFS content)
+  """
   name: String
+  """
+  URL of the image of Space (IPFS content)
+  """
   image: String
+  """
+  About test of Space (IPFS content)
+  """
   about: String
+  """
+  Summary from content of Space (IPFS content)
+  """
   summary: String
+  """
+  If "about" is longer than summary, field contains true.
+  """
   isShowMore: Boolean
+
+  """
+  Email of Space (IPFS content)
+  """
   email: String
+
+  """
+  List of Space's tags converted to string with "comma" as a separator (IPFS content)
+  """
   tagsOriginal: String
+
+  """
+  List of Space's links converted to string with "comma" as a separator (IPFS content)
+  """
   linksOriginal: String
+
+  """
+  List of Space's interests converted to string with "comma" as a separator (IPFS content)
+  """
   interestsOriginal: String
+
+  """
+  Space format (IPFS content)
+  """
   format: String
+
+  """
+  Space handle (will be renamed to domain or username) (IPFS content)
+  """
   handle: String
 
+  """
+  Space permissions rule
+  """
   canFollowerCreatePosts: Boolean
+
+  """
+  Space permissions rule
+  """
   canEveryoneCreatePosts: Boolean
 
+  """
+  Space permissions rule
+  """
   nonePermissions: SpacePermissions
+  """
+  Space permissions rule
+  """
   everyonePermissions: SpacePermissions
+  """
+  Space permissions rule
+  """
   followerPermissions: SpacePermissions
+  """
+  Space permissions rule
+  """
   spaceOwnerPermissions: SpacePermissions
 
-  followersCount: Int! @index
+  """
+  Many-To-Many relationship between Space and follower Account through SpaceFollowers (foreign key - "followingSpace")
+  """
   followers: [SpaceFollowers]! @derivedFrom(field: "followingSpace")
+
+  """
+  Total number of all followers
+  """
+  followersCount: Int! @index
 }
 
+"""
+Activity entity - represents any activity in blockchain (within tracked events list).
+"""
 type Activity @entity {
+  """
+  Activity ID. Has next structure - <blockNumber>-<indexInBlock>-<md5Hash(eventName)>` (e.g. 1093209-1001-1ee8fd8482c322254acff29a8f52f5e1)
+  """
   id: ID!
+
+  """
+  One-To-One relationship with Account who initiated current activity (usually it's a caller Account)
+  """
   account: Account!
+
+  """
+  Block height when activity has been done
+  """
   blockNumber: BigInt!
+
+  """
+  Event's index in block
+  """
   eventIndex: Int!
+
+  """
+  Event name
+  """
   event: EventName! @index
+
+  """
+  One-to-One relationship with following Account if event is ***Followed or ***Unfollowed.
+  Following account|post|space will be saved in appropriate field.
+  """
   followingAccount: Account
+
+  """
+  One-to-One relationship with Space which has been involved to current Activity
+  """
   space: Space
+  """
+  One-to-One relationship with previous Space if event is "PostMoved"
+  """
   spacePrev: Space
+
+  """
+  One-to-One relationship with previous owner Account if event is "SpaceOwnershipTransferAccepted"
+  """
   newOwner: Account
+
+  """
+  One-to-One relationship with new owner Account if event is "SpaceOwnershipTransferAccepted"
+  """
   oldOwner: Account
+
+  """
+  One-to-One relationship with Post which has been involved to current Activity
+  """
   post: Post
+
+  """
+  One-to-One relationship with Reaction which has been involved to current Activity
+  """
   reaction: Reaction
+
+  """
+  DateTime when current activity has been done
+  """
   date: DateTime!
+
+  """
+  Clarification is required here
+  """
   aggregated: Boolean @index
+  """
+  Clarification is required here
+  """
   aggCount: BigInt!
 }
 
+"""
+Join table for Many-to-Many relationship between follower and following Accounts
+"""
 type AccountFollowers @entity {
   followerAccount: Account!
   followingAccount: Account!
 }
 
+"""
+Join table for Many-to-Many relationship between follower Account and following Space
+"""
 type SpaceFollowers @entity {
   followerAccount: Account!
   followingSpace: Space!
 }
 
+"""
+Join table for Many-to-Many relationship between follower Account and following Post
+"""
 type PostFollowers @entity {
   followerAccount: Account!
   followingPost: Post!
 }
 
+"""
+Join table for Many-to-Many relationship between follower Account and following Comment
+"""
 type CommentFollowers @entity {
   followerAccount: Account!
   followingComment: Post!
 }
 
+"""
+Join table for Many-to-Many relationship between Account and Activity
+"""
 type NewsFeed @entity {
   account: Account!
   activity: Activity!
 }
 
+"""
+Join table for Many-to-Many relationship between Account and Notification
+"""
 type Notification @entity {
   account: Account!
   activity: Activity!
 }
 
+"""
+Space permissions
+"""
 type SpacePermissions {
   manageRoles: Boolean
   representSpaceInternally: Boolean
@@ -523,6 +788,9 @@ type SpacePermissions {
   updateSpaceSettings: Boolean
 }
 
+"""
+Detailed information for Tweet attached to Post
+"""
 type TweetDetails {
   createdAt: String
   username: String
