@@ -29,6 +29,45 @@ make process
 make serve
 ```
 
+### Defined events in squid
+```graphql
+  PostCreated
+  PostDeleted # synthetic
+  PostUpdated
+  PostShared # synthetic
+  PostMoved
+  PostFollowed # synthetic
+  PostUnfollowed # synthetic
+  PostReactionCreated
+  PostReactionUpdated
+  PostReactionDeleted
+
+  SpaceCreated
+  SpaceUpdated
+  SpaceFollowed
+  SpaceUnfollowed
+  SpaceOwnershipTransferAccepted
+
+  AccountFollowed
+  AccountUnfollowed
+  ProfileUpdated
+
+  CommentCreated # synthetic
+  CommentDeleted # synthetic
+  CommentUpdated # synthetic
+  CommentShared # synthetic
+  CommentReactionCreated # synthetic
+  CommentReactionUpdated # synthetic
+  CommentReactionDeleted # synthetic
+  CommentReplyCreated # synthetic
+  CommentReplyDeleted # synthetic
+  CommentReplyUpdated # synthetic
+  CommentReplyShared # synthetic
+  CommentReplyReactionCreated # synthetic
+  CommentReplyReactionUpdated # synthetic
+  CommentReplyReactionDeleted # synthetic
+```
+
 ### Short info about indexer multi-chain structure
 
 1. Chain configs/endpoints can be configured in `config.ts` file in appropriate folder of necessary chain:
