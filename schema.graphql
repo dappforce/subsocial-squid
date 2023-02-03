@@ -55,126 +55,346 @@ enum Status {
 Account entity
 """
 type Account @entity {
-      """ Account public key converted to ss58 format for Subsocial chain (prefix "28") """
+  """
+  Account public key converted to ss58 format for Subsocial chain (prefix "28")
+  """
   id: ID!
 
-      """ One-To-One relationship with Space entity which is defined as Account Profile  """
+  """
+  One-To-One relationship with Space entity which is defined as Account Profile
+  """
   profileSpace: Space
 
-      """ One-To-Many relationship with Account followers (foreign key - "followingAccount") """
+  """
+  One-To-Many relationship with Account followers (foreign key - "followingAccount")
+  """
   followers: [AccountFollowers]! @derivedFrom(field: "followingAccount")
 
-      """ Total number of all Account followers (followers.length) """
+  """
+  Total number of all Account followers (followers.length)
+  """
   followersCount: Int!
 
-      """ One-To-Many relationship with following accounts by current Account (foreign key - "followerAccount") """
+  """
+  One-To-Many relationship with following accounts by current Account (foreign key - "followerAccount")
+  """
   followingAccounts: [AccountFollowers]! @derivedFrom(field: "followerAccount")
 
-      """ Total number of all following accounts by current Account (followingAccounts.length) """
+  """
+  Total number of all following accounts by current Account (followingAccounts.length)
+  """
   followingAccountsCount: Int!
 
-      """ One-To-Many relationship with Posts which are created by Account (foreign key - "createdByAccount") """
+  """
+  One-To-Many relationship with Posts which are created by Account (foreign key - "createdByAccount")
+  """
   posts: [Post] @derivedFrom(field: "createdByAccount")
 
-      """ One-To-Many relationship with Posts which are owned by Account (foreign key - "ownedByAccount") """
+  """
+  One-To-Many relationship with Posts which are owned by Account (foreign key - "ownedByAccount")
+  """
   ownedPosts: [Post] @derivedFrom(field: "ownedByAccount")
 
-      """ Total number of all owned by Account Posts (ownedPosts.length) """
+  """
+  Total number of all owned by Account Posts (ownedPosts.length)
+  """
   ownedPostsCount: Int!
 
-      """ Total number of all Posts which Account is following (currently only post creator is it's follower) """
+  """
+  Total number of all Posts which Account is following (currently only post creator is it's follower)
+  """
   followingPostsCount: Int!
 
-      """ One-To-Many relationship with Spaces which are created by Account (foreign key - "createdByAccount") """
+  """
+  One-To-Many relationship with Spaces which are created by Account (foreign key - "createdByAccount")
+  """
   spacesCreated: [Space!] @derivedFrom(field: "createdByAccount")
 
-      """ One-To-Many relationship with Spaces which are owned by Account (foreign key - "ownedByAccount") """
+  """
+  One-To-Many relationship with Spaces which are owned by Account (foreign key - "ownedByAccount")
+  """
   spacesOwned: [Space!] @derivedFrom(field: "ownedByAccount")
 
-      """ Many-To-Many relationship between Account and followed Spaces via SpaceFollowers (foreign key - "followerAccount") """
+  """
+  Many-To-Many relationship between Account and followed Spaces via SpaceFollowers (foreign key - "followerAccount")
+  """
   spacesFollowed: [SpaceFollowers!] @derivedFrom(field: "followerAccount")
 
-      """ Total number of all Spaces which Account is following """
+  """
+  Total number of all Spaces which Account is following
+  """
   followingSpacesCount: Int!
 
-      """ Many-To-Many relationship between Account and done Activity in network via NewsFeed (foreign key - "account").
-      Each Activity has "event<EventName>" and "post" fields which can be used for adding created Posts to user's Feed.  """
+  """
+  Many-To-Many relationship between Account and done Activity in network via NewsFeed (foreign key - "account").
+  Each Activity has "event<EventName>" and "post" fields which can be used for adding created Posts to user's Feed.
+  """
   feeds: [NewsFeed]! @derivedFrom(field: "account")
 
-      """ Many-To-Many relationship between Account and done Activity in network via Notification (foreign key - "account"). """
+  """
+  Many-To-Many relationship between Account and done Activity in network via Notification (foreign key - "account").
+  """
   notifications: [Notification]! @derivedFrom(field: "account")
 
-      """ One-To-Many relationship with Activity which are done by Account (foreign key - "account") """
+  """
+  One-To-Many relationship with Activity which are done by Account (foreign key - "account")
+  """
   activities: [Activity]! @derivedFrom(field: "account")
 
-      """ One-To-Many relationship with Reaction which are done by Account (foreign key - "account") """
+  """
+  One-To-Many relationship with Reaction which are done by Account (foreign key - "account")
+  """
   reactions: [Reaction]! @derivedFrom(field: "account")
 
-      """ DateTime when Account has been updated by Profiles.ProfileUpdated event """
+  """
+  DateTime when Account has been updated by Profiles.ProfileUpdated event
+  """
   updatedAtTime: DateTime
 
-      """ Block height when Account has been updated by Profiles.ProfileUpdated event """
+  """
+  Block height when Account has been updated by Profiles.ProfileUpdated event
+  """
   updatedAtBlock: BigInt
 }
 
+"""
+Post entity
+"""
 type Post @entity {
+  """
+  Post ID. The same as in blockchain.
+  """
   id: ID!
-  parentPost: Post
+
+  """
+  One-to-One relationship with Post. This field has value only if current Post is a Comment or Reply to Comment and contains relation with top level Regular Post.
+  """
   rootPost: Post
+
+  """
+  One-to-One relationship with Post. This field has value only if current Post is a Reply to Comment and contains relation with Comment Post or another Reply (in case there is discussion within context of some Comment).
+  """
+  parentPost: Post
+
+  """
+  One-to-One relationship with Post which has been shared. Current Post is a new Post which has been created during sharing action and can contain additional body as a comment to sharing Post. "sharedPost" is relation with Post which has been shared
+  """
   sharedPost: Post
+
+  """
+  Is current Post a Comment to Regular Post or Comment Post
+  """
   isComment: Boolean! @index
+
+  """
+  Is current post hidden
+  """
   hidden: Boolean! @index
 
+  """
+  One-To-One relationship with Post's owner Account entity. Currently we don't have Post transfer functionality.
+  """
   ownedByAccount: Account!
+
+  """
+  One-To-One relationship with Post's creator Account entity
+  """
   createdByAccount: Account!
+
+  """
+  Block height when Post has been created
+  """
   createdAtBlock: BigInt
+
+  """
+  DateTime when Post has been created
+  """
   createdAtTime: DateTime @index
+
+  """
+  Day when Post has been created
+  """
   createdOnDay: DateTime
+
+  """
+  Time when Post has been created
+  """
   updatedAtTime: DateTime
+
+  """
+  One-To-One relationship with Space current Post has been created on. Can be null in case Post is deleted (moved to Space with ID === null)
+  """
   space: Space
+
+  """
+  Type of the Post (Comment | SharedPost | RegularPost)
+  """
   kind: PostKind @index
 
+  """
+  One-To-Many relationship with Regular Post's followers (foreign key - "followingPost") (currently only Post's creator can be follower of the Post)
+  """
   postFollowers: [PostFollowers] @derivedFrom(field: "followingPost")
+
+  """
+  One-To-Many relationship with Comment Post's or Comment Replies followers (foreign key - "followingPost") (currently only Post's creator can be follower of the Post)
+  """
   commentFollowers: [CommentFollowers] @derivedFrom(field: "followingComment")
+
+  """
+  Total number of all Post followers
+  """
   followersCount: Int! @index
 
+  """
+  Total number of replies to current Post
+  """
   repliesCount: Int!
+
+  """
+  Total number of non-hidden replies to current Post
+  """
   publicRepliesCount: Int! @index
+
+  """
+  Total number of hidden replies to current Post
+  """
   hiddenRepliesCount: Int!
+
+  """
+  How many times current Post has been shared
+  """
   sharesCount: Int! @index
+
+  """
+  Total number of UpVote reaction for current Post
+  """
   upvotesCount: Int! @index
+
+  """
+  Total number of DownVote reaction for current Post
+  """
   downvotesCount: Int! @index
+
+  """
+  Total number of all reaction for current Post
+  """
   reactionsCount: Int! @index
+
+  """
+  One-To-Many relationship with Reactions for this current Post (foreign key - "post")
+  """
   reactions: [Reaction] @derivedFrom(field: "post")
-  #  score: Int
 
+  """
+  Post title (IPFS content)
+  """
   title: String
+  """
+  Post image URL (IPFS content)
+  """
   image: String
+  """
+  Post link (IPFS content)
+  """
   link: String
+  """
+  Post canonical URL (IPFS content)
+  """
   canonical: String
+  """
+  IPFS content CID
+  """
   content: String
+  """
+  Post slug URL (IPFS content)
+  """
   slug: String
+  """
+  Post body (IPFS content)
+  """
   body: String
+  """
+  Post body summary (IPFS content)
+  """
   summary: String
+  """
+  If body is longer than summary, field contains true.
+  """
   isShowMore: Boolean
+  """
+  ! Deprecated field and will be removed !
+  """
   meta: String
+  """
+  List of Post's tags converted to string with "comma" as separator (IPFS content)
+  """
   tagsOriginal: String
+  """
+  Post format (IPFS content)
+  """
   format: String
+  """
+  Tweet ID attached to current Post (IPFS content)
+  """
   tweetId: String
+  """
+  Tweet details (IPFS content)
+  """
   tweetDetails: TweetDetails
-
+  """
+  ! Deprecated field and will be removed !
+  """
   proposalIndex: Int # postContent.meta[0]
 }
 
+"""
+Post Reaction entity
+"""
 type Reaction @entity {
+  """
+  Reaction ID. Has the same value and reaction ID in blockchain.
+  """
   id: ID!
+
+  """
+  One-to-One relationship with Post current reaction has been made for.
+  """
   post: Post!
+
+  """
+  One-to-One relationship with Reaction creator Account.
+  """
   account: Account!
+
+  """
+  Reaction kind (Upvote, Downvote)
+  """
   kind: ReactionKind! @index
+
+  """
+  Reaction status (Active, Deleted). Synthetic value, is not existing in blockchain and used only in squid.
+  """
   status: Status! @index
+
+  """
+  Block height when Reaction has been created
+  """
   createdAtBlock: BigInt!
+
+  """
+  DateTime when Reaction has been created
+  """
   createdAtTime: DateTime!
+
+  """
+  Block height when Reaction has been updated
+  """
   updatedAtBlock: BigInt
+
+  """
+  DateTime when Reaction has been updated
+  """
   updatedAtTime: DateTime
 }
 
