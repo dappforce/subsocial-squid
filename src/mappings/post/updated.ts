@@ -72,6 +72,7 @@ export async function postUpdated(
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
     post.slug = null;
+    post.appId = postIpfsContent.appId ?? null;
 
     if (postIpfsContent.tags) {
       post.tagsOriginal = getJoinedList(postIpfsContent.tags);

@@ -105,6 +105,7 @@ export const ensureSpace = async ({
     spaceInst.image = spaceIpfsContent.image ?? null;
     spaceInst.tagsOriginal = null;
     spaceInst.linksOriginal = null;
+    spaceInst.appId = spaceIpfsContent.appId ?? null;
 
     if (spaceIpfsContent.tags) {
       spaceInst.tagsOriginal = getJoinedList(spaceIpfsContent.tags);

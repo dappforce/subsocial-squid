@@ -53,6 +53,7 @@ export async function spaceUpdated(
     space.summary = aboutSummary.summary;
     space.isShowMore = aboutSummary.isShowMore;
     space.image = spaceIpfsContent.image ?? null;
+    space.appId = spaceIpfsContent.appId ?? null;
 
     if (spaceIpfsContent.tags) {
       space.tagsOriginal = getJoinedList(spaceIpfsContent.tags);

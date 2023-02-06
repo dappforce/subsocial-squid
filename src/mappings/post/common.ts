@@ -190,6 +190,8 @@ export const ensurePost = async ({
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
     post.slug = null;
+    post.appId = postIpfsContent.appId ?? null;
+
     if (postIpfsContent.tags) {
       post.tagsOriginal = getJoinedList(postIpfsContent.tags);
     }
@@ -199,13 +201,6 @@ export const ensurePost = async ({
         ? postIpfsContent.tweet.id
         : null;
     }
-
-    // TODO Implementation is needed
-    // const { meta } = postContent;
-    //
-    // if (meta && !isEmptyArray(meta)) {
-    //   post.proposalIndex = meta[0].proposalIndex;
-    // }
   }
 
   return post;

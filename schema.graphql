@@ -125,8 +125,10 @@ type Post @entity {
   format: String
   tweetId: String
   tweetDetails: TweetDetails
+  experimental: JSON
 
   proposalIndex: Int # postContent.meta[0]
+  appId: String
 }
 
 type Reaction @entity {
@@ -171,6 +173,7 @@ type Space @entity {
   interestsOriginal: String
   format: String
   handle: String
+  experimental: JSON
 
   canFollowerCreatePosts: Boolean
   canEveryoneCreatePosts: Boolean
@@ -182,6 +185,7 @@ type Space @entity {
 
   followersCount: Int! @index
   followers: [SpaceFollowers]! @derivedFrom(field: "followingSpace")
+  appId: String
 }
 
 type Activity @entity {
