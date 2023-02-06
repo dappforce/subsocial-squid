@@ -299,12 +299,14 @@ type Post @entity {
   kind: PostKind @index
 
   """
-  One-To-Many relationship with Regular Post's followers (foreign key - "followingPost") (currently only Post's creator can be follower of the Post)
+  Many-To-Many relationship between Regular Post and followers Accounts through PostFollowers (foreign key - "followingPost")
+  (currently only Post's creator can be follower of the Post)
   """
   postFollowers: [PostFollowers] @derivedFrom(field: "followingPost")
 
   """
-  One-To-Many relationship with Comment Post's or Comment Replies followers (foreign key - "followingPost") (currently only Post's creator can be follower of the Post)
+  Many-To-Many relationship between Comment Post or Comment Replie and followers Accounts through CommentFollowers (foreign key - "followingComment")
+  (currently only Post's creator can be follower of the Post)
   """
   commentFollowers: [CommentFollowers] @derivedFrom(field: "followingComment")
 
