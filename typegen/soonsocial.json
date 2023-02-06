@@ -1,0 +1,27 @@
+{
+  "outDir": "../src/chains/soonsocial/types",
+  "specVersions": "https://soonsocial.archive.subsquid.io/graphql",
+  "events": [
+    "Posts.PostCreated",
+    "Posts.PostUpdated",
+    "Posts.PostMoved",
+
+    "Reactions.PostReactionCreated",
+    "Reactions.PostReactionUpdated",
+    "Reactions.PostReactionDeleted",
+
+    "Spaces.SpaceCreated",
+    "Spaces.SpaceUpdated",
+
+    "Profiles.ProfileUpdated",
+
+    "SpaceFollows.SpaceFollowed",
+    "SpaceFollows.SpaceUnfollowed",
+    "SpaceOwnership.SpaceOwnershipTransferAccepted",
+
+    "AccountFollows.AccountFollowed",
+    "AccountFollows.AccountUnfollowed"
+  ],
+  "calls": true,
+  "storage": true
+}
