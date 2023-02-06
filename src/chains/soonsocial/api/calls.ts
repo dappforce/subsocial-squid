@@ -27,10 +27,10 @@ import {
   PostReactionDeleteCallParsedData
 } from '../../../common/types';
 import {
-  getContentSrcDecorated,
   getReactionKindDecorated,
   getSpacePermissionsDecorated
 } from './decorators';
+import { getContentSrcDecorated } from '../../utils';
 import * as v1500 from '../types/v1500';
 import { addressSs58ToString } from '../../../common/utils';
 
@@ -96,7 +96,7 @@ export function parsePostCreatedCallArgs(
   }
 
   response.postKind = PostKind[extensionData.__kind];
-  
+
   switch (extensionData.__kind) {
     case PostKind.Comment:
       response.rootPostId = extensionData.value.rootPostId
@@ -242,7 +242,8 @@ export function parsePostReactionCreateCallArgs(
       callInst = new ReactionsForceCreatePostReactionCall(ctx, ctx.event.call!);
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
 
-      const { who, postId, reactionId, reactionKind, created } = callInst.asV1500;
+      const { who, postId, reactionId, reactionKind, created } =
+        callInst.asV1500;
       response = {
         ...response,
         forced: true,

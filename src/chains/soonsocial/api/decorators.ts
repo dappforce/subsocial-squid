@@ -1,33 +1,7 @@
-import { Content } from '../types/v1500';
-import { ContentSrcDecorated, SpacePermissionsScope } from '../../../common/types';
+import { SpacePermissionsScope } from '../../../common/types';
 import { SpacePermissionMap } from '@subsocial/api/types/dto';
 import * as v1500 from '../types/v1500';
 import { ReactionKind } from '../../../model';
-
-export function getContentSrcDecorated(
-  contentSrc: Content | undefined
-): ContentSrcDecorated {
-  const res: ContentSrcDecorated = {
-    ipfsSrc: null,
-    otherSrc: null,
-    none: false
-  };
-
-  if (!contentSrc) return { ...res, none: true };
-
-  switch (contentSrc.__kind) {
-    case 'IPFS':
-      res.ipfsSrc = contentSrc.value.toString();
-      break;
-    case 'Other':
-      res.otherSrc = contentSrc.value.toString();
-      break;
-    default:
-      res.none = true;
-  }
-
-  return res;
-}
 
 function getSpacePermissionsTpl(): Required<SpacePermissionMap> {
   return {

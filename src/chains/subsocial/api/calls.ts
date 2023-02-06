@@ -27,10 +27,10 @@ import {
   PostReactionDeleteCallParsedData
 } from '../../../common/types';
 import {
-  getContentSrcDecorated,
   getReactionKindDecorated,
   getSpacePermissionsDecorated
 } from './decorators';
+import { getContentSrcDecorated } from '../../utils';
 import * as v13 from '../types/v13';
 import { addressSs58ToString } from '../../../common/utils';
 
