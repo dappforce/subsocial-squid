@@ -181,24 +181,6 @@ export interface OriginCaller_Void {
     value: Void
 }
 
-export interface Announcement {
-    real: Uint8Array
-    callHash: Uint8Array
-    height: number
-}
-
-export interface ProxyDefinition {
-    delegate: Uint8Array
-    proxyType: ProxyType
-    delay: number
-}
-
-export interface EventRecord {
-    phase: Phase
-    event: Event
-    topics: Uint8Array[]
-}
-
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
@@ -1933,138 +1915,6 @@ export interface Type_216_SiblingParachain {
 
 export type Void = never
 
-export type Phase = Phase_ApplyExtrinsic | Phase_Finalization | Phase_Initialization
-
-export interface Phase_ApplyExtrinsic {
-    __kind: 'ApplyExtrinsic'
-    value: number
-}
-
-export interface Phase_Finalization {
-    __kind: 'Finalization'
-}
-
-export interface Phase_Initialization {
-    __kind: 'Initialization'
-}
-
-export type Event = Event_System | Event_ParachainSystem | Event_Balances | Event_CollatorSelection | Event_Session | Event_Vesting | Event_Proxy | Event_Utility | Event_XcmpQueue | Event_PolkadotXcm | Event_CumulusXcm | Event_DmpQueue | Event_Domains | Event_Energy | Event_Roles | Event_AccountFollows | Event_Profiles | Event_SpaceFollows | Event_SpaceOwnership | Event_Spaces | Event_Posts | Event_Reactions | Event_Sudo
-
-export interface Event_System {
-    __kind: 'System'
-    value: SystemEvent
-}
-
-export interface Event_ParachainSystem {
-    __kind: 'ParachainSystem'
-    value: ParachainSystemEvent
-}
-
-export interface Event_Balances {
-    __kind: 'Balances'
-    value: BalancesEvent
-}
-
-export interface Event_CollatorSelection {
-    __kind: 'CollatorSelection'
-    value: CollatorSelectionEvent
-}
-
-export interface Event_Session {
-    __kind: 'Session'
-    value: SessionEvent
-}
-
-export interface Event_Vesting {
-    __kind: 'Vesting'
-    value: VestingEvent
-}
-
-export interface Event_Proxy {
-    __kind: 'Proxy'
-    value: ProxyEvent
-}
-
-export interface Event_Utility {
-    __kind: 'Utility'
-    value: UtilityEvent
-}
-
-export interface Event_XcmpQueue {
-    __kind: 'XcmpQueue'
-    value: XcmpQueueEvent
-}
-
-export interface Event_PolkadotXcm {
-    __kind: 'PolkadotXcm'
-    value: PolkadotXcmEvent
-}
-
-export interface Event_CumulusXcm {
-    __kind: 'CumulusXcm'
-    value: CumulusXcmEvent
-}
-
-export interface Event_DmpQueue {
-    __kind: 'DmpQueue'
-    value: DmpQueueEvent
-}
-
-export interface Event_Domains {
-    __kind: 'Domains'
-    value: DomainsEvent
-}
-
-export interface Event_Energy {
-    __kind: 'Energy'
-    value: EnergyEvent
-}
-
-export interface Event_Roles {
-    __kind: 'Roles'
-    value: RolesEvent
-}
-
-export interface Event_AccountFollows {
-    __kind: 'AccountFollows'
-    value: AccountFollowsEvent
-}
-
-export interface Event_Profiles {
-    __kind: 'Profiles'
-    value: ProfilesEvent
-}
-
-export interface Event_SpaceFollows {
-    __kind: 'SpaceFollows'
-    value: SpaceFollowsEvent
-}
-
-export interface Event_SpaceOwnership {
-    __kind: 'SpaceOwnership'
-    value: SpaceOwnershipEvent
-}
-
-export interface Event_Spaces {
-    __kind: 'Spaces'
-    value: SpacesEvent
-}
-
-export interface Event_Posts {
-    __kind: 'Posts'
-    value: PostsEvent
-}
-
-export interface Event_Reactions {
-    __kind: 'Reactions'
-    value: ReactionsEvent
-}
-
-export interface Event_Sudo {
-    __kind: 'Sudo'
-    value: SudoEvent
-}
-
 export interface ParachainInherentData {
     validationData: V2PersistedValidationData
     relayChainState: StorageProof
@@ -2390,1095 +2240,6 @@ export interface ReactionKind_Upvote {
 
 export interface ReactionKind_Downvote {
     __kind: 'Downvote'
-}
-
-/**
- * Event for the System pallet.
- */
-export type SystemEvent = SystemEvent_ExtrinsicSuccess | SystemEvent_ExtrinsicFailed | SystemEvent_CodeUpdated | SystemEvent_NewAccount | SystemEvent_KilledAccount | SystemEvent_Remarked
-
-/**
- * An extrinsic completed successfully.
- */
-export interface SystemEvent_ExtrinsicSuccess {
-    __kind: 'ExtrinsicSuccess'
-    dispatchInfo: DispatchInfo
-}
-
-/**
- * An extrinsic failed.
- */
-export interface SystemEvent_ExtrinsicFailed {
-    __kind: 'ExtrinsicFailed'
-    dispatchError: DispatchError
-    dispatchInfo: DispatchInfo
-}
-
-/**
- * `:code` was updated.
- */
-export interface SystemEvent_CodeUpdated {
-    __kind: 'CodeUpdated'
-}
-
-/**
- * A new account was created.
- */
-export interface SystemEvent_NewAccount {
-    __kind: 'NewAccount'
-    account: Uint8Array
-}
-
-/**
- * An account was reaped.
- */
-export interface SystemEvent_KilledAccount {
-    __kind: 'KilledAccount'
-    account: Uint8Array
-}
-
-/**
- * On on-chain remark happened.
- */
-export interface SystemEvent_Remarked {
-    __kind: 'Remarked'
-    sender: Uint8Array
-    hash: Uint8Array
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type ParachainSystemEvent = ParachainSystemEvent_ValidationFunctionStored | ParachainSystemEvent_ValidationFunctionApplied | ParachainSystemEvent_ValidationFunctionDiscarded | ParachainSystemEvent_UpgradeAuthorized | ParachainSystemEvent_DownwardMessagesReceived | ParachainSystemEvent_DownwardMessagesProcessed
-
-/**
- * The validation function has been scheduled to apply.
- */
-export interface ParachainSystemEvent_ValidationFunctionStored {
-    __kind: 'ValidationFunctionStored'
-}
-
-/**
- * The validation function was applied as of the contained relay chain block number.
- */
-export interface ParachainSystemEvent_ValidationFunctionApplied {
-    __kind: 'ValidationFunctionApplied'
-    relayChainBlockNum: number
-}
-
-/**
- * The relay-chain aborted the upgrade process.
- */
-export interface ParachainSystemEvent_ValidationFunctionDiscarded {
-    __kind: 'ValidationFunctionDiscarded'
-}
-
-/**
- * An upgrade has been authorized.
- */
-export interface ParachainSystemEvent_UpgradeAuthorized {
-    __kind: 'UpgradeAuthorized'
-    codeHash: Uint8Array
-}
-
-/**
- * Some downward messages have been received and will be processed.
- */
-export interface ParachainSystemEvent_DownwardMessagesReceived {
-    __kind: 'DownwardMessagesReceived'
-    count: number
-}
-
-/**
- * Downward messages were processed using the given weight.
- */
-export interface ParachainSystemEvent_DownwardMessagesProcessed {
-    __kind: 'DownwardMessagesProcessed'
-    weightUsed: bigint
-    dmqHead: Uint8Array
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type BalancesEvent = BalancesEvent_Endowed | BalancesEvent_DustLost | BalancesEvent_Transfer | BalancesEvent_BalanceSet | BalancesEvent_Reserved | BalancesEvent_Unreserved | BalancesEvent_ReserveRepatriated | BalancesEvent_Deposit | BalancesEvent_Withdraw | BalancesEvent_Slashed
-
-/**
- * An account was created with some free balance.
- */
-export interface BalancesEvent_Endowed {
-    __kind: 'Endowed'
-    account: Uint8Array
-    freeBalance: bigint
-}
-
-/**
- * An account was removed whose balance was non-zero but below ExistentialDeposit,
- * resulting in an outright loss.
- */
-export interface BalancesEvent_DustLost {
-    __kind: 'DustLost'
-    account: Uint8Array
-    amount: bigint
-}
-
-/**
- * Transfer succeeded.
- */
-export interface BalancesEvent_Transfer {
-    __kind: 'Transfer'
-    from: Uint8Array
-    to: Uint8Array
-    amount: bigint
-}
-
-/**
- * A balance was set by root.
- */
-export interface BalancesEvent_BalanceSet {
-    __kind: 'BalanceSet'
-    who: Uint8Array
-    free: bigint
-    reserved: bigint
-}
-
-/**
- * Some balance was reserved (moved from free to reserved).
- */
-export interface BalancesEvent_Reserved {
-    __kind: 'Reserved'
-    who: Uint8Array
-    amount: bigint
-}
-
-/**
- * Some balance was unreserved (moved from reserved to free).
- */
-export interface BalancesEvent_Unreserved {
-    __kind: 'Unreserved'
-    who: Uint8Array
-    amount: bigint
-}
-
-/**
- * Some balance was moved from the reserve of the first account to the second account.
- * Final argument indicates the destination balance type.
- */
-export interface BalancesEvent_ReserveRepatriated {
-    __kind: 'ReserveRepatriated'
-    from: Uint8Array
-    to: Uint8Array
-    amount: bigint
-    destinationStatus: BalanceStatus
-}
-
-/**
- * Some amount was deposited (e.g. for transaction fees).
- */
-export interface BalancesEvent_Deposit {
-    __kind: 'Deposit'
-    who: Uint8Array
-    amount: bigint
-}
-
-/**
- * Some amount was withdrawn from the account (e.g. for transaction fees).
- */
-export interface BalancesEvent_Withdraw {
-    __kind: 'Withdraw'
-    who: Uint8Array
-    amount: bigint
-}
-
-/**
- * Some amount was removed from the account (e.g. for misbehavior).
- */
-export interface BalancesEvent_Slashed {
-    __kind: 'Slashed'
-    who: Uint8Array
-    amount: bigint
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type CollatorSelectionEvent = CollatorSelectionEvent_NewInvulnerables | CollatorSelectionEvent_NewDesiredCandidates | CollatorSelectionEvent_NewCandidacyBond | CollatorSelectionEvent_CandidateAdded | CollatorSelectionEvent_CandidateRemoved
-
-export interface CollatorSelectionEvent_NewInvulnerables {
-    __kind: 'NewInvulnerables'
-    invulnerables: Uint8Array[]
-}
-
-export interface CollatorSelectionEvent_NewDesiredCandidates {
-    __kind: 'NewDesiredCandidates'
-    desiredCandidates: number
-}
-
-export interface CollatorSelectionEvent_NewCandidacyBond {
-    __kind: 'NewCandidacyBond'
-    bondAmount: bigint
-}
-
-export interface CollatorSelectionEvent_CandidateAdded {
-    __kind: 'CandidateAdded'
-    accountId: Uint8Array
-    deposit: bigint
-}
-
-export interface CollatorSelectionEvent_CandidateRemoved {
-    __kind: 'CandidateRemoved'
-    accountId: Uint8Array
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type SessionEvent = SessionEvent_NewSession
-
-/**
- * New session has happened. Note that the argument is the session index, not the
- * block number as the type might suggest.
- */
-export interface SessionEvent_NewSession {
-    __kind: 'NewSession'
-    sessionIndex: number
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type VestingEvent = VestingEvent_VestingUpdated | VestingEvent_VestingCompleted
-
-/**
- * The amount vested has been updated. This could indicate a change in funds available.
- * The balance given is the amount which is left unvested (and thus locked).
- */
-export interface VestingEvent_VestingUpdated {
-    __kind: 'VestingUpdated'
-    account: Uint8Array
-    unvested: bigint
-}
-
-/**
- * An \[account\] has become fully vested.
- */
-export interface VestingEvent_VestingCompleted {
-    __kind: 'VestingCompleted'
-    account: Uint8Array
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type ProxyEvent = ProxyEvent_ProxyExecuted | ProxyEvent_AnonymousCreated | ProxyEvent_Announced | ProxyEvent_ProxyAdded | ProxyEvent_ProxyRemoved
-
-/**
- * A proxy was executed correctly, with the given.
- */
-export interface ProxyEvent_ProxyExecuted {
-    __kind: 'ProxyExecuted'
-    result: Type_35
-}
-
-/**
- * Anonymous account has been created by new proxy with given
- * disambiguation index and proxy type.
- */
-export interface ProxyEvent_AnonymousCreated {
-    __kind: 'AnonymousCreated'
-    anonymous: Uint8Array
-    who: Uint8Array
-    proxyType: ProxyType
-    disambiguationIndex: number
-}
-
-/**
- * An announcement was placed to make a call in the future.
- */
-export interface ProxyEvent_Announced {
-    __kind: 'Announced'
-    real: Uint8Array
-    proxy: Uint8Array
-    callHash: Uint8Array
-}
-
-/**
- * A proxy was added.
- */
-export interface ProxyEvent_ProxyAdded {
-    __kind: 'ProxyAdded'
-    delegator: Uint8Array
-    delegatee: Uint8Array
-    proxyType: ProxyType
-    delay: number
-}
-
-/**
- * A proxy was removed.
- */
-export interface ProxyEvent_ProxyRemoved {
-    __kind: 'ProxyRemoved'
-    delegator: Uint8Array
-    delegatee: Uint8Array
-    proxyType: ProxyType
-    delay: number
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type UtilityEvent = UtilityEvent_BatchInterrupted | UtilityEvent_BatchCompleted | UtilityEvent_BatchCompletedWithErrors | UtilityEvent_ItemCompleted | UtilityEvent_ItemFailed | UtilityEvent_DispatchedAs
-
-/**
- * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
- * well as the error.
- */
-export interface UtilityEvent_BatchInterrupted {
-    __kind: 'BatchInterrupted'
-    index: number
-    error: DispatchError
-}
-
-/**
- * Batch of dispatches completed fully with no error.
- */
-export interface UtilityEvent_BatchCompleted {
-    __kind: 'BatchCompleted'
-}
-
-/**
- * Batch of dispatches completed but has errors.
- */
-export interface UtilityEvent_BatchCompletedWithErrors {
-    __kind: 'BatchCompletedWithErrors'
-}
-
-/**
- * A single item within a Batch of dispatches has completed with no error.
- */
-export interface UtilityEvent_ItemCompleted {
-    __kind: 'ItemCompleted'
-}
-
-/**
- * A single item within a Batch of dispatches has completed with error.
- */
-export interface UtilityEvent_ItemFailed {
-    __kind: 'ItemFailed'
-    error: DispatchError
-}
-
-/**
- * A call was dispatched.
- */
-export interface UtilityEvent_DispatchedAs {
-    __kind: 'DispatchedAs'
-    result: Type_35
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type XcmpQueueEvent = XcmpQueueEvent_Success | XcmpQueueEvent_Fail | XcmpQueueEvent_BadVersion | XcmpQueueEvent_BadFormat | XcmpQueueEvent_UpwardMessageSent | XcmpQueueEvent_XcmpMessageSent | XcmpQueueEvent_OverweightEnqueued | XcmpQueueEvent_OverweightServiced
-
-/**
- * Some XCM was executed ok.
- */
-export interface XcmpQueueEvent_Success {
-    __kind: 'Success'
-    value: (Uint8Array | undefined)
-}
-
-/**
- * Some XCM failed.
- */
-export interface XcmpQueueEvent_Fail {
-    __kind: 'Fail'
-    value: [(Uint8Array | undefined), V2Error]
-}
-
-/**
- * Bad XCM version used.
- */
-export interface XcmpQueueEvent_BadVersion {
-    __kind: 'BadVersion'
-    value: (Uint8Array | undefined)
-}
-
-/**
- * Bad XCM format used.
- */
-export interface XcmpQueueEvent_BadFormat {
-    __kind: 'BadFormat'
-    value: (Uint8Array | undefined)
-}
-
-/**
- * An upward message was sent to the relay chain.
- */
-export interface XcmpQueueEvent_UpwardMessageSent {
-    __kind: 'UpwardMessageSent'
-    value: (Uint8Array | undefined)
-}
-
-/**
- * An HRMP message was sent to a sibling parachain.
- */
-export interface XcmpQueueEvent_XcmpMessageSent {
-    __kind: 'XcmpMessageSent'
-    value: (Uint8Array | undefined)
-}
-
-/**
- * An XCM exceeded the individual message weight budget.
- */
-export interface XcmpQueueEvent_OverweightEnqueued {
-    __kind: 'OverweightEnqueued'
-    value: [number, number, bigint, bigint]
-}
-
-/**
- * An XCM from the overweight queue was executed with the given actual weight used.
- */
-export interface XcmpQueueEvent_OverweightServiced {
-    __kind: 'OverweightServiced'
-    value: [bigint, bigint]
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type PolkadotXcmEvent = PolkadotXcmEvent_Attempted | PolkadotXcmEvent_Sent | PolkadotXcmEvent_UnexpectedResponse | PolkadotXcmEvent_ResponseReady | PolkadotXcmEvent_Notified | PolkadotXcmEvent_NotifyOverweight | PolkadotXcmEvent_NotifyDispatchError | PolkadotXcmEvent_NotifyDecodeFailed | PolkadotXcmEvent_InvalidResponder | PolkadotXcmEvent_InvalidResponderVersion | PolkadotXcmEvent_ResponseTaken | PolkadotXcmEvent_AssetsTrapped | PolkadotXcmEvent_VersionChangeNotified | PolkadotXcmEvent_SupportedVersionChanged | PolkadotXcmEvent_NotifyTargetSendFail | PolkadotXcmEvent_NotifyTargetMigrationFail
-
-/**
- * Execution of an XCM message was attempted.
- * 
- * \[ outcome \]
- */
-export interface PolkadotXcmEvent_Attempted {
-    __kind: 'Attempted'
-    value: V2Outcome
-}
-
-/**
- * A XCM message was sent.
- * 
- * \[ origin, destination, message \]
- */
-export interface PolkadotXcmEvent_Sent {
-    __kind: 'Sent'
-    value: [V1MultiLocation, V1MultiLocation, V2Instruction[]]
-}
-
-/**
- * Query response received which does not match a registered query. This may be because a
- * matching query was never registered, it may be because it is a duplicate response, or
- * because the query timed out.
- * 
- * \[ origin location, id \]
- */
-export interface PolkadotXcmEvent_UnexpectedResponse {
-    __kind: 'UnexpectedResponse'
-    value: [V1MultiLocation, bigint]
-}
-
-/**
- * Query response has been received and is ready for taking with `take_response`. There is
- * no registered notification call.
- * 
- * \[ id, response \]
- */
-export interface PolkadotXcmEvent_ResponseReady {
-    __kind: 'ResponseReady'
-    value: [bigint, V2Response]
-}
-
-/**
- * Query response has been received and query is removed. The registered notification has
- * been dispatched and executed successfully.
- * 
- * \[ id, pallet index, call index \]
- */
-export interface PolkadotXcmEvent_Notified {
-    __kind: 'Notified'
-    value: [bigint, number, number]
-}
-
-/**
- * Query response has been received and query is removed. The registered notification could
- * not be dispatched because the dispatch weight is greater than the maximum weight
- * originally budgeted by this runtime for the query result.
- * 
- * \[ id, pallet index, call index, actual weight, max budgeted weight \]
- */
-export interface PolkadotXcmEvent_NotifyOverweight {
-    __kind: 'NotifyOverweight'
-    value: [bigint, number, number, bigint, bigint]
-}
-
-/**
- * Query response has been received and query is removed. There was a general error with
- * dispatching the notification call.
- * 
- * \[ id, pallet index, call index \]
- */
-export interface PolkadotXcmEvent_NotifyDispatchError {
-    __kind: 'NotifyDispatchError'
-    value: [bigint, number, number]
-}
-
-/**
- * Query response has been received and query is removed. The dispatch was unable to be
- * decoded into a `Call`; this might be due to dispatch function having a signature which
- * is not `(origin, QueryId, Response)`.
- * 
- * \[ id, pallet index, call index \]
- */
-export interface PolkadotXcmEvent_NotifyDecodeFailed {
-    __kind: 'NotifyDecodeFailed'
-    value: [bigint, number, number]
-}
-
-/**
- * Expected query response has been received but the origin location of the response does
- * not match that expected. The query remains registered for a later, valid, response to
- * be received and acted upon.
- * 
- * \[ origin location, id, expected location \]
- */
-export interface PolkadotXcmEvent_InvalidResponder {
-    __kind: 'InvalidResponder'
-    value: [V1MultiLocation, bigint, (V1MultiLocation | undefined)]
-}
-
-/**
- * Expected query response has been received but the expected origin location placed in
- * storage by this runtime previously cannot be decoded. The query remains registered.
- * 
- * This is unexpected (since a location placed in storage in a previously executing
- * runtime should be readable prior to query timeout) and dangerous since the possibly
- * valid response will be dropped. Manual governance intervention is probably going to be
- * needed.
- * 
- * \[ origin location, id \]
- */
-export interface PolkadotXcmEvent_InvalidResponderVersion {
-    __kind: 'InvalidResponderVersion'
-    value: [V1MultiLocation, bigint]
-}
-
-/**
- * Received query response has been read and removed.
- * 
- * \[ id \]
- */
-export interface PolkadotXcmEvent_ResponseTaken {
-    __kind: 'ResponseTaken'
-    value: bigint
-}
-
-/**
- * Some assets have been placed in an asset trap.
- * 
- * \[ hash, origin, assets \]
- */
-export interface PolkadotXcmEvent_AssetsTrapped {
-    __kind: 'AssetsTrapped'
-    value: [Uint8Array, V1MultiLocation, VersionedMultiAssets]
-}
-
-/**
- * An XCM version change notification message has been attempted to be sent.
- * 
- * \[ destination, result \]
- */
-export interface PolkadotXcmEvent_VersionChangeNotified {
-    __kind: 'VersionChangeNotified'
-    value: [V1MultiLocation, number]
-}
-
-/**
- * The supported version of a location has been changed. This might be through an
- * automatic notification or a manual intervention.
- * 
- * \[ location, XCM version \]
- */
-export interface PolkadotXcmEvent_SupportedVersionChanged {
-    __kind: 'SupportedVersionChanged'
-    value: [V1MultiLocation, number]
-}
-
-/**
- * A given location which had a version change subscription was dropped owing to an error
- * sending the notification to it.
- * 
- * \[ location, query ID, error \]
- */
-export interface PolkadotXcmEvent_NotifyTargetSendFail {
-    __kind: 'NotifyTargetSendFail'
-    value: [V1MultiLocation, bigint, V2Error]
-}
-
-/**
- * A given location which had a version change subscription was dropped owing to an error
- * migrating the location to our new XCM format.
- * 
- * \[ location, query ID \]
- */
-export interface PolkadotXcmEvent_NotifyTargetMigrationFail {
-    __kind: 'NotifyTargetMigrationFail'
-    value: [VersionedMultiLocation, bigint]
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type CumulusXcmEvent = CumulusXcmEvent_InvalidFormat | CumulusXcmEvent_UnsupportedVersion | CumulusXcmEvent_ExecutedDownward
-
-/**
- * Downward message is invalid XCM.
- * \[ id \]
- */
-export interface CumulusXcmEvent_InvalidFormat {
-    __kind: 'InvalidFormat'
-    value: Uint8Array
-}
-
-/**
- * Downward message is unsupported version of XCM.
- * \[ id \]
- */
-export interface CumulusXcmEvent_UnsupportedVersion {
-    __kind: 'UnsupportedVersion'
-    value: Uint8Array
-}
-
-/**
- * Downward message executed with the given outcome.
- * \[ id, outcome \]
- */
-export interface CumulusXcmEvent_ExecutedDownward {
-    __kind: 'ExecutedDownward'
-    value: [Uint8Array, V2Outcome]
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type DmpQueueEvent = DmpQueueEvent_InvalidFormat | DmpQueueEvent_UnsupportedVersion | DmpQueueEvent_ExecutedDownward | DmpQueueEvent_WeightExhausted | DmpQueueEvent_OverweightEnqueued | DmpQueueEvent_OverweightServiced
-
-/**
- * Downward message is invalid XCM.
- */
-export interface DmpQueueEvent_InvalidFormat {
-    __kind: 'InvalidFormat'
-    messageId: Uint8Array
-}
-
-/**
- * Downward message is unsupported version of XCM.
- */
-export interface DmpQueueEvent_UnsupportedVersion {
-    __kind: 'UnsupportedVersion'
-    messageId: Uint8Array
-}
-
-/**
- * Downward message executed with the given outcome.
- */
-export interface DmpQueueEvent_ExecutedDownward {
-    __kind: 'ExecutedDownward'
-    messageId: Uint8Array
-    outcome: V2Outcome
-}
-
-/**
- * The weight limit for handling downward messages was reached.
- */
-export interface DmpQueueEvent_WeightExhausted {
-    __kind: 'WeightExhausted'
-    messageId: Uint8Array
-    remainingWeight: bigint
-    requiredWeight: bigint
-}
-
-/**
- * Downward message is overweight and was placed in the overweight queue.
- */
-export interface DmpQueueEvent_OverweightEnqueued {
-    __kind: 'OverweightEnqueued'
-    messageId: Uint8Array
-    overweightIndex: bigint
-    requiredWeight: bigint
-}
-
-/**
- * Downward message from the overweight queue was executed.
- */
-export interface DmpQueueEvent_OverweightServiced {
-    __kind: 'OverweightServiced'
-    overweightIndex: bigint
-    weightUsed: bigint
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type DomainsEvent = DomainsEvent_DomainRegistered | DomainsEvent_DomainMetaUpdated | DomainsEvent_NewWordsReserved | DomainsEvent_NewTldsSupported
-
-/**
- * The domain name was successfully registered.
- */
-export interface DomainsEvent_DomainRegistered {
-    __kind: 'DomainRegistered'
-    who: Uint8Array
-    domain: Uint8Array
-}
-
-/**
- * The domain meta was successfully updated.
- */
-export interface DomainsEvent_DomainMetaUpdated {
-    __kind: 'DomainMetaUpdated'
-    who: Uint8Array
-    domain: Uint8Array
-}
-
-/**
- * New words have been reserved.
- */
-export interface DomainsEvent_NewWordsReserved {
-    __kind: 'NewWordsReserved'
-    count: number
-}
-
-/**
- * Added support for new TLDs (top-level domains).
- */
-export interface DomainsEvent_NewTldsSupported {
-    __kind: 'NewTldsSupported'
-    count: number
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type EnergyEvent = EnergyEvent_EnergyGenerated | EnergyEvent_ValueCoefficientUpdated | EnergyEvent_DustLost
-
-/**
- * Energy have been generated to an account.
- */
-export interface EnergyEvent_EnergyGenerated {
-    __kind: 'EnergyGenerated'
-    /**
-     * The account that generated the energy.
-     */
-    generator: Uint8Array
-    /**
-     * The account that received the energy.
-     */
-    receiver: Uint8Array
-    /**
-     * The amount of balance that was burned.
-     */
-    balanceBurned: bigint
-}
-
-/**
- * Energy value coefficient has been updated.
- */
-export interface EnergyEvent_ValueCoefficientUpdated {
-    __kind: 'ValueCoefficientUpdated'
-    /**
-     * The new value coefficient.
-     */
-    newCoefficient: bigint
-}
-
-/**
- * An account was removed whose balance was non-zero but below
- * ExistentialDeposit, resulting in an outright loss.
- */
-export interface EnergyEvent_DustLost {
-    __kind: 'DustLost'
-    account: Uint8Array
-    amount: bigint
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type RolesEvent = RolesEvent_RoleCreated | RolesEvent_RoleUpdated | RolesEvent_RoleDeleted | RolesEvent_RoleGranted | RolesEvent_RoleRevoked
-
-export interface RolesEvent_RoleCreated {
-    __kind: 'RoleCreated'
-    account: Uint8Array
-    spaceId: bigint
-    roleId: bigint
-}
-
-export interface RolesEvent_RoleUpdated {
-    __kind: 'RoleUpdated'
-    account: Uint8Array
-    roleId: bigint
-}
-
-export interface RolesEvent_RoleDeleted {
-    __kind: 'RoleDeleted'
-    account: Uint8Array
-    roleId: bigint
-}
-
-export interface RolesEvent_RoleGranted {
-    __kind: 'RoleGranted'
-    account: Uint8Array
-    roleId: bigint
-    users: User[]
-}
-
-export interface RolesEvent_RoleRevoked {
-    __kind: 'RoleRevoked'
-    account: Uint8Array
-    roleId: bigint
-    users: User[]
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type AccountFollowsEvent = AccountFollowsEvent_AccountFollowed | AccountFollowsEvent_AccountUnfollowed
-
-export interface AccountFollowsEvent_AccountFollowed {
-    __kind: 'AccountFollowed'
-    follower: Uint8Array
-    account: Uint8Array
-}
-
-export interface AccountFollowsEvent_AccountUnfollowed {
-    __kind: 'AccountUnfollowed'
-    follower: Uint8Array
-    account: Uint8Array
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type ProfilesEvent = ProfilesEvent_ProfileUpdated
-
-/**
- * Profile's space id was updated for this account.
- */
-export interface ProfilesEvent_ProfileUpdated {
-    __kind: 'ProfileUpdated'
-    account: Uint8Array
-    spaceId: (bigint | undefined)
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type SpaceFollowsEvent = SpaceFollowsEvent_SpaceFollowed | SpaceFollowsEvent_SpaceUnfollowed
-
-export interface SpaceFollowsEvent_SpaceFollowed {
-    __kind: 'SpaceFollowed'
-    follower: Uint8Array
-    spaceId: bigint
-}
-
-export interface SpaceFollowsEvent_SpaceUnfollowed {
-    __kind: 'SpaceUnfollowed'
-    follower: Uint8Array
-    spaceId: bigint
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type SpaceOwnershipEvent = SpaceOwnershipEvent_SpaceOwnershipTransferCreated | SpaceOwnershipEvent_SpaceOwnershipTransferAccepted | SpaceOwnershipEvent_SpaceOwnershipTransferRejected
-
-export interface SpaceOwnershipEvent_SpaceOwnershipTransferCreated {
-    __kind: 'SpaceOwnershipTransferCreated'
-    currentOwner: Uint8Array
-    spaceId: bigint
-    newOwner: Uint8Array
-}
-
-export interface SpaceOwnershipEvent_SpaceOwnershipTransferAccepted {
-    __kind: 'SpaceOwnershipTransferAccepted'
-    account: Uint8Array
-    spaceId: bigint
-}
-
-export interface SpaceOwnershipEvent_SpaceOwnershipTransferRejected {
-    __kind: 'SpaceOwnershipTransferRejected'
-    account: Uint8Array
-    spaceId: bigint
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type SpacesEvent = SpacesEvent_SpaceCreated | SpacesEvent_SpaceUpdated
-
-export interface SpacesEvent_SpaceCreated {
-    __kind: 'SpaceCreated'
-    account: Uint8Array
-    spaceId: bigint
-}
-
-export interface SpacesEvent_SpaceUpdated {
-    __kind: 'SpaceUpdated'
-    account: Uint8Array
-    spaceId: bigint
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type PostsEvent = PostsEvent_PostCreated | PostsEvent_PostUpdated | PostsEvent_PostMoved
-
-export interface PostsEvent_PostCreated {
-    __kind: 'PostCreated'
-    account: Uint8Array
-    postId: bigint
-}
-
-export interface PostsEvent_PostUpdated {
-    __kind: 'PostUpdated'
-    account: Uint8Array
-    postId: bigint
-}
-
-export interface PostsEvent_PostMoved {
-    __kind: 'PostMoved'
-    account: Uint8Array
-    postId: bigint
-    fromSpace: (bigint | undefined)
-    toSpace: (bigint | undefined)
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type ReactionsEvent = ReactionsEvent_PostReactionCreated | ReactionsEvent_PostReactionUpdated | ReactionsEvent_PostReactionDeleted
-
-export interface ReactionsEvent_PostReactionCreated {
-    __kind: 'PostReactionCreated'
-    account: Uint8Array
-    postId: bigint
-    reactionId: bigint
-    reactionKind: ReactionKind
-}
-
-export interface ReactionsEvent_PostReactionUpdated {
-    __kind: 'PostReactionUpdated'
-    account: Uint8Array
-    postId: bigint
-    reactionId: bigint
-    reactionKind: ReactionKind
-}
-
-export interface ReactionsEvent_PostReactionDeleted {
-    __kind: 'PostReactionDeleted'
-    account: Uint8Array
-    postId: bigint
-    reactionId: bigint
-    reactionKind: ReactionKind
-}
-
-/**
- * 
-			The [event](https://docs.substrate.io/v3/runtime/events-and-errors) emitted
-			by this pallet.
-			
- */
-export type SudoEvent = SudoEvent_Sudid | SudoEvent_KeyChanged | SudoEvent_SudoAsDone
-
-/**
- * A sudo just took place. \[result\]
- */
-export interface SudoEvent_Sudid {
-    __kind: 'Sudid'
-    sudoResult: Type_35
-}
-
-/**
- * The \[sudoer\] just switched identity; the old key is supplied if one existed.
- */
-export interface SudoEvent_KeyChanged {
-    __kind: 'KeyChanged'
-    oldSudoer: (Uint8Array | undefined)
-}
-
-/**
- * A sudo just took place. \[result\]
- */
-export interface SudoEvent_SudoAsDone {
-    __kind: 'SudoAsDone'
-    sudoResult: Type_35
 }
 
 export interface V2PersistedValidationData {
@@ -4308,225 +3069,6 @@ export interface Comment {
     parentId: (bigint | undefined)
 }
 
-export interface DispatchInfo {
-    weight: bigint
-    class: DispatchClass
-    paysFee: Pays
-}
-
-export type DispatchError = DispatchError_Other | DispatchError_CannotLookup | DispatchError_BadOrigin | DispatchError_Module | DispatchError_ConsumerRemaining | DispatchError_NoProviders | DispatchError_TooManyConsumers | DispatchError_Token | DispatchError_Arithmetic | DispatchError_Transactional
-
-export interface DispatchError_Other {
-    __kind: 'Other'
-}
-
-export interface DispatchError_CannotLookup {
-    __kind: 'CannotLookup'
-}
-
-export interface DispatchError_BadOrigin {
-    __kind: 'BadOrigin'
-}
-
-export interface DispatchError_Module {
-    __kind: 'Module'
-    value: ModuleError
-}
-
-export interface DispatchError_ConsumerRemaining {
-    __kind: 'ConsumerRemaining'
-}
-
-export interface DispatchError_NoProviders {
-    __kind: 'NoProviders'
-}
-
-export interface DispatchError_TooManyConsumers {
-    __kind: 'TooManyConsumers'
-}
-
-export interface DispatchError_Token {
-    __kind: 'Token'
-    value: TokenError
-}
-
-export interface DispatchError_Arithmetic {
-    __kind: 'Arithmetic'
-    value: ArithmeticError
-}
-
-export interface DispatchError_Transactional {
-    __kind: 'Transactional'
-    value: TransactionalError
-}
-
-export type BalanceStatus = BalanceStatus_Free | BalanceStatus_Reserved
-
-export interface BalanceStatus_Free {
-    __kind: 'Free'
-}
-
-export interface BalanceStatus_Reserved {
-    __kind: 'Reserved'
-}
-
-export type Type_35 = Type_35_Ok | Type_35_Err
-
-export interface Type_35_Ok {
-    __kind: 'Ok'
-}
-
-export interface Type_35_Err {
-    __kind: 'Err'
-    value: DispatchError
-}
-
-export type V2Error = V2Error_Overflow | V2Error_Unimplemented | V2Error_UntrustedReserveLocation | V2Error_UntrustedTeleportLocation | V2Error_MultiLocationFull | V2Error_MultiLocationNotInvertible | V2Error_BadOrigin | V2Error_InvalidLocation | V2Error_AssetNotFound | V2Error_FailedToTransactAsset | V2Error_NotWithdrawable | V2Error_LocationCannotHold | V2Error_ExceedsMaxMessageSize | V2Error_DestinationUnsupported | V2Error_Transport | V2Error_Unroutable | V2Error_UnknownClaim | V2Error_FailedToDecode | V2Error_MaxWeightInvalid | V2Error_NotHoldingFees | V2Error_TooExpensive | V2Error_Trap | V2Error_UnhandledXcmVersion | V2Error_WeightLimitReached | V2Error_Barrier | V2Error_WeightNotComputable
-
-export interface V2Error_Overflow {
-    __kind: 'Overflow'
-}
-
-export interface V2Error_Unimplemented {
-    __kind: 'Unimplemented'
-}
-
-export interface V2Error_UntrustedReserveLocation {
-    __kind: 'UntrustedReserveLocation'
-}
-
-export interface V2Error_UntrustedTeleportLocation {
-    __kind: 'UntrustedTeleportLocation'
-}
-
-export interface V2Error_MultiLocationFull {
-    __kind: 'MultiLocationFull'
-}
-
-export interface V2Error_MultiLocationNotInvertible {
-    __kind: 'MultiLocationNotInvertible'
-}
-
-export interface V2Error_BadOrigin {
-    __kind: 'BadOrigin'
-}
-
-export interface V2Error_InvalidLocation {
-    __kind: 'InvalidLocation'
-}
-
-export interface V2Error_AssetNotFound {
-    __kind: 'AssetNotFound'
-}
-
-export interface V2Error_FailedToTransactAsset {
-    __kind: 'FailedToTransactAsset'
-}
-
-export interface V2Error_NotWithdrawable {
-    __kind: 'NotWithdrawable'
-}
-
-export interface V2Error_LocationCannotHold {
-    __kind: 'LocationCannotHold'
-}
-
-export interface V2Error_ExceedsMaxMessageSize {
-    __kind: 'ExceedsMaxMessageSize'
-}
-
-export interface V2Error_DestinationUnsupported {
-    __kind: 'DestinationUnsupported'
-}
-
-export interface V2Error_Transport {
-    __kind: 'Transport'
-}
-
-export interface V2Error_Unroutable {
-    __kind: 'Unroutable'
-}
-
-export interface V2Error_UnknownClaim {
-    __kind: 'UnknownClaim'
-}
-
-export interface V2Error_FailedToDecode {
-    __kind: 'FailedToDecode'
-}
-
-export interface V2Error_MaxWeightInvalid {
-    __kind: 'MaxWeightInvalid'
-}
-
-export interface V2Error_NotHoldingFees {
-    __kind: 'NotHoldingFees'
-}
-
-export interface V2Error_TooExpensive {
-    __kind: 'TooExpensive'
-}
-
-export interface V2Error_Trap {
-    __kind: 'Trap'
-    value: bigint
-}
-
-export interface V2Error_UnhandledXcmVersion {
-    __kind: 'UnhandledXcmVersion'
-}
-
-export interface V2Error_WeightLimitReached {
-    __kind: 'WeightLimitReached'
-    value: bigint
-}
-
-export interface V2Error_Barrier {
-    __kind: 'Barrier'
-}
-
-export interface V2Error_WeightNotComputable {
-    __kind: 'WeightNotComputable'
-}
-
-export type V2Outcome = V2Outcome_Complete | V2Outcome_Incomplete | V2Outcome_Error
-
-export interface V2Outcome_Complete {
-    __kind: 'Complete'
-    value: bigint
-}
-
-export interface V2Outcome_Incomplete {
-    __kind: 'Incomplete'
-    value: [bigint, V2Error]
-}
-
-export interface V2Outcome_Error {
-    __kind: 'Error'
-    value: V2Error
-}
-
-export type V2Response = V2Response_Null | V2Response_Assets | V2Response_ExecutionResult | V2Response_Version
-
-export interface V2Response_Null {
-    __kind: 'Null'
-}
-
-export interface V2Response_Assets {
-    __kind: 'Assets'
-    value: V1MultiAsset[]
-}
-
-export interface V2Response_ExecutionResult {
-    __kind: 'ExecutionResult'
-    value: ([number, V2Error] | undefined)
-}
-
-export interface V2Response_Version {
-    __kind: 'Version'
-    value: number
-}
-
 export type DigestItem = DigestItem_PreRuntime | DigestItem_Consensus | DigestItem_Seal | DigestItem_Other | DigestItem_RuntimeEnvironmentUpdated
 
 export interface DigestItem_PreRuntime {
@@ -4756,6 +3298,27 @@ export interface V1Response_Assets {
 }
 
 export interface V1Response_Version {
+    __kind: 'Version'
+    value: number
+}
+
+export type V2Response = V2Response_Null | V2Response_Assets | V2Response_ExecutionResult | V2Response_Version
+
+export interface V2Response_Null {
+    __kind: 'Null'
+}
+
+export interface V2Response_Assets {
+    __kind: 'Assets'
+    value: V1MultiAsset[]
+}
+
+export interface V2Response_ExecutionResult {
+    __kind: 'ExecutionResult'
+    value: ([number, V2Error] | undefined)
+}
+
+export interface V2Response_Version {
     __kind: 'Version'
     value: number
 }
@@ -4994,89 +3557,6 @@ export interface V1Junction_Plurality {
     part: V0BodyPart
 }
 
-export type DispatchClass = DispatchClass_Normal | DispatchClass_Operational | DispatchClass_Mandatory
-
-export interface DispatchClass_Normal {
-    __kind: 'Normal'
-}
-
-export interface DispatchClass_Operational {
-    __kind: 'Operational'
-}
-
-export interface DispatchClass_Mandatory {
-    __kind: 'Mandatory'
-}
-
-export type Pays = Pays_Yes | Pays_No
-
-export interface Pays_Yes {
-    __kind: 'Yes'
-}
-
-export interface Pays_No {
-    __kind: 'No'
-}
-
-export interface ModuleError {
-    index: number
-    error: Uint8Array
-}
-
-export type TokenError = TokenError_NoFunds | TokenError_WouldDie | TokenError_BelowMinimum | TokenError_CannotCreate | TokenError_UnknownAsset | TokenError_Frozen | TokenError_Unsupported
-
-export interface TokenError_NoFunds {
-    __kind: 'NoFunds'
-}
-
-export interface TokenError_WouldDie {
-    __kind: 'WouldDie'
-}
-
-export interface TokenError_BelowMinimum {
-    __kind: 'BelowMinimum'
-}
-
-export interface TokenError_CannotCreate {
-    __kind: 'CannotCreate'
-}
-
-export interface TokenError_UnknownAsset {
-    __kind: 'UnknownAsset'
-}
-
-export interface TokenError_Frozen {
-    __kind: 'Frozen'
-}
-
-export interface TokenError_Unsupported {
-    __kind: 'Unsupported'
-}
-
-export type ArithmeticError = ArithmeticError_Underflow | ArithmeticError_Overflow | ArithmeticError_DivisionByZero
-
-export interface ArithmeticError_Underflow {
-    __kind: 'Underflow'
-}
-
-export interface ArithmeticError_Overflow {
-    __kind: 'Overflow'
-}
-
-export interface ArithmeticError_DivisionByZero {
-    __kind: 'DivisionByZero'
-}
-
-export type TransactionalError = TransactionalError_LimitReached | TransactionalError_NoLayer
-
-export interface TransactionalError_LimitReached {
-    __kind: 'LimitReached'
-}
-
-export interface TransactionalError_NoLayer {
-    __kind: 'NoLayer'
-}
-
 export type V0NetworkId = V0NetworkId_Any | V0NetworkId_Named | V0NetworkId_Polkadot | V0NetworkId_Kusama
 
 export interface V0NetworkId_Any {
@@ -5155,6 +3635,114 @@ export interface V0BodyPart_MoreThanProportion {
     __kind: 'MoreThanProportion'
     nom: number
     denom: number
+}
+
+export type V2Error = V2Error_Overflow | V2Error_Unimplemented | V2Error_UntrustedReserveLocation | V2Error_UntrustedTeleportLocation | V2Error_MultiLocationFull | V2Error_MultiLocationNotInvertible | V2Error_BadOrigin | V2Error_InvalidLocation | V2Error_AssetNotFound | V2Error_FailedToTransactAsset | V2Error_NotWithdrawable | V2Error_LocationCannotHold | V2Error_ExceedsMaxMessageSize | V2Error_DestinationUnsupported | V2Error_Transport | V2Error_Unroutable | V2Error_UnknownClaim | V2Error_FailedToDecode | V2Error_MaxWeightInvalid | V2Error_NotHoldingFees | V2Error_TooExpensive | V2Error_Trap | V2Error_UnhandledXcmVersion | V2Error_WeightLimitReached | V2Error_Barrier | V2Error_WeightNotComputable
+
+export interface V2Error_Overflow {
+    __kind: 'Overflow'
+}
+
+export interface V2Error_Unimplemented {
+    __kind: 'Unimplemented'
+}
+
+export interface V2Error_UntrustedReserveLocation {
+    __kind: 'UntrustedReserveLocation'
+}
+
+export interface V2Error_UntrustedTeleportLocation {
+    __kind: 'UntrustedTeleportLocation'
+}
+
+export interface V2Error_MultiLocationFull {
+    __kind: 'MultiLocationFull'
+}
+
+export interface V2Error_MultiLocationNotInvertible {
+    __kind: 'MultiLocationNotInvertible'
+}
+
+export interface V2Error_BadOrigin {
+    __kind: 'BadOrigin'
+}
+
+export interface V2Error_InvalidLocation {
+    __kind: 'InvalidLocation'
+}
+
+export interface V2Error_AssetNotFound {
+    __kind: 'AssetNotFound'
+}
+
+export interface V2Error_FailedToTransactAsset {
+    __kind: 'FailedToTransactAsset'
+}
+
+export interface V2Error_NotWithdrawable {
+    __kind: 'NotWithdrawable'
+}
+
+export interface V2Error_LocationCannotHold {
+    __kind: 'LocationCannotHold'
+}
+
+export interface V2Error_ExceedsMaxMessageSize {
+    __kind: 'ExceedsMaxMessageSize'
+}
+
+export interface V2Error_DestinationUnsupported {
+    __kind: 'DestinationUnsupported'
+}
+
+export interface V2Error_Transport {
+    __kind: 'Transport'
+}
+
+export interface V2Error_Unroutable {
+    __kind: 'Unroutable'
+}
+
+export interface V2Error_UnknownClaim {
+    __kind: 'UnknownClaim'
+}
+
+export interface V2Error_FailedToDecode {
+    __kind: 'FailedToDecode'
+}
+
+export interface V2Error_MaxWeightInvalid {
+    __kind: 'MaxWeightInvalid'
+}
+
+export interface V2Error_NotHoldingFees {
+    __kind: 'NotHoldingFees'
+}
+
+export interface V2Error_TooExpensive {
+    __kind: 'TooExpensive'
+}
+
+export interface V2Error_Trap {
+    __kind: 'Trap'
+    value: bigint
+}
+
+export interface V2Error_UnhandledXcmVersion {
+    __kind: 'UnhandledXcmVersion'
+}
+
+export interface V2Error_WeightLimitReached {
+    __kind: 'WeightLimitReached'
+    value: bigint
+}
+
+export interface V2Error_Barrier {
+    __kind: 'Barrier'
+}
+
+export interface V2Error_WeightNotComputable {
+    __kind: 'WeightNotComputable'
 }
 
 export type V1WildMultiAsset = V1WildMultiAsset_All | V1WildMultiAsset_AllOf

@@ -48,6 +48,64 @@ export class AccountFollowsAccountUnfollowedEvent {
     }
 }
 
+export class DomainsDomainMetaUpdatedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Domains.DomainMetaUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * The domain meta was successfully updated.
+     */
+    get isV7(): boolean {
+        return this._chain.getEventHash('Domains.DomainMetaUpdated') === '73beec149671d4cb018751c97dbc6bc98a8f2fe07dd82943d2a8e39de980066e'
+    }
+
+    /**
+     * The domain meta was successfully updated.
+     */
+    get asV7(): {who: Uint8Array, domain: Uint8Array} {
+        assert(this.isV7)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class DomainsDomainRegisteredEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Domains.DomainRegistered')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * The domain name was successfully registered.
+     */
+    get isV7(): boolean {
+        return this._chain.getEventHash('Domains.DomainRegistered') === '73beec149671d4cb018751c97dbc6bc98a8f2fe07dd82943d2a8e39de980066e'
+    }
+
+    /**
+     * The domain name was successfully registered.
+     */
+    get asV7(): {who: Uint8Array, domain: Uint8Array} {
+        assert(this.isV7)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class PostsPostCreatedEvent {
     private readonly _chain: Chain
     private readonly event: Event

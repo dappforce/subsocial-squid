@@ -37,16 +37,16 @@ export const ensureSpace = async ({
   eventData: SpaceCreatedData;
 }): Promise<Space> => {
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
-  const spaceStorageData = storageDataManagerInst.getStorageDataById(
-    'space',
-    eventData.blockHash,
-    spaceId
-  );
+  // const spaceStorageData = storageDataManagerInst.getStorageDataById(
+  //   'space',
+  //   eventData.blockHash,
+  //   spaceId
+  // );
 
-  if (!spaceStorageData) {
-    new MissingSubsocialApiEntity('SpaceData', ctx, eventData);
-    throw new CommonCriticalError();
-  }
+  // if (!spaceStorageData) {
+  //   new MissingSubsocialApiEntity('SpaceData', ctx, eventData);
+  //   throw new CommonCriticalError();
+  // }
 
   const spaceIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'space',
@@ -81,7 +81,7 @@ export const ensureSpace = async ({
 
   spaceInst.id = spaceId;
   spaceInst.content = eventData.ipfsSrc;
-  spaceInst.handle = spaceStorageData.handle;
+  // spaceInst.handle = spaceStorageData.handle;
 
   spaceInst.postsCount = 0; // Initial value for counter
   spaceInst.hiddenPostsCount = 0; // Initial value for counter

@@ -125,4 +125,7 @@ export class Space {
 
     @Column_("text", {nullable: true})
     appId!: string | undefined | null
+
+    @Column_("text", {nullable: true})
+    username!: string | undefined | null
 }

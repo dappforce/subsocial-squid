@@ -20,8 +20,11 @@
     "SpaceOwnership.SpaceOwnershipTransferAccepted",
 
     "AccountFollows.AccountFollowed",
-    "AccountFollows.AccountUnfollowed"
+    "AccountFollows.AccountUnfollowed",
+
+    "Domains.DomainRegistered",
+    "Domains.DomainMetaUpdated"
   ],
   "calls": true,
-  "storage": true
+  "storage": ["Domains.RegisteredDomains", "Domains.DomainByInnerValue"]
 }

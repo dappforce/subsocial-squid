@@ -9,4 +9,5 @@ export interface ProcessorConfig {
   elasticSearchUsername: string;
   elasticSearchPassword: string;
   ipfsReadOnlyNodeUrl: string;
+  ipfsNodeRequestTimeout: number;
 }
