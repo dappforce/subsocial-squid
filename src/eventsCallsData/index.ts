@@ -338,7 +338,7 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
         case 'Domains.DomainMetaUpdated': {
           const eventData =
-            api.events.parseAccountUnfollowedEventArgs(eventHandlerContext);
+            api.events.parseDomainMetaUpdatedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.UserNameUpdated, {
             ...getEventMetadata(block, item.event as SubstrateEvent),

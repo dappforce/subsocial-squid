@@ -12,17 +12,12 @@ export async function handleUsername(
   const account = await getOrCreateAccount(eventData.accountId, ctx);
   const usernameStr = eventData.domain.toString();
 
-  console.log('>>>>>>>>>>');
-  console.log('usernameStr - ', usernameStr);
-
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
   const domainStorageData = storageDataManagerInst.getStorageDataById(
     'domain',
     eventData.blockHash,
     usernameStr
   );
-
-  console.dir(domainStorageData, { depth: null });
 
   if (eventData.name === 'Domains.DomainMetaUpdated') {
     /**
@@ -61,5 +56,4 @@ export async function handleUsername(
     ];
   }
   await ctx.store.save(account);
-  console.log('>>>>>>>>>>');
 }
