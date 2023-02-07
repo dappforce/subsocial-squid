@@ -2,6 +2,7 @@ import {
   ensurePositiveOrZeroValue,
   getBodySummary,
   getDateWithoutTime,
+  getExperimentalFieldsFromIPFSContent,
   getJoinedList
 } from '../../common/utils';
 import {
@@ -106,6 +107,10 @@ export const ensureSpace = async ({
     spaceInst.tagsOriginal = null;
     spaceInst.linksOriginal = null;
     spaceInst.appId = spaceIpfsContent.appId ?? null;
+
+    spaceInst.experimental =
+      getExperimentalFieldsFromIPFSContent(spaceIpfsContent, 'space', ctx) ??
+      null;
 
     if (spaceIpfsContent.tags) {
       spaceInst.tagsOriginal = getJoinedList(spaceIpfsContent.tags);

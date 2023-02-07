@@ -10,7 +10,11 @@ import { StorageDataManager } from '../../storage';
 import { setActivity } from '../activity';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
-import { getBodySummary, getJoinedList } from '../../common/utils';
+import {
+  getBodySummary,
+  getExperimentalFieldsFromIPFSContent,
+  getJoinedList
+} from '../../common/utils';
 
 export async function spaceUpdated(
   ctx: Ctx,
@@ -54,6 +58,10 @@ export async function spaceUpdated(
     space.isShowMore = aboutSummary.isShowMore;
     space.image = spaceIpfsContent.image ?? null;
     space.appId = spaceIpfsContent.appId ?? null;
+
+    space.experimental =
+      getExperimentalFieldsFromIPFSContent(spaceIpfsContent, 'space', ctx) ??
+      null;
 
     if (spaceIpfsContent.tags) {
       space.tagsOriginal = getJoinedList(spaceIpfsContent.tags);
