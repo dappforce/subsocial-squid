@@ -116,23 +116,6 @@ export class StorageDataManager {
 
     for (const [eventName, eventsData] of [...parsedEvents.entries()]) {
       switch (eventName) {
-        // case EventName.SpaceCreated:
-        // case EventName.SpaceUpdated: {
-        //   for (const event of [...eventsData.values()] as (SpaceCreatedData &
-        //     SpaceUpdatedData)[]) {
-        //     this.ensureIdsForFetchContainer('space', event.blockHash);
-        //
-        //     this.idsForFetchStorage
-        //       .get('space')!
-        //       .get(event.blockHash)!
-        //       .add([
-        //         addressStringToSs58(event.accountId),
-        //         { __kind: 'Space', value: BigInt(event.spaceId) }
-        //       ]);
-        //   }
-        //   break;
-        // }
-
         case EventName.UserNameRegistered:
         case EventName.UserNameUpdated: {
           for (const event of [
@@ -156,43 +139,6 @@ export class StorageDataManager {
       ...this.idsForFetchStorage.entries()
     ]) {
       switch (section) {
-        // case 'space': {
-        //   for (const [blockHash, idsPairs] of [...idsListByBlock.entries()]) {
-        //     const idPairsList = [...idsPairs.values()] as [
-        //       Uint8Array,
-        //       InnerValue
-        //     ][];
-        //     const spacesHandlesResp = await api.storage.getSpacesHandle(
-        //       this.context,
-        //       { hash: blockHash },
-        //       idPairsList.map((d) => {
-        //         return [d[0], d[1]] as [Uint8Array, InnerValue];
-        //       })
-        //     );
-        //
-        //     this.ensureStorageDataCacheContainer(section, blockHash);
-        //
-        //     for (let i = 0; i < idPairsList.length; i++) {
-        //       const spaceIdStr = idPairsList[i][1].value.toString();
-        //       const spaceStorageData: SpaceStorageData = {
-        //         handle: null
-        //       };
-        //
-        //       if (spacesHandlesResp && spacesHandlesResp[i])
-        //         spaceStorageData.handle = spacesHandlesResp[i]
-        //           ? spacesHandlesResp[i]!.toString()
-        //           : null;
-        //
-        //       this.storageDataCache
-        //         .get(section)!
-        //         .get(blockHash)!
-        //         .set(spaceIdStr, spaceStorageData);
-        //     }
-        //   }
-        //
-        //   break;
-        // }
-
         case 'domain': {
           for (const [blockHash, idsPairs] of [...idsListByBlock.entries()]) {
             const domainsList = [...idsPairs.values()] as Uint8Array[];

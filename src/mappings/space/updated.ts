@@ -28,16 +28,6 @@ export async function spaceUpdated(
   }
 
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
-  // const spaceStorageData = storageDataManagerInst.getStorageDataById(
-  //   'space',
-  //   eventData.blockHash,
-  //   eventData.spaceId
-  // );
-  //
-  // if (!spaceStorageData) {
-  //   new MissingSubsocialApiEntity('SpaceData', ctx, eventData);
-  //   throw new CommonCriticalError();
-  // }
 
   const spaceIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'space',
@@ -50,7 +40,6 @@ export async function spaceUpdated(
 
   if (spaceIpfsContent) {
     const aboutSummary = getBodySummary(spaceIpfsContent.about);
-    // space.handle = spaceStorageData.handle;
     space.name = spaceIpfsContent.name ?? null;
     space.email = spaceIpfsContent.email ?? null;
     space.about = spaceIpfsContent.about ?? null;

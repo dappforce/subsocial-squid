@@ -28,7 +28,7 @@ import {
   parsePostReactionUpdateCallArgs,
   parsePostReactionDeleteCallArgs
 } from './calls';
-import { getRegisteredDomainMeta, getSpacesHandle } from './storage';
+import { getRegisteredDomainMeta } from './storage';
 
 export const api: ChainApi = {
   events: {
@@ -60,7 +60,6 @@ export const api: ChainApi = {
     parsePostReactionDeleteCallArgs
   },
   storage: {
-    getSpacesHandle,
     getRegisteredDomainMeta
   }
 };

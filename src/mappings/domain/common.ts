@@ -34,14 +34,15 @@ export async function handleUsername(
     /**
      * We need remove current username from Space where it was saved as username
      */
-    const previousAssignedSpaces = await ctx.store.findOneBy(Space, {
+    const previousAssignedSpace = await ctx.store.findOneBy(Space, {
       username: usernameStr
     });
 
-    if (previousAssignedSpaces) {
-      previousAssignedSpaces.username = null;
-      await ctx.store.save(previousAssignedSpaces);
-      result.spacePrev = previousAssignedSpaces;
+    if (previousAssignedSpace) {
+      previousAssignedSpace.username = null;
+      previousAssignedSpace.handle = null;
+      await ctx.store.save(previousAssignedSpace);
+      result.spacePrev = previousAssignedSpace;
     }
   }
 
@@ -55,6 +56,7 @@ export async function handleUsername(
     );
     if (space) {
       space.username = usernameStr;
+      space.handle = usernameStr;
       await ctx.store.save(space);
       result.space = space;
     }

@@ -61,10 +61,6 @@ export type ChainApi = {
     parsePostReactionDeleteCallArgs?: CallGetter<PostReactionDeleteCallParsedData>;
   };
   storage: {
-    getSpacesHandle?: StorageGetter<
-      [[Uint8Array, InnerValue] | [Uint8Array, InnerValue][]],
-      (Uint8Array | undefined)[] | Uint8Array | undefined
-    >;
     getRegisteredDomainMeta?: StorageGetter<
       [Uint8Array | Uint8Array[]],
       (DomainStorageData | undefined)[] | DomainStorageData | undefined
@@ -118,10 +114,8 @@ type SoonsocialChainEvents =
   | 'parseDomainRegisteredEventArgs'
   | 'parseDomainMetaUpdatedEventArgs';
 
-type SubsocialChainStorageCalls = 'getSpacesHandle' | 'getRegisteredDomainMeta';
-type SoonsocialChainStorageCalls =
-  | 'getSpacesHandle'
-  | 'getRegisteredDomainMeta';
+type SubsocialChainStorageCalls = 'getRegisteredDomainMeta';
+type SoonsocialChainStorageCalls = 'getRegisteredDomainMeta';
 
 type SubsocialChainCalls =
   | 'parsePostCreatedCallArgs'
