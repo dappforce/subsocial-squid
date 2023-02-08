@@ -16,6 +16,8 @@ import {
 import { EventData, PostTweetDetailsIPFS } from './types';
 import { summarizeMd } from '@subsocial/utils';
 import { NamedLink } from '@subsocial/api/types/ipfs';
+import { IpfsContent, supportedIpfsContent } from '../storage/types';
+import { Ctx } from '../processor';
 
 let subsocialSs58CodecInst: ss58.Codec | null = null;
 
@@ -279,4 +281,26 @@ export function getTweetDetailsEntity(
           })
         : null
   });
+}
+
+export function getExperimentalFieldsFromIPFSContent<
+  T extends 'post' | 'space'
+>(srcData: IpfsContent<T>, entity: T, ctx: Ctx): Record<string, any> | null {
+  const experimentalFields: Record<string, any> = {};
+
+  try {
+    for (const contentField of Object.getOwnPropertyNames(srcData)) {
+      if (!supportedIpfsContent.get(entity)!.has(contentField))
+        // @ts-ignore
+        experimentalFields[contentField] = srcData[contentField]; // We should ignore type checking here as we don't know field name of experimental field.
+    }
+  } catch (e) {
+    ctx.log.error(
+      `Experimental fields cannot be extracted from IPFS content for entity "${entity}"`
+    );
+  }
+
+  if (Object.getOwnPropertyNames(experimentalFields).length > 0)
+    return experimentalFields;
+  return null;
 }

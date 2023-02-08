@@ -95,6 +95,9 @@ export class Space {
     @Column_("text", {nullable: true})
     handle!: string | undefined | null
 
+    @Column_("jsonb", {nullable: true})
+    experimental!: unknown | undefined | null
+
     @Column_("bool", {nullable: true})
     canFollowerCreatePosts!: boolean | undefined | null
 
@@ -119,4 +122,7 @@ export class Space {
 
     @OneToMany_(() => SpaceFollowers, e => e.followingSpace)
     followers!: SpaceFollowers[]
+
+    @Column_("text", {nullable: true})
+    appId!: string | undefined | null
 }
