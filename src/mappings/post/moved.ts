@@ -93,7 +93,7 @@ export async function postMoved(
 
   const activity = await setActivity({
     syntheticEventName: getSyntheticEventName(EventName.PostMoved, post),
-    spacePrev: prevSpaceInst,
+    spacePrev: prevSpaceInst ?? undefined,
     account,
     post,
     ctx,

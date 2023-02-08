@@ -3,14 +3,25 @@ import { DomainRegisteredData } from '../../common/types';
 import { getOrCreateAccount } from '../account';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-import { EventName, Space } from '../../model';
+import { EventName, Space, Account } from '../../model';
+
+type UsernameHandlerResult = {
+  space?: Space;
+  spacePrev?: Space;
+  account: Account;
+  usernameStr: string;
+};
 
 export async function handleUsername(
   ctx: Ctx,
   eventData: DomainRegisteredData
-): Promise<void> {
+): Promise<UsernameHandlerResult> {
   const account = await getOrCreateAccount(eventData.accountId, ctx);
   const usernameStr = eventData.domain.toString();
+  const result: UsernameHandlerResult = {
+    account: account,
+    usernameStr
+  };
 
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
   const domainStorageData = storageDataManagerInst.getStorageDataById(
@@ -21,17 +32,17 @@ export async function handleUsername(
 
   if (eventData.name === 'Domains.DomainMetaUpdated') {
     /**
-     * We need remove current username from Spaces where it was saved as username
+     * We need remove current username from Space where it was saved as username
      */
-    const previousAssignedSpaces = await ctx.store.findBy(Space, {
+    const previousAssignedSpaces = await ctx.store.findOneBy(Space, {
       username: usernameStr
     });
-    const updatedSpaces = [];
-    for (const space of previousAssignedSpaces) {
-      space.username = null;
-      updatedSpaces.push(space);
+
+    if (previousAssignedSpaces) {
+      previousAssignedSpaces.username = null;
+      await ctx.store.save(previousAssignedSpaces);
+      result.spacePrev = previousAssignedSpaces;
     }
-    if (updatedSpaces.length > 0) await ctx.store.save(updatedSpaces);
   }
 
   /**
@@ -45,6 +56,7 @@ export async function handleUsername(
     if (space) {
       space.username = usernameStr;
       await ctx.store.save(space);
+      result.space = space;
     }
   }
 
@@ -56,4 +68,5 @@ export async function handleUsername(
     ];
   }
   await ctx.store.save(account);
+  return result;
 }

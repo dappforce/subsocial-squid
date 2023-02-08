@@ -207,6 +207,7 @@ type Activity @entity {
   oldOwner: Account
   post: Post
   reaction: Reaction
+  username: String
   date: DateTime!
   aggregated: Boolean @index
   aggCount: BigInt!
