@@ -57,6 +57,9 @@ export class Activity {
     @ManyToOne_(() => Reaction, {nullable: true})
     reaction!: Reaction | undefined | null
 
+    @Column_("text", {nullable: true})
+    username!: string | undefined | null
+
     @Column_("timestamp with time zone", {nullable: false})
     date!: Date
 

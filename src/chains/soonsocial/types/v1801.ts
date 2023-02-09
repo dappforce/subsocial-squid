@@ -1,42 +1,5 @@
 import type {Result, Option} from './support'
 
-export type ReactionKind = ReactionKind_Upvote | ReactionKind_Downvote
-
-export interface ReactionKind_Upvote {
-    __kind: 'Upvote'
-}
-
-export interface ReactionKind_Downvote {
-    __kind: 'Downvote'
-}
-
-export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
-
-export interface MultiAddress_Id {
-    __kind: 'Id'
-    value: Uint8Array
-}
-
-export interface MultiAddress_Index {
-    __kind: 'Index'
-    value: null
-}
-
-export interface MultiAddress_Raw {
-    __kind: 'Raw'
-    value: Uint8Array
-}
-
-export interface MultiAddress_Address32 {
-    __kind: 'Address32'
-    value: Uint8Array
-}
-
-export interface MultiAddress_Address20 {
-    __kind: 'Address20'
-    value: Uint8Array
-}
-
 export type Content = Content_None | Content_Other | Content_IPFS
 
 export interface Content_None {
@@ -53,192 +16,25 @@ export interface Content_IPFS {
     value: Uint8Array
 }
 
-export type PostExtension = PostExtension_RegularPost | PostExtension_Comment | PostExtension_SharedPost
+export type ProxyType = ProxyType_Any | ProxyType_DomainRegistrar | ProxyType_SocialActions | ProxyType_Management
 
-export interface PostExtension_RegularPost {
-    __kind: 'RegularPost'
+export interface ProxyType_Any {
+    __kind: 'Any'
 }
 
-export interface PostExtension_Comment {
-    __kind: 'Comment'
-    value: Comment
+export interface ProxyType_DomainRegistrar {
+    __kind: 'DomainRegistrar'
 }
 
-export interface PostExtension_SharedPost {
-    __kind: 'SharedPost'
-    value: bigint
+export interface ProxyType_SocialActions {
+    __kind: 'SocialActions'
 }
 
-export interface WhoAndWhen {
-    account: Uint8Array
-    block: number
-    time: bigint
+export interface ProxyType_Management {
+    __kind: 'Management'
 }
 
-export interface PostUpdate {
-    spaceId: (bigint | undefined)
-    content: (Content | undefined)
-    hidden: (boolean | undefined)
-}
-
-export type SpacePermission = SpacePermission_ManageRoles | SpacePermission_RepresentSpaceInternally | SpacePermission_RepresentSpaceExternally | SpacePermission_UpdateSpace | SpacePermission_CreateSubspaces | SpacePermission_UpdateOwnSubspaces | SpacePermission_DeleteOwnSubspaces | SpacePermission_HideOwnSubspaces | SpacePermission_UpdateAnySubspace | SpacePermission_DeleteAnySubspace | SpacePermission_HideAnySubspace | SpacePermission_CreatePosts | SpacePermission_UpdateOwnPosts | SpacePermission_DeleteOwnPosts | SpacePermission_HideOwnPosts | SpacePermission_UpdateAnyPost | SpacePermission_DeleteAnyPost | SpacePermission_HideAnyPost | SpacePermission_CreateComments | SpacePermission_UpdateOwnComments | SpacePermission_DeleteOwnComments | SpacePermission_HideOwnComments | SpacePermission_HideAnyComment | SpacePermission_Upvote | SpacePermission_Downvote | SpacePermission_Share | SpacePermission_OverrideSubspacePermissions | SpacePermission_OverridePostPermissions | SpacePermission_SuggestEntityStatus | SpacePermission_UpdateEntityStatus | SpacePermission_UpdateSpaceSettings
-
-export interface SpacePermission_ManageRoles {
-    __kind: 'ManageRoles'
-}
-
-export interface SpacePermission_RepresentSpaceInternally {
-    __kind: 'RepresentSpaceInternally'
-}
-
-export interface SpacePermission_RepresentSpaceExternally {
-    __kind: 'RepresentSpaceExternally'
-}
-
-export interface SpacePermission_UpdateSpace {
-    __kind: 'UpdateSpace'
-}
-
-export interface SpacePermission_CreateSubspaces {
-    __kind: 'CreateSubspaces'
-}
-
-export interface SpacePermission_UpdateOwnSubspaces {
-    __kind: 'UpdateOwnSubspaces'
-}
-
-export interface SpacePermission_DeleteOwnSubspaces {
-    __kind: 'DeleteOwnSubspaces'
-}
-
-export interface SpacePermission_HideOwnSubspaces {
-    __kind: 'HideOwnSubspaces'
-}
-
-export interface SpacePermission_UpdateAnySubspace {
-    __kind: 'UpdateAnySubspace'
-}
-
-export interface SpacePermission_DeleteAnySubspace {
-    __kind: 'DeleteAnySubspace'
-}
-
-export interface SpacePermission_HideAnySubspace {
-    __kind: 'HideAnySubspace'
-}
-
-export interface SpacePermission_CreatePosts {
-    __kind: 'CreatePosts'
-}
-
-export interface SpacePermission_UpdateOwnPosts {
-    __kind: 'UpdateOwnPosts'
-}
-
-export interface SpacePermission_DeleteOwnPosts {
-    __kind: 'DeleteOwnPosts'
-}
-
-export interface SpacePermission_HideOwnPosts {
-    __kind: 'HideOwnPosts'
-}
-
-export interface SpacePermission_UpdateAnyPost {
-    __kind: 'UpdateAnyPost'
-}
-
-export interface SpacePermission_DeleteAnyPost {
-    __kind: 'DeleteAnyPost'
-}
-
-export interface SpacePermission_HideAnyPost {
-    __kind: 'HideAnyPost'
-}
-
-export interface SpacePermission_CreateComments {
-    __kind: 'CreateComments'
-}
-
-export interface SpacePermission_UpdateOwnComments {
-    __kind: 'UpdateOwnComments'
-}
-
-export interface SpacePermission_DeleteOwnComments {
-    __kind: 'DeleteOwnComments'
-}
-
-export interface SpacePermission_HideOwnComments {
-    __kind: 'HideOwnComments'
-}
-
-export interface SpacePermission_HideAnyComment {
-    __kind: 'HideAnyComment'
-}
-
-export interface SpacePermission_Upvote {
-    __kind: 'Upvote'
-}
-
-export interface SpacePermission_Downvote {
-    __kind: 'Downvote'
-}
-
-export interface SpacePermission_Share {
-    __kind: 'Share'
-}
-
-export interface SpacePermission_OverrideSubspacePermissions {
-    __kind: 'OverrideSubspacePermissions'
-}
-
-export interface SpacePermission_OverridePostPermissions {
-    __kind: 'OverridePostPermissions'
-}
-
-export interface SpacePermission_SuggestEntityStatus {
-    __kind: 'SuggestEntityStatus'
-}
-
-export interface SpacePermission_UpdateEntityStatus {
-    __kind: 'UpdateEntityStatus'
-}
-
-export interface SpacePermission_UpdateSpaceSettings {
-    __kind: 'UpdateSpaceSettings'
-}
-
-export type User = User_Account | User_Space
-
-export interface User_Account {
-    __kind: 'Account'
-    value: Uint8Array
-}
-
-export interface User_Space {
-    __kind: 'Space'
-    value: bigint
-}
-
-export interface RoleUpdate {
-    disabled: (boolean | undefined)
-    content: (Content | undefined)
-    permissions: (SpacePermission[] | undefined)
-}
-
-export interface SpacePermissions {
-    none: (SpacePermission[] | undefined)
-    everyone: (SpacePermission[] | undefined)
-    follower: (SpacePermission[] | undefined)
-    spaceOwner: (SpacePermission[] | undefined)
-}
-
-export interface SpaceUpdate {
-    content: (Content | undefined)
-    hidden: (boolean | undefined)
-    permissions: Option<(SpacePermissions | undefined)>
-}
-
-export type Call = Call_System | Call_ParachainSystem | Call_Timestamp | Call_Balances | Call_Authorship | Call_CollatorSelection | Call_Session | Call_Vesting | Call_Utility | Call_XcmpQueue | Call_PolkadotXcm | Call_DmpQueue | Call_Domains | Call_Roles | Call_AccountFollows | Call_Profiles | Call_SpaceFollows | Call_SpaceOwnership | Call_Spaces | Call_Posts | Call_Reactions | Call_Sudo
+export type Call = Call_System | Call_ParachainSystem | Call_Timestamp | Call_Balances | Call_Authorship | Call_CollatorSelection | Call_Session | Call_Vesting | Call_Proxy | Call_Utility | Call_XcmpQueue | Call_PolkadotXcm | Call_DmpQueue | Call_Domains | Call_Energy | Call_Roles | Call_AccountFollows | Call_Profiles | Call_SpaceFollows | Call_SpaceOwnership | Call_Spaces | Call_Posts | Call_Reactions | Call_Subscriptions | Call_Sudo
 
 export interface Call_System {
     __kind: 'System'
@@ -280,6 +76,11 @@ export interface Call_Vesting {
     value: VestingCall
 }
 
+export interface Call_Proxy {
+    __kind: 'Proxy'
+    value: ProxyCall
+}
+
 export interface Call_Utility {
     __kind: 'Utility'
     value: UtilityCall
@@ -303,6 +104,11 @@ export interface Call_DmpQueue {
 export interface Call_Domains {
     __kind: 'Domains'
     value: DomainsCall
+}
+
+export interface Call_Energy {
+    __kind: 'Energy'
+    value: EnergyCall
 }
 
 export interface Call_Roles {
@@ -345,9 +151,47 @@ export interface Call_Reactions {
     value: ReactionsCall
 }
 
+export interface Call_Subscriptions {
+    __kind: 'Subscriptions'
+    value: SubscriptionsCall
+}
+
 export interface Call_Sudo {
     __kind: 'Sudo'
     value: SudoCall
+}
+
+export interface SubscriptionSettings {
+    subscription: bigint
+    disabled: boolean
+    roleId: bigint
+}
+
+export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
+
+export interface MultiAddress_Id {
+    __kind: 'Id'
+    value: Uint8Array
+}
+
+export interface MultiAddress_Index {
+    __kind: 'Index'
+    value: null
+}
+
+export interface MultiAddress_Raw {
+    __kind: 'Raw'
+    value: Uint8Array
+}
+
+export interface MultiAddress_Address32 {
+    __kind: 'Address32'
+    value: Uint8Array
+}
+
+export interface MultiAddress_Address20 {
+    __kind: 'Address20'
+    value: Uint8Array
 }
 
 export type OriginCaller = OriginCaller_system | OriginCaller_PolkadotXcm | OriginCaller_CumulusXcm | OriginCaller_Void
@@ -364,29 +208,12 @@ export interface OriginCaller_PolkadotXcm {
 
 export interface OriginCaller_CumulusXcm {
     __kind: 'CumulusXcm'
-    value: Type_261
+    value: Type_217
 }
 
 export interface OriginCaller_Void {
     __kind: 'Void'
     value: Void
-}
-
-export interface DomainMeta {
-    created: WhoAndWhen
-    updated: (WhoAndWhen | undefined)
-    expiresAt: number
-    owner: Uint8Array
-    content: Content
-    innerValue: (InnerValue | undefined)
-    outerValue: (Uint8Array | undefined)
-    domainDeposit: bigint
-    outerValueDeposit: bigint
-}
-
-export interface Comment {
-    rootPostId: bigint
-    parentId: (bigint | undefined)
 }
 
 /**
@@ -922,6 +749,260 @@ export interface VestingCall_merge_schedules {
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
+export type ProxyCall = ProxyCall_proxy | ProxyCall_add_proxy | ProxyCall_remove_proxy | ProxyCall_remove_proxies | ProxyCall_anonymous | ProxyCall_kill_anonymous | ProxyCall_announce | ProxyCall_remove_announcement | ProxyCall_reject_announcement | ProxyCall_proxy_announced
+
+/**
+ * Dispatch the given `call` from an account that the sender is authorised for through
+ * `add_proxy`.
+ * 
+ * Removes any corresponding announcement(s).
+ * 
+ * The dispatch origin for this call must be _Signed_.
+ * 
+ * Parameters:
+ * - `real`: The account that the proxy will make a call on behalf of.
+ * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+ * - `call`: The call to be made by the `real` account.
+ * 
+ * # <weight>
+ * Weight is a function of the number of proxies the user has (P).
+ * # </weight>
+ */
+export interface ProxyCall_proxy {
+    __kind: 'proxy'
+    real: Uint8Array
+    forceProxyType: (ProxyType | undefined)
+    call: Call
+}
+
+/**
+ * Register a proxy account for the sender that is able to make calls on its behalf.
+ * 
+ * The dispatch origin for this call must be _Signed_.
+ * 
+ * Parameters:
+ * - `proxy`: The account that the `caller` would like to make a proxy.
+ * - `proxy_type`: The permissions allowed for this proxy account.
+ * - `delay`: The announcement period required of the initial proxy. Will generally be
+ * zero.
+ * 
+ * # <weight>
+ * Weight is a function of the number of proxies the user has (P).
+ * # </weight>
+ */
+export interface ProxyCall_add_proxy {
+    __kind: 'add_proxy'
+    delegate: Uint8Array
+    proxyType: ProxyType
+    delay: number
+}
+
+/**
+ * Unregister a proxy account for the sender.
+ * 
+ * The dispatch origin for this call must be _Signed_.
+ * 
+ * Parameters:
+ * - `proxy`: The account that the `caller` would like to remove as a proxy.
+ * - `proxy_type`: The permissions currently enabled for the removed proxy account.
+ * 
+ * # <weight>
+ * Weight is a function of the number of proxies the user has (P).
+ * # </weight>
+ */
+export interface ProxyCall_remove_proxy {
+    __kind: 'remove_proxy'
+    delegate: Uint8Array
+    proxyType: ProxyType
+    delay: number
+}
+
+/**
+ * Unregister all proxy accounts for the sender.
+ * 
+ * The dispatch origin for this call must be _Signed_.
+ * 
+ * WARNING: This may be called on accounts created by `anonymous`, however if done, then
+ * the unreserved fees will be inaccessible. **All access to this account will be lost.**
+ * 
+ * # <weight>
+ * Weight is a function of the number of proxies the user has (P).
+ * # </weight>
+ */
+export interface ProxyCall_remove_proxies {
+    __kind: 'remove_proxies'
+}
+
+/**
+ * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
+ * initialize it with a proxy of `proxy_type` for `origin` sender.
+ * 
+ * Requires a `Signed` origin.
+ * 
+ * - `proxy_type`: The type of the proxy that the sender will be registered as over the
+ * new account. This will almost always be the most permissive `ProxyType` possible to
+ * allow for maximum flexibility.
+ * - `index`: A disambiguation index, in case this is called multiple times in the same
+ * transaction (e.g. with `utility::batch`). Unless you're using `batch` you probably just
+ * want to use `0`.
+ * - `delay`: The announcement period required of the initial proxy. Will generally be
+ * zero.
+ * 
+ * Fails with `Duplicate` if this has already been called in this transaction, from the
+ * same sender, with the same parameters.
+ * 
+ * Fails if there are insufficient funds to pay for deposit.
+ * 
+ * # <weight>
+ * Weight is a function of the number of proxies the user has (P).
+ * # </weight>
+ * TODO: Might be over counting 1 read
+ */
+export interface ProxyCall_anonymous {
+    __kind: 'anonymous'
+    proxyType: ProxyType
+    delay: number
+    index: number
+}
+
+/**
+ * Removes a previously spawned anonymous proxy.
+ * 
+ * WARNING: **All access to this account will be lost.** Any funds held in it will be
+ * inaccessible.
+ * 
+ * Requires a `Signed` origin, and the sender account must have been created by a call to
+ * `anonymous` with corresponding parameters.
+ * 
+ * - `spawner`: The account that originally called `anonymous` to create this account.
+ * - `index`: The disambiguation index originally passed to `anonymous`. Probably `0`.
+ * - `proxy_type`: The proxy type originally passed to `anonymous`.
+ * - `height`: The height of the chain when the call to `anonymous` was processed.
+ * - `ext_index`: The extrinsic index in which the call to `anonymous` was processed.
+ * 
+ * Fails with `NoPermission` in case the caller is not a previously created anonymous
+ * account whose `anonymous` call has corresponding parameters.
+ * 
+ * # <weight>
+ * Weight is a function of the number of proxies the user has (P).
+ * # </weight>
+ */
+export interface ProxyCall_kill_anonymous {
+    __kind: 'kill_anonymous'
+    spawner: Uint8Array
+    proxyType: ProxyType
+    index: number
+    height: number
+    extIndex: number
+}
+
+/**
+ * Publish the hash of a proxy-call that will be made in the future.
+ * 
+ * This must be called some number of blocks before the corresponding `proxy` is attempted
+ * if the delay associated with the proxy relationship is greater than zero.
+ * 
+ * No more than `MaxPending` announcements may be made at any one time.
+ * 
+ * This will take a deposit of `AnnouncementDepositFactor` as well as
+ * `AnnouncementDepositBase` if there are no other pending announcements.
+ * 
+ * The dispatch origin for this call must be _Signed_ and a proxy of `real`.
+ * 
+ * Parameters:
+ * - `real`: The account that the proxy will make a call on behalf of.
+ * - `call_hash`: The hash of the call to be made by the `real` account.
+ * 
+ * # <weight>
+ * Weight is a function of:
+ * - A: the number of announcements made.
+ * - P: the number of proxies the user has.
+ * # </weight>
+ */
+export interface ProxyCall_announce {
+    __kind: 'announce'
+    real: Uint8Array
+    callHash: Uint8Array
+}
+
+/**
+ * Remove a given announcement.
+ * 
+ * May be called by a proxy account to remove a call they previously announced and return
+ * the deposit.
+ * 
+ * The dispatch origin for this call must be _Signed_.
+ * 
+ * Parameters:
+ * - `real`: The account that the proxy will make a call on behalf of.
+ * - `call_hash`: The hash of the call to be made by the `real` account.
+ * 
+ * # <weight>
+ * Weight is a function of:
+ * - A: the number of announcements made.
+ * - P: the number of proxies the user has.
+ * # </weight>
+ */
+export interface ProxyCall_remove_announcement {
+    __kind: 'remove_announcement'
+    real: Uint8Array
+    callHash: Uint8Array
+}
+
+/**
+ * Remove the given announcement of a delegate.
+ * 
+ * May be called by a target (proxied) account to remove a call that one of their delegates
+ * (`delegate`) has announced they want to execute. The deposit is returned.
+ * 
+ * The dispatch origin for this call must be _Signed_.
+ * 
+ * Parameters:
+ * - `delegate`: The account that previously announced the call.
+ * - `call_hash`: The hash of the call to be made.
+ * 
+ * # <weight>
+ * Weight is a function of:
+ * - A: the number of announcements made.
+ * - P: the number of proxies the user has.
+ * # </weight>
+ */
+export interface ProxyCall_reject_announcement {
+    __kind: 'reject_announcement'
+    delegate: Uint8Array
+    callHash: Uint8Array
+}
+
+/**
+ * Dispatch the given `call` from an account that the sender is authorized for through
+ * `add_proxy`.
+ * 
+ * Removes any corresponding announcement(s).
+ * 
+ * The dispatch origin for this call must be _Signed_.
+ * 
+ * Parameters:
+ * - `real`: The account that the proxy will make a call on behalf of.
+ * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+ * - `call`: The call to be made by the `real` account.
+ * 
+ * # <weight>
+ * Weight is a function of:
+ * - A: the number of announcements made.
+ * - P: the number of proxies the user has.
+ * # </weight>
+ */
+export interface ProxyCall_proxy_announced {
+    __kind: 'proxy_announced'
+    delegate: Uint8Array
+    real: Uint8Array
+    forceProxyType: (ProxyType | undefined)
+    call: Call
+}
+
+/**
+ * Contains one variant per dispatchable that can be called by an extrinsic.
+ */
 export type UtilityCall = UtilityCall_batch | UtilityCall_as_derivative | UtilityCall_batch_all | UtilityCall_dispatch_as | UtilityCall_force_batch
 
 /**
@@ -1225,7 +1306,7 @@ export interface PolkadotXcmCall_reserve_transfer_assets {
  */
 export interface PolkadotXcmCall_execute {
     __kind: 'execute'
-    message: Type_211
+    message: Type_232
     maxWeight: bigint
 }
 
@@ -1446,6 +1527,28 @@ export interface DomainsCall_support_tlds {
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
+export type EnergyCall = EnergyCall_update_value_coefficient | EnergyCall_generate_energy
+
+/**
+ * Updates the value coefficient. Only callable by the `UpdateOrigin`.
+ */
+export interface EnergyCall_update_value_coefficient {
+    __kind: 'update_value_coefficient'
+    newCoefficient: bigint
+}
+
+/**
+ * Generate energy for a target account by burning balance from the caller.
+ */
+export interface EnergyCall_generate_energy {
+    __kind: 'generate_energy'
+    target: MultiAddress
+    burnAmount: bigint
+}
+
+/**
+ * Contains one variant per dispatchable that can be called by an extrinsic.
+ */
 export type RolesCall = RolesCall_create_role | RolesCall_update_role | RolesCall_delete_role | RolesCall_grant_role | RolesCall_revoke_role | RolesCall_force_create_role | RolesCall_force_grant_role | RolesCall_force_set_next_role_id
 
 /**
@@ -1481,6 +1584,7 @@ export interface RolesCall_update_role {
 export interface RolesCall_delete_role {
     __kind: 'delete_role'
     roleId: bigint
+    userCount: number
 }
 
 /**
@@ -1548,7 +1652,7 @@ export interface AccountFollowsCall_force_follow_account {
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
-export type ProfilesCall = ProfilesCall_set_profile | ProfilesCall_reset_profile | ProfilesCall_force_set_space_as_profile
+export type ProfilesCall = ProfilesCall_set_profile | ProfilesCall_reset_profile | ProfilesCall_create_space_as_profile
 
 export interface ProfilesCall_set_profile {
     __kind: 'set_profile'
@@ -1559,10 +1663,9 @@ export interface ProfilesCall_reset_profile {
     __kind: 'reset_profile'
 }
 
-export interface ProfilesCall_force_set_space_as_profile {
-    __kind: 'force_set_space_as_profile'
-    account: Uint8Array
-    spaceIdOpt: (bigint | undefined)
+export interface ProfilesCall_create_space_as_profile {
+    __kind: 'create_space_as_profile'
+    content: Content
 }
 
 /**
@@ -1734,6 +1837,27 @@ export interface ReactionsCall_force_set_next_reaction_id {
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
+export type SubscriptionsCall = SubscriptionsCall_update_subscription_settings | SubscriptionsCall_subscribe | SubscriptionsCall_unsubscribe
+
+export interface SubscriptionsCall_update_subscription_settings {
+    __kind: 'update_subscription_settings'
+    spaceId: bigint
+    settings: SubscriptionSettings
+}
+
+export interface SubscriptionsCall_subscribe {
+    __kind: 'subscribe'
+    spaceId: bigint
+}
+
+export interface SubscriptionsCall_unsubscribe {
+    __kind: 'unsubscribe'
+    spaceId: bigint
+}
+
+/**
+ * Contains one variant per dispatchable that can be called by an extrinsic.
+ */
 export type SudoCall = SudoCall_sudo | SudoCall_sudo_unchecked_weight | SudoCall_set_key | SudoCall_sudo_as
 
 /**
@@ -1834,35 +1958,18 @@ export interface Origin_Response {
     value: V1MultiLocation
 }
 
-export type Type_261 = Type_261_Relay | Type_261_SiblingParachain
+export type Type_217 = Type_217_Relay | Type_217_SiblingParachain
 
-export interface Type_261_Relay {
+export interface Type_217_Relay {
     __kind: 'Relay'
 }
 
-export interface Type_261_SiblingParachain {
+export interface Type_217_SiblingParachain {
     __kind: 'SiblingParachain'
     value: number
 }
 
 export type Void = never
-
-export type InnerValue = InnerValue_Account | InnerValue_Space | InnerValue_Post
-
-export interface InnerValue_Account {
-    __kind: 'Account'
-    value: Uint8Array
-}
-
-export interface InnerValue_Space {
-    __kind: 'Space'
-    value: bigint
-}
-
-export interface InnerValue_Post {
-    __kind: 'Post'
-    value: bigint
-}
 
 export interface ParachainInherentData {
     validationData: V2PersistedValidationData
@@ -1930,21 +2037,21 @@ export interface VersionedMultiAssets_V1 {
     value: V1MultiAsset[]
 }
 
-export type Type_211 = Type_211_V0 | Type_211_V1 | Type_211_V2
+export type Type_232 = Type_232_V0 | Type_232_V1 | Type_232_V2
 
-export interface Type_211_V0 {
+export interface Type_232_V0 {
     __kind: 'V0'
-    value: Type_212
+    value: Type_233
 }
 
-export interface Type_211_V1 {
+export interface Type_232_V1 {
     __kind: 'V1'
-    value: Type_217
+    value: Type_238
 }
 
-export interface Type_211_V2 {
+export interface Type_232_V2 {
     __kind: 'V2'
-    value: Type_223[]
+    value: Type_244[]
 }
 
 export interface V1MultiLocation {
@@ -1961,6 +2068,218 @@ export interface V2WeightLimit_Unlimited {
 export interface V2WeightLimit_Limited {
     __kind: 'Limited'
     value: bigint
+}
+
+export type InnerValue = InnerValue_Account | InnerValue_Space | InnerValue_Post
+
+export interface InnerValue_Account {
+    __kind: 'Account'
+    value: Uint8Array
+}
+
+export interface InnerValue_Space {
+    __kind: 'Space'
+    value: bigint
+}
+
+export interface InnerValue_Post {
+    __kind: 'Post'
+    value: bigint
+}
+
+export type SpacePermission = SpacePermission_ManageRoles | SpacePermission_RepresentSpaceInternally | SpacePermission_RepresentSpaceExternally | SpacePermission_UpdateSpace | SpacePermission_CreateSubspaces | SpacePermission_UpdateOwnSubspaces | SpacePermission_DeleteOwnSubspaces | SpacePermission_HideOwnSubspaces | SpacePermission_UpdateAnySubspace | SpacePermission_DeleteAnySubspace | SpacePermission_HideAnySubspace | SpacePermission_CreatePosts | SpacePermission_UpdateOwnPosts | SpacePermission_DeleteOwnPosts | SpacePermission_HideOwnPosts | SpacePermission_UpdateAnyPost | SpacePermission_DeleteAnyPost | SpacePermission_HideAnyPost | SpacePermission_CreateComments | SpacePermission_UpdateOwnComments | SpacePermission_DeleteOwnComments | SpacePermission_HideOwnComments | SpacePermission_HideAnyComment | SpacePermission_Upvote | SpacePermission_Downvote | SpacePermission_Share | SpacePermission_OverrideSubspacePermissions | SpacePermission_OverridePostPermissions | SpacePermission_SuggestEntityStatus | SpacePermission_UpdateEntityStatus | SpacePermission_UpdateSpaceSettings
+
+export interface SpacePermission_ManageRoles {
+    __kind: 'ManageRoles'
+}
+
+export interface SpacePermission_RepresentSpaceInternally {
+    __kind: 'RepresentSpaceInternally'
+}
+
+export interface SpacePermission_RepresentSpaceExternally {
+    __kind: 'RepresentSpaceExternally'
+}
+
+export interface SpacePermission_UpdateSpace {
+    __kind: 'UpdateSpace'
+}
+
+export interface SpacePermission_CreateSubspaces {
+    __kind: 'CreateSubspaces'
+}
+
+export interface SpacePermission_UpdateOwnSubspaces {
+    __kind: 'UpdateOwnSubspaces'
+}
+
+export interface SpacePermission_DeleteOwnSubspaces {
+    __kind: 'DeleteOwnSubspaces'
+}
+
+export interface SpacePermission_HideOwnSubspaces {
+    __kind: 'HideOwnSubspaces'
+}
+
+export interface SpacePermission_UpdateAnySubspace {
+    __kind: 'UpdateAnySubspace'
+}
+
+export interface SpacePermission_DeleteAnySubspace {
+    __kind: 'DeleteAnySubspace'
+}
+
+export interface SpacePermission_HideAnySubspace {
+    __kind: 'HideAnySubspace'
+}
+
+export interface SpacePermission_CreatePosts {
+    __kind: 'CreatePosts'
+}
+
+export interface SpacePermission_UpdateOwnPosts {
+    __kind: 'UpdateOwnPosts'
+}
+
+export interface SpacePermission_DeleteOwnPosts {
+    __kind: 'DeleteOwnPosts'
+}
+
+export interface SpacePermission_HideOwnPosts {
+    __kind: 'HideOwnPosts'
+}
+
+export interface SpacePermission_UpdateAnyPost {
+    __kind: 'UpdateAnyPost'
+}
+
+export interface SpacePermission_DeleteAnyPost {
+    __kind: 'DeleteAnyPost'
+}
+
+export interface SpacePermission_HideAnyPost {
+    __kind: 'HideAnyPost'
+}
+
+export interface SpacePermission_CreateComments {
+    __kind: 'CreateComments'
+}
+
+export interface SpacePermission_UpdateOwnComments {
+    __kind: 'UpdateOwnComments'
+}
+
+export interface SpacePermission_DeleteOwnComments {
+    __kind: 'DeleteOwnComments'
+}
+
+export interface SpacePermission_HideOwnComments {
+    __kind: 'HideOwnComments'
+}
+
+export interface SpacePermission_HideAnyComment {
+    __kind: 'HideAnyComment'
+}
+
+export interface SpacePermission_Upvote {
+    __kind: 'Upvote'
+}
+
+export interface SpacePermission_Downvote {
+    __kind: 'Downvote'
+}
+
+export interface SpacePermission_Share {
+    __kind: 'Share'
+}
+
+export interface SpacePermission_OverrideSubspacePermissions {
+    __kind: 'OverrideSubspacePermissions'
+}
+
+export interface SpacePermission_OverridePostPermissions {
+    __kind: 'OverridePostPermissions'
+}
+
+export interface SpacePermission_SuggestEntityStatus {
+    __kind: 'SuggestEntityStatus'
+}
+
+export interface SpacePermission_UpdateEntityStatus {
+    __kind: 'UpdateEntityStatus'
+}
+
+export interface SpacePermission_UpdateSpaceSettings {
+    __kind: 'UpdateSpaceSettings'
+}
+
+export interface RoleUpdate {
+    disabled: (boolean | undefined)
+    content: (Content | undefined)
+    permissions: (SpacePermission[] | undefined)
+}
+
+export type User = User_Account | User_Space
+
+export interface User_Account {
+    __kind: 'Account'
+    value: Uint8Array
+}
+
+export interface User_Space {
+    __kind: 'Space'
+    value: bigint
+}
+
+export interface WhoAndWhen {
+    account: Uint8Array
+    block: number
+    time: bigint
+}
+
+export interface SpacePermissions {
+    none: (SpacePermission[] | undefined)
+    everyone: (SpacePermission[] | undefined)
+    follower: (SpacePermission[] | undefined)
+    spaceOwner: (SpacePermission[] | undefined)
+}
+
+export interface SpaceUpdate {
+    content: (Content | undefined)
+    hidden: (boolean | undefined)
+    permissions: Option<(SpacePermissions | undefined)>
+}
+
+export type PostExtension = PostExtension_RegularPost | PostExtension_Comment | PostExtension_SharedPost
+
+export interface PostExtension_RegularPost {
+    __kind: 'RegularPost'
+}
+
+export interface PostExtension_Comment {
+    __kind: 'Comment'
+    value: Comment
+}
+
+export interface PostExtension_SharedPost {
+    __kind: 'SharedPost'
+    value: bigint
+}
+
+export interface PostUpdate {
+    spaceId: (bigint | undefined)
+    content: (Content | undefined)
+    hidden: (boolean | undefined)
+}
+
+export type ReactionKind = ReactionKind_Upvote | ReactionKind_Downvote
+
+export interface ReactionKind_Upvote {
+    __kind: 'Upvote'
+}
+
+export interface ReactionKind_Downvote {
+    __kind: 'Downvote'
 }
 
 export interface V2PersistedValidationData {
@@ -2420,245 +2739,245 @@ export interface V1MultiAsset {
     fun: V1Fungibility
 }
 
-export type Type_212 = Type_212_WithdrawAsset | Type_212_ReserveAssetDeposit | Type_212_TeleportAsset | Type_212_QueryResponse | Type_212_TransferAsset | Type_212_TransferReserveAsset | Type_212_Transact | Type_212_HrmpNewChannelOpenRequest | Type_212_HrmpChannelAccepted | Type_212_HrmpChannelClosing | Type_212_RelayedFrom
+export type Type_233 = Type_233_WithdrawAsset | Type_233_ReserveAssetDeposit | Type_233_TeleportAsset | Type_233_QueryResponse | Type_233_TransferAsset | Type_233_TransferReserveAsset | Type_233_Transact | Type_233_HrmpNewChannelOpenRequest | Type_233_HrmpChannelAccepted | Type_233_HrmpChannelClosing | Type_233_RelayedFrom
 
-export interface Type_212_WithdrawAsset {
+export interface Type_233_WithdrawAsset {
     __kind: 'WithdrawAsset'
     assets: V0MultiAsset[]
-    effects: Type_214[]
+    effects: Type_235[]
 }
 
-export interface Type_212_ReserveAssetDeposit {
+export interface Type_233_ReserveAssetDeposit {
     __kind: 'ReserveAssetDeposit'
     assets: V0MultiAsset[]
-    effects: Type_214[]
+    effects: Type_235[]
 }
 
-export interface Type_212_TeleportAsset {
+export interface Type_233_TeleportAsset {
     __kind: 'TeleportAsset'
     assets: V0MultiAsset[]
-    effects: Type_214[]
+    effects: Type_235[]
 }
 
-export interface Type_212_QueryResponse {
+export interface Type_233_QueryResponse {
     __kind: 'QueryResponse'
     queryId: bigint
     response: V0Response
 }
 
-export interface Type_212_TransferAsset {
+export interface Type_233_TransferAsset {
     __kind: 'TransferAsset'
     assets: V0MultiAsset[]
     dest: V0MultiLocation
 }
 
-export interface Type_212_TransferReserveAsset {
+export interface Type_233_TransferReserveAsset {
     __kind: 'TransferReserveAsset'
     assets: V0MultiAsset[]
     dest: V0MultiLocation
     effects: V0Order[]
 }
 
-export interface Type_212_Transact {
+export interface Type_233_Transact {
     __kind: 'Transact'
     originType: V0OriginKind
     requireWeightAtMost: bigint
     call: DoubleEncoded
 }
 
-export interface Type_212_HrmpNewChannelOpenRequest {
+export interface Type_233_HrmpNewChannelOpenRequest {
     __kind: 'HrmpNewChannelOpenRequest'
     sender: number
     maxMessageSize: number
     maxCapacity: number
 }
 
-export interface Type_212_HrmpChannelAccepted {
+export interface Type_233_HrmpChannelAccepted {
     __kind: 'HrmpChannelAccepted'
     recipient: number
 }
 
-export interface Type_212_HrmpChannelClosing {
+export interface Type_233_HrmpChannelClosing {
     __kind: 'HrmpChannelClosing'
     initiator: number
     sender: number
     recipient: number
 }
 
-export interface Type_212_RelayedFrom {
+export interface Type_233_RelayedFrom {
     __kind: 'RelayedFrom'
     who: V0MultiLocation
-    message: Type_212
+    message: Type_233
 }
 
-export type Type_217 = Type_217_WithdrawAsset | Type_217_ReserveAssetDeposited | Type_217_ReceiveTeleportedAsset | Type_217_QueryResponse | Type_217_TransferAsset | Type_217_TransferReserveAsset | Type_217_Transact | Type_217_HrmpNewChannelOpenRequest | Type_217_HrmpChannelAccepted | Type_217_HrmpChannelClosing | Type_217_RelayedFrom | Type_217_SubscribeVersion | Type_217_UnsubscribeVersion
+export type Type_238 = Type_238_WithdrawAsset | Type_238_ReserveAssetDeposited | Type_238_ReceiveTeleportedAsset | Type_238_QueryResponse | Type_238_TransferAsset | Type_238_TransferReserveAsset | Type_238_Transact | Type_238_HrmpNewChannelOpenRequest | Type_238_HrmpChannelAccepted | Type_238_HrmpChannelClosing | Type_238_RelayedFrom | Type_238_SubscribeVersion | Type_238_UnsubscribeVersion
 
-export interface Type_217_WithdrawAsset {
+export interface Type_238_WithdrawAsset {
     __kind: 'WithdrawAsset'
     assets: V1MultiAsset[]
-    effects: Type_219[]
+    effects: Type_240[]
 }
 
-export interface Type_217_ReserveAssetDeposited {
+export interface Type_238_ReserveAssetDeposited {
     __kind: 'ReserveAssetDeposited'
     assets: V1MultiAsset[]
-    effects: Type_219[]
+    effects: Type_240[]
 }
 
-export interface Type_217_ReceiveTeleportedAsset {
+export interface Type_238_ReceiveTeleportedAsset {
     __kind: 'ReceiveTeleportedAsset'
     assets: V1MultiAsset[]
-    effects: Type_219[]
+    effects: Type_240[]
 }
 
-export interface Type_217_QueryResponse {
+export interface Type_238_QueryResponse {
     __kind: 'QueryResponse'
     queryId: bigint
     response: V1Response
 }
 
-export interface Type_217_TransferAsset {
+export interface Type_238_TransferAsset {
     __kind: 'TransferAsset'
     assets: V1MultiAsset[]
     beneficiary: V1MultiLocation
 }
 
-export interface Type_217_TransferReserveAsset {
+export interface Type_238_TransferReserveAsset {
     __kind: 'TransferReserveAsset'
     assets: V1MultiAsset[]
     dest: V1MultiLocation
     effects: V1Order[]
 }
 
-export interface Type_217_Transact {
+export interface Type_238_Transact {
     __kind: 'Transact'
     originType: V0OriginKind
     requireWeightAtMost: bigint
     call: DoubleEncoded
 }
 
-export interface Type_217_HrmpNewChannelOpenRequest {
+export interface Type_238_HrmpNewChannelOpenRequest {
     __kind: 'HrmpNewChannelOpenRequest'
     sender: number
     maxMessageSize: number
     maxCapacity: number
 }
 
-export interface Type_217_HrmpChannelAccepted {
+export interface Type_238_HrmpChannelAccepted {
     __kind: 'HrmpChannelAccepted'
     recipient: number
 }
 
-export interface Type_217_HrmpChannelClosing {
+export interface Type_238_HrmpChannelClosing {
     __kind: 'HrmpChannelClosing'
     initiator: number
     sender: number
     recipient: number
 }
 
-export interface Type_217_RelayedFrom {
+export interface Type_238_RelayedFrom {
     __kind: 'RelayedFrom'
     who: V1Junctions
-    message: Type_217
+    message: Type_238
 }
 
-export interface Type_217_SubscribeVersion {
+export interface Type_238_SubscribeVersion {
     __kind: 'SubscribeVersion'
     queryId: bigint
     maxResponseWeight: bigint
 }
 
-export interface Type_217_UnsubscribeVersion {
+export interface Type_238_UnsubscribeVersion {
     __kind: 'UnsubscribeVersion'
 }
 
-export type Type_223 = Type_223_WithdrawAsset | Type_223_ReserveAssetDeposited | Type_223_ReceiveTeleportedAsset | Type_223_QueryResponse | Type_223_TransferAsset | Type_223_TransferReserveAsset | Type_223_Transact | Type_223_HrmpNewChannelOpenRequest | Type_223_HrmpChannelAccepted | Type_223_HrmpChannelClosing | Type_223_ClearOrigin | Type_223_DescendOrigin | Type_223_ReportError | Type_223_DepositAsset | Type_223_DepositReserveAsset | Type_223_ExchangeAsset | Type_223_InitiateReserveWithdraw | Type_223_InitiateTeleport | Type_223_QueryHolding | Type_223_BuyExecution | Type_223_RefundSurplus | Type_223_SetErrorHandler | Type_223_SetAppendix | Type_223_ClearError | Type_223_ClaimAsset | Type_223_Trap | Type_223_SubscribeVersion | Type_223_UnsubscribeVersion
+export type Type_244 = Type_244_WithdrawAsset | Type_244_ReserveAssetDeposited | Type_244_ReceiveTeleportedAsset | Type_244_QueryResponse | Type_244_TransferAsset | Type_244_TransferReserveAsset | Type_244_Transact | Type_244_HrmpNewChannelOpenRequest | Type_244_HrmpChannelAccepted | Type_244_HrmpChannelClosing | Type_244_ClearOrigin | Type_244_DescendOrigin | Type_244_ReportError | Type_244_DepositAsset | Type_244_DepositReserveAsset | Type_244_ExchangeAsset | Type_244_InitiateReserveWithdraw | Type_244_InitiateTeleport | Type_244_QueryHolding | Type_244_BuyExecution | Type_244_RefundSurplus | Type_244_SetErrorHandler | Type_244_SetAppendix | Type_244_ClearError | Type_244_ClaimAsset | Type_244_Trap | Type_244_SubscribeVersion | Type_244_UnsubscribeVersion
 
-export interface Type_223_WithdrawAsset {
+export interface Type_244_WithdrawAsset {
     __kind: 'WithdrawAsset'
     value: V1MultiAsset[]
 }
 
-export interface Type_223_ReserveAssetDeposited {
+export interface Type_244_ReserveAssetDeposited {
     __kind: 'ReserveAssetDeposited'
     value: V1MultiAsset[]
 }
 
-export interface Type_223_ReceiveTeleportedAsset {
+export interface Type_244_ReceiveTeleportedAsset {
     __kind: 'ReceiveTeleportedAsset'
     value: V1MultiAsset[]
 }
 
-export interface Type_223_QueryResponse {
+export interface Type_244_QueryResponse {
     __kind: 'QueryResponse'
     queryId: bigint
     response: V2Response
     maxWeight: bigint
 }
 
-export interface Type_223_TransferAsset {
+export interface Type_244_TransferAsset {
     __kind: 'TransferAsset'
     assets: V1MultiAsset[]
     beneficiary: V1MultiLocation
 }
 
-export interface Type_223_TransferReserveAsset {
+export interface Type_244_TransferReserveAsset {
     __kind: 'TransferReserveAsset'
     assets: V1MultiAsset[]
     dest: V1MultiLocation
     xcm: V2Instruction[]
 }
 
-export interface Type_223_Transact {
+export interface Type_244_Transact {
     __kind: 'Transact'
     originType: V0OriginKind
     requireWeightAtMost: bigint
     call: DoubleEncoded
 }
 
-export interface Type_223_HrmpNewChannelOpenRequest {
+export interface Type_244_HrmpNewChannelOpenRequest {
     __kind: 'HrmpNewChannelOpenRequest'
     sender: number
     maxMessageSize: number
     maxCapacity: number
 }
 
-export interface Type_223_HrmpChannelAccepted {
+export interface Type_244_HrmpChannelAccepted {
     __kind: 'HrmpChannelAccepted'
     recipient: number
 }
 
-export interface Type_223_HrmpChannelClosing {
+export interface Type_244_HrmpChannelClosing {
     __kind: 'HrmpChannelClosing'
     initiator: number
     sender: number
     recipient: number
 }
 
-export interface Type_223_ClearOrigin {
+export interface Type_244_ClearOrigin {
     __kind: 'ClearOrigin'
 }
 
-export interface Type_223_DescendOrigin {
+export interface Type_244_DescendOrigin {
     __kind: 'DescendOrigin'
     value: V1Junctions
 }
 
-export interface Type_223_ReportError {
+export interface Type_244_ReportError {
     __kind: 'ReportError'
     queryId: bigint
     dest: V1MultiLocation
     maxResponseWeight: bigint
 }
 
-export interface Type_223_DepositAsset {
+export interface Type_244_DepositAsset {
     __kind: 'DepositAsset'
     assets: V1MultiAssetFilter
     maxAssets: number
     beneficiary: V1MultiLocation
 }
 
-export interface Type_223_DepositReserveAsset {
+export interface Type_244_DepositReserveAsset {
     __kind: 'DepositReserveAsset'
     assets: V1MultiAssetFilter
     maxAssets: number
@@ -2666,27 +2985,27 @@ export interface Type_223_DepositReserveAsset {
     xcm: V2Instruction[]
 }
 
-export interface Type_223_ExchangeAsset {
+export interface Type_244_ExchangeAsset {
     __kind: 'ExchangeAsset'
     give: V1MultiAssetFilter
     receive: V1MultiAsset[]
 }
 
-export interface Type_223_InitiateReserveWithdraw {
+export interface Type_244_InitiateReserveWithdraw {
     __kind: 'InitiateReserveWithdraw'
     assets: V1MultiAssetFilter
     reserve: V1MultiLocation
     xcm: V2Instruction[]
 }
 
-export interface Type_223_InitiateTeleport {
+export interface Type_244_InitiateTeleport {
     __kind: 'InitiateTeleport'
     assets: V1MultiAssetFilter
     dest: V1MultiLocation
     xcm: V2Instruction[]
 }
 
-export interface Type_223_QueryHolding {
+export interface Type_244_QueryHolding {
     __kind: 'QueryHolding'
     queryId: bigint
     dest: V1MultiLocation
@@ -2694,48 +3013,48 @@ export interface Type_223_QueryHolding {
     maxResponseWeight: bigint
 }
 
-export interface Type_223_BuyExecution {
+export interface Type_244_BuyExecution {
     __kind: 'BuyExecution'
     fees: V1MultiAsset
     weightLimit: V2WeightLimit
 }
 
-export interface Type_223_RefundSurplus {
+export interface Type_244_RefundSurplus {
     __kind: 'RefundSurplus'
 }
 
-export interface Type_223_SetErrorHandler {
+export interface Type_244_SetErrorHandler {
     __kind: 'SetErrorHandler'
-    value: Type_223[]
+    value: Type_244[]
 }
 
-export interface Type_223_SetAppendix {
+export interface Type_244_SetAppendix {
     __kind: 'SetAppendix'
-    value: Type_223[]
+    value: Type_244[]
 }
 
-export interface Type_223_ClearError {
+export interface Type_244_ClearError {
     __kind: 'ClearError'
 }
 
-export interface Type_223_ClaimAsset {
+export interface Type_244_ClaimAsset {
     __kind: 'ClaimAsset'
     assets: V1MultiAsset[]
     ticket: V1MultiLocation
 }
 
-export interface Type_223_Trap {
+export interface Type_244_Trap {
     __kind: 'Trap'
     value: bigint
 }
 
-export interface Type_223_SubscribeVersion {
+export interface Type_244_SubscribeVersion {
     __kind: 'SubscribeVersion'
     queryId: bigint
     maxResponseWeight: bigint
 }
 
-export interface Type_223_UnsubscribeVersion {
+export interface Type_244_UnsubscribeVersion {
     __kind: 'UnsubscribeVersion'
 }
 
@@ -2783,6 +3102,11 @@ export interface V1Junctions_X7 {
 export interface V1Junctions_X8 {
     __kind: 'X8'
     value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
+}
+
+export interface Comment {
+    rootPostId: bigint
+    parentId: (bigint | undefined)
 }
 
 export type DigestItem = DigestItem_PreRuntime | DigestItem_Consensus | DigestItem_Seal | DigestItem_Other | DigestItem_RuntimeEnvironmentUpdated
@@ -3111,75 +3435,75 @@ export interface V1Fungibility_NonFungible {
     value: V1AssetInstance
 }
 
-export type Type_214 = Type_214_Null | Type_214_DepositAsset | Type_214_DepositReserveAsset | Type_214_ExchangeAsset | Type_214_InitiateReserveWithdraw | Type_214_InitiateTeleport | Type_214_QueryHolding | Type_214_BuyExecution
+export type Type_235 = Type_235_Null | Type_235_DepositAsset | Type_235_DepositReserveAsset | Type_235_ExchangeAsset | Type_235_InitiateReserveWithdraw | Type_235_InitiateTeleport | Type_235_QueryHolding | Type_235_BuyExecution
 
-export interface Type_214_Null {
+export interface Type_235_Null {
     __kind: 'Null'
 }
 
-export interface Type_214_DepositAsset {
+export interface Type_235_DepositAsset {
     __kind: 'DepositAsset'
     assets: V0MultiAsset[]
     dest: V0MultiLocation
 }
 
-export interface Type_214_DepositReserveAsset {
+export interface Type_235_DepositReserveAsset {
     __kind: 'DepositReserveAsset'
     assets: V0MultiAsset[]
     dest: V0MultiLocation
     effects: V0Order[]
 }
 
-export interface Type_214_ExchangeAsset {
+export interface Type_235_ExchangeAsset {
     __kind: 'ExchangeAsset'
     give: V0MultiAsset[]
     receive: V0MultiAsset[]
 }
 
-export interface Type_214_InitiateReserveWithdraw {
+export interface Type_235_InitiateReserveWithdraw {
     __kind: 'InitiateReserveWithdraw'
     assets: V0MultiAsset[]
     reserve: V0MultiLocation
     effects: V0Order[]
 }
 
-export interface Type_214_InitiateTeleport {
+export interface Type_235_InitiateTeleport {
     __kind: 'InitiateTeleport'
     assets: V0MultiAsset[]
     dest: V0MultiLocation
     effects: V0Order[]
 }
 
-export interface Type_214_QueryHolding {
+export interface Type_235_QueryHolding {
     __kind: 'QueryHolding'
     queryId: bigint
     dest: V0MultiLocation
     assets: V0MultiAsset[]
 }
 
-export interface Type_214_BuyExecution {
+export interface Type_235_BuyExecution {
     __kind: 'BuyExecution'
     fees: V0MultiAsset
     weight: bigint
     debt: bigint
     haltOnError: boolean
-    xcm: Type_212[]
+    xcm: Type_233[]
 }
 
-export type Type_219 = Type_219_Noop | Type_219_DepositAsset | Type_219_DepositReserveAsset | Type_219_ExchangeAsset | Type_219_InitiateReserveWithdraw | Type_219_InitiateTeleport | Type_219_QueryHolding | Type_219_BuyExecution
+export type Type_240 = Type_240_Noop | Type_240_DepositAsset | Type_240_DepositReserveAsset | Type_240_ExchangeAsset | Type_240_InitiateReserveWithdraw | Type_240_InitiateTeleport | Type_240_QueryHolding | Type_240_BuyExecution
 
-export interface Type_219_Noop {
+export interface Type_240_Noop {
     __kind: 'Noop'
 }
 
-export interface Type_219_DepositAsset {
+export interface Type_240_DepositAsset {
     __kind: 'DepositAsset'
     assets: V1MultiAssetFilter
     maxAssets: number
     beneficiary: V1MultiLocation
 }
 
-export interface Type_219_DepositReserveAsset {
+export interface Type_240_DepositReserveAsset {
     __kind: 'DepositReserveAsset'
     assets: V1MultiAssetFilter
     maxAssets: number
@@ -3187,40 +3511,40 @@ export interface Type_219_DepositReserveAsset {
     effects: V1Order[]
 }
 
-export interface Type_219_ExchangeAsset {
+export interface Type_240_ExchangeAsset {
     __kind: 'ExchangeAsset'
     give: V1MultiAssetFilter
     receive: V1MultiAsset[]
 }
 
-export interface Type_219_InitiateReserveWithdraw {
+export interface Type_240_InitiateReserveWithdraw {
     __kind: 'InitiateReserveWithdraw'
     assets: V1MultiAssetFilter
     reserve: V1MultiLocation
     effects: V1Order[]
 }
 
-export interface Type_219_InitiateTeleport {
+export interface Type_240_InitiateTeleport {
     __kind: 'InitiateTeleport'
     assets: V1MultiAssetFilter
     dest: V1MultiLocation
     effects: V1Order[]
 }
 
-export interface Type_219_QueryHolding {
+export interface Type_240_QueryHolding {
     __kind: 'QueryHolding'
     queryId: bigint
     dest: V1MultiLocation
     assets: V1MultiAssetFilter
 }
 
-export interface Type_219_BuyExecution {
+export interface Type_240_BuyExecution {
     __kind: 'BuyExecution'
     fees: V1MultiAsset
     weight: bigint
     debt: bigint
     haltOnError: boolean
-    instructions: Type_217[]
+    instructions: Type_238[]
 }
 
 export type V1Junction = V1Junction_Parachain | V1Junction_AccountId32 | V1Junction_AccountIndex64 | V1Junction_AccountKey20 | V1Junction_PalletInstance | V1Junction_GeneralIndex | V1Junction_GeneralKey | V1Junction_OnlyChild | V1Junction_Plurality

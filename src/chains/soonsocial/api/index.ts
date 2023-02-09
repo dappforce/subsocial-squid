@@ -13,7 +13,9 @@ import {
   parseSpaceUnfollowedEventArgs,
   parseSpaceOwnershipTransferAcceptedEventArgs,
   parseAccountFollowedEventArgs,
-  parseAccountUnfollowedEventArgs
+  parseAccountUnfollowedEventArgs,
+  parseDomainRegisteredEventArgs,
+  parseDomainMetaUpdatedEventArgs
 } from './events';
 
 import {
@@ -26,7 +28,7 @@ import {
   parsePostReactionUpdateCallArgs,
   parsePostReactionDeleteCallArgs
 } from './calls';
-import { getSpacesHandle } from './storage';
+import { getRegisteredDomainMeta } from './storage';
 
 export const api: ChainApi = {
   events: {
@@ -43,7 +45,9 @@ export const api: ChainApi = {
     parseSpaceUnfollowedEventArgs,
     parseSpaceOwnershipTransferAcceptedEventArgs,
     parseAccountFollowedEventArgs,
-    parseAccountUnfollowedEventArgs
+    parseAccountUnfollowedEventArgs,
+    parseDomainRegisteredEventArgs,
+    parseDomainMetaUpdatedEventArgs
   },
   calls: {
     parsePostCreatedCallArgs,
@@ -56,6 +60,6 @@ export const api: ChainApi = {
     parsePostReactionDeleteCallArgs
   },
   storage: {
-    getSpacesHandle
+    getRegisteredDomainMeta
   }
 };

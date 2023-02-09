@@ -6,6 +6,9 @@ import {
   CreatePostCallParsedData,
   CreatePostEventParsedData,
   CreateSpaceCallParsedData,
+  DomainMetaUpdatedEventParsedData,
+  DomainRegisteredEventParsedData,
+  DomainStorageData,
   EventContext,
   MovedPostEventParsedData,
   MovePostCallParsedData,
@@ -26,6 +29,7 @@ import {
 } from '../../common/types';
 import * as v7 from '../subsocial/types/v7';
 import { InnerValue } from './sharedTypes';
+import { getRegisteredDomainMeta } from '../subsocial/api/storage';
 
 export type ChainApi = {
   events: {
@@ -43,6 +47,8 @@ export type ChainApi = {
     parseSpaceOwnershipTransferAcceptedEventArgs?: EventGetter<SpaceOwnershipTransferAcceptedEventParsedData>;
     parseAccountFollowedEventArgs?: EventGetter<AccountFollowedEventParsedData>;
     parseAccountUnfollowedEventArgs?: EventGetter<AccountUnfollowedEventParsedData>;
+    parseDomainRegisteredEventArgs?: EventGetter<DomainRegisteredEventParsedData>;
+    parseDomainMetaUpdatedEventArgs?: EventGetter<DomainMetaUpdatedEventParsedData>;
   };
   calls: {
     parsePostCreatedCallArgs?: CallGetter<CreatePostCallParsedData>;
@@ -55,9 +61,9 @@ export type ChainApi = {
     parsePostReactionDeleteCallArgs?: CallGetter<PostReactionDeleteCallParsedData>;
   };
   storage: {
-    getSpacesHandle: StorageGetter<
-      [[Uint8Array, InnerValue] | [Uint8Array, InnerValue][]],
-      (Uint8Array | undefined)[] | Uint8Array | undefined
+    getRegisteredDomainMeta?: StorageGetter<
+      [Uint8Array | Uint8Array[]],
+      (DomainStorageData | undefined)[] | DomainStorageData | undefined
     >;
   };
 };
@@ -86,7 +92,9 @@ type SubsocialChainEvents =
   | 'parseSpaceUnfollowedEventArgs'
   | 'parseSpaceOwnershipTransferAcceptedEventArgs'
   | 'parseAccountFollowedEventArgs'
-  | 'parseAccountUnfollowedEventArgs';
+  | 'parseAccountUnfollowedEventArgs'
+  | 'parseDomainRegisteredEventArgs'
+  | 'parseDomainMetaUpdatedEventArgs';
 
 type SoonsocialChainEvents =
   | 'parsePostCreatedEventArgs'
@@ -102,10 +110,12 @@ type SoonsocialChainEvents =
   | 'parseSpaceUnfollowedEventArgs'
   | 'parseSpaceOwnershipTransferAcceptedEventArgs'
   | 'parseAccountFollowedEventArgs'
-  | 'parseAccountUnfollowedEventArgs';
+  | 'parseAccountUnfollowedEventArgs'
+  | 'parseDomainRegisteredEventArgs'
+  | 'parseDomainMetaUpdatedEventArgs';
 
-type SubsocialChainStorageCalls = 'getSpacesHandle';
-type SoonsocialChainStorageCalls = 'getSpacesHandle';
+type SubsocialChainStorageCalls = 'getRegisteredDomainMeta';
+type SoonsocialChainStorageCalls = 'getRegisteredDomainMeta';
 
 type SubsocialChainCalls =
   | 'parsePostCreatedCallArgs'

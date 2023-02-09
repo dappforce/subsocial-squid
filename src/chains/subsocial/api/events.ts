@@ -2,6 +2,8 @@ import { ChainContext, Event } from '../types/support';
 import {
   AccountFollowsAccountFollowedEvent,
   AccountFollowsAccountUnfollowedEvent,
+  DomainsDomainMetaUpdatedEvent,
+  DomainsDomainRegisteredEvent,
   PostsPostCreatedEvent,
   PostsPostMovedEvent,
   PostsPostUpdatedEvent,
@@ -32,7 +34,10 @@ import {
   SpaceFollowedEventParsedData,
   AccountFollowedEventParsedData,
   AccountUnfollowedEventParsedData,
-  SpaceOwnershipTransferAcceptedEventParsedData
+  SpaceOwnershipTransferAcceptedEventParsedData,
+  DomainRegisteredData,
+  DomainRegisteredEventParsedData,
+  DomainMetaUpdatedEventParsedData
 } from '../../../common/types';
 
 import { UnknownVersionError } from '../../../common/errors';
@@ -247,5 +252,31 @@ export function parseAccountUnfollowedEventArgs(
   return {
     followerId: addressSs58ToString(follower),
     accountId: addressSs58ToString(account)
+  };
+}
+
+export function parseDomainRegisteredEventArgs(
+  ctx: EventContext
+): DomainRegisteredEventParsedData {
+  const event = new DomainsDomainRegisteredEvent(ctx, ctx.event);
+
+  const { who, domain } = event.asV7;
+
+  return {
+    accountId: addressSs58ToString(who),
+    domain
+  };
+}
+
+export function parseDomainMetaUpdatedEventArgs(
+  ctx: EventContext
+): DomainMetaUpdatedEventParsedData {
+  const event = new DomainsDomainMetaUpdatedEvent(ctx, ctx.event);
+
+  const { who, domain } = event.asV7;
+
+  return {
+    accountId: addressSs58ToString(who),
+    domain
   };
 }

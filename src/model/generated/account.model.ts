@@ -75,4 +75,7 @@ export class Account {
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
     updatedAtBlock!: bigint | undefined | null
+
+    @Column_("text", {array: true, nullable: true})
+    usernames!: (string | undefined | null)[] | undefined | null
 }

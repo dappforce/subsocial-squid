@@ -14,4 +14,5 @@ export const config: ProcessorConfig = {
   elasticSearchPassword: process.env.SOONSOCIAL_ELASTIC_SEARCH_PASSWORD || '',
   ipfsReadOnlyNodeUrl:
     process.env.SOONSOCIAL_IPFS_READ_ONLY_NODE_URL || 'https://ipfs.subsocial.network',
+  ipfsNodeRequestTimeout: 10000
 };

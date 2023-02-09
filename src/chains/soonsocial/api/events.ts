@@ -13,7 +13,9 @@ import {
   SpaceFollowsSpaceUnfollowedEvent,
   SpaceOwnershipSpaceOwnershipTransferAcceptedEvent,
   SpacesSpaceCreatedEvent,
-  SpacesSpaceUpdatedEvent
+  SpacesSpaceUpdatedEvent,
+  DomainsDomainRegisteredEvent,
+  DomainsDomainMetaUpdatedEvent
 } from '../types/events';
 
 import {
@@ -32,7 +34,9 @@ import {
   SpaceFollowedEventParsedData,
   AccountFollowedEventParsedData,
   AccountUnfollowedEventParsedData,
-  SpaceOwnershipTransferAcceptedEventParsedData
+  SpaceOwnershipTransferAcceptedEventParsedData,
+  DomainRegisteredEventParsedData,
+  DomainMetaUpdatedEventParsedData
 } from '../../../common/types';
 
 import { UnknownVersionError } from '../../../common/errors';
@@ -128,7 +132,12 @@ export function parsePostReactionCreatedEventArgs(
 ): PostReactionCreatedEventParsedData {
   const event = new ReactionsPostReactionCreatedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId, reactionId, reactionKind } = event.asV1500;
+  const {
+    account: accountId,
+    postId,
+    reactionId,
+    reactionKind
+  } = event.asV1500;
 
   return {
     accountId: addressSs58ToString(accountId),
@@ -143,7 +152,12 @@ export function parsePostReactionUpdatedEventArgs(
 ): PostReactionUpdatedEventParsedData {
   const event = new ReactionsPostReactionUpdatedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId, reactionId, reactionKind } = event.asV1500;
+  const {
+    account: accountId,
+    postId,
+    reactionId,
+    reactionKind
+  } = event.asV1500;
 
   return {
     accountId: addressSs58ToString(accountId),
@@ -158,7 +172,12 @@ export function parsePostReactionDeletedEventArgs(
 ): PostReactionDeletedEventParsedData {
   const event = new ReactionsPostReactionDeletedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId, reactionId, reactionKind } = event.asV1500;
+  const {
+    account: accountId,
+    postId,
+    reactionId,
+    reactionKind
+  } = event.asV1500;
 
   return {
     accountId: addressSs58ToString(accountId),
@@ -247,5 +266,31 @@ export function parseAccountUnfollowedEventArgs(
   return {
     followerId: addressSs58ToString(follower),
     accountId: addressSs58ToString(account)
+  };
+}
+
+export function parseDomainRegisteredEventArgs(
+  ctx: EventContext
+): DomainRegisteredEventParsedData {
+  const event = new DomainsDomainRegisteredEvent(ctx, ctx.event);
+
+  const { who, domain } = event.asV1500;
+
+  return {
+    accountId: addressSs58ToString(who),
+    domain
+  };
+}
+
+export function parseDomainMetaUpdatedEventArgs(
+  ctx: EventContext
+): DomainMetaUpdatedEventParsedData {
+  const event = new DomainsDomainMetaUpdatedEvent(ctx, ctx.event);
+
+  const { who, domain } = event.asV1500;
+
+  return {
+    accountId: addressSs58ToString(who),
+    domain
   };
 }

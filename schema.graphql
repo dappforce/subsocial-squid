@@ -34,6 +34,9 @@ enum EventName {
   CommentReplyReactionCreated # synthetic
   CommentReplyReactionUpdated # synthetic
   CommentReplyReactionDeleted # synthetic
+
+  UserNameRegistered # synthetic
+  UserNameUpdated # synthetic
 }
 
 enum PostKind {
@@ -78,6 +81,8 @@ type Account @entity {
 
   updatedAtTime: DateTime
   updatedAtBlock: BigInt
+
+  usernames: [String]
 }
 
 type Post @entity {
@@ -186,6 +191,7 @@ type Space @entity {
   followersCount: Int! @index
   followers: [SpaceFollowers]! @derivedFrom(field: "followingSpace")
   appId: String
+  username: String
 }
 
 type Activity @entity {
@@ -201,6 +207,7 @@ type Activity @entity {
   oldOwner: Account
   post: Post
   reaction: Reaction
+  username: String
   date: DateTime!
   aggregated: Boolean @index
   aggCount: BigInt!
