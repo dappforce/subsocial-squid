@@ -66,6 +66,11 @@ export type SpaceStorageData = {
 export type PostStorageData = {
   ipfsContent: IpfsPostContentSummarized | null;
 };
+export type DomainStorageData = {
+  owner: Uint8Array;
+  innerValue: bigint | null;
+  outerValue: Uint8Array | null;
+};
 
 /**
  * :::::: CREATE POST ::::::
@@ -311,6 +316,33 @@ export type AccountUnfollowedEventParsedData = AccountFollowedEventParsedData;
 
 export type AccountUnfollowedData = AccountFollowedData;
 
+/**
+ * :::::: DOMAIN REGISTERED ::::::
+ */
+
+export interface DomainRegisteredEventParsedData {
+  accountId: string;
+  domain: Uint8Array;
+}
+
+export type DomainRegisteredData = EventData & DomainRegisteredEventParsedData;
+
+/**
+ * :::::: DOMAIN META UPDATED ::::::
+ */
+
+export interface DomainMetaUpdatedEventParsedData {
+  accountId: string;
+  domain: Uint8Array;
+}
+
+export type DomainMetaUpdatedData = EventData &
+  DomainMetaUpdatedEventParsedData;
+
+/**
+ * MISC
+ */
+
 export type EventId = string;
 
 export type ParsedEventsData =
@@ -327,7 +359,9 @@ export type ParsedEventsData =
   | SpaceFollowedData
   | SpaceUnfollowedData
   | AccountFollowedData
-  | AccountUnfollowedData;
+  | AccountUnfollowedData
+  | DomainRegisteredData
+  | DomainMetaUpdatedData;
 
 export type ParsedEventsDataMap = Map<
   EventName,

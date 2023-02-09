@@ -8,6 +8,8 @@ import { Post, Space } from '../model';
 import { Entity } from '@subsquid/typeorm-store/lib/store';
 import { splitIntoBatches } from '../common/utils';
 import envConfig from '../config';
+import { getChain } from '../chains';
+const chainConfig = getChain();
 
 type ContentData<E> = E extends Post
   ? ElasticPostDoc
@@ -41,10 +43,10 @@ export class ElasticSearchIndexerManager {
 
   constructor(private processorContext: Ctx) {
     this.esClient = new SubsocialElasticApi({
-      url: envConfig.elasticSearchEndpoint,
+      url: chainConfig.config.elasticSearchEndpoint,
       auth: {
-        username: envConfig.elasticSearchUsername,
-        password: envConfig.elasticSearchPassword
+        username: chainConfig.config.elasticSearchUsername,
+        password: chainConfig.config.elasticSearchPassword
       },
       ssl: false
     });

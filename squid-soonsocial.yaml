@@ -1,0 +1,21 @@
+manifestVersion: subsquid.io/v0.1
+name: soonsocial
+version: 111
+description: |-
+  Squid for Soonsocial
+build:
+
+deploy:
+  secrets:
+    - SOONSOCIAL_ELASTIC_SEARCH_ENDPOINT
+    - SOONSOCIAL_ELASTIC_SEARCH_USERNAME
+    - SOONSOCIAL_ELASTIC_SEARCH_PASSWORD
+  addons:
+    postgres:
+  processor:
+    env:
+      CHAIN:
+        soonsocial
+    cmd: [ "node", "lib/processor" ]
+  api:
+    cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "5000", "--dumb-cache-size", "200", "--dumb-cache-max-age", "5000" ]

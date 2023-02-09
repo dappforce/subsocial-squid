@@ -3,7 +3,8 @@ import {
   getBodySummary,
   getJoinedList,
   getTweetDetailsEntity,
-  isTweetDetailsIPFSValid
+  isTweetDetailsIPFSValid,
+  getExperimentalFieldsFromIPFSContent
 } from '../../common/utils';
 import { Post, PostKind, Space, IpfsFetchLog } from '../../model';
 import { getOrCreateAccount } from '../account';
@@ -190,6 +191,12 @@ export const ensurePost = async ({
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
     post.slug = null;
+    post.appId = postIpfsContent.appId ?? null;
+
+    post.experimental =
+      getExperimentalFieldsFromIPFSContent(postIpfsContent, 'post', ctx) ??
+      null;
+
     if (postIpfsContent.tags) {
       post.tagsOriginal = getJoinedList(postIpfsContent.tags);
     }
@@ -199,13 +206,6 @@ export const ensurePost = async ({
         ? postIpfsContent.tweet.id
         : null;
     }
-
-    // TODO Implementation is needed
-    // const { meta } = postContent;
-    //
-    // if (meta && !isEmptyArray(meta)) {
-    //   post.proposalIndex = meta[0].proposalIndex;
-    // }
   }
 
   return post;

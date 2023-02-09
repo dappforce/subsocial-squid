@@ -8,3 +8,4 @@ export { insertActivityForPostShared } from './insertActivityForPostShared';
 export { insertActivityForSpaceCreatedUpdated } from './insertActivityForSpaceCreatedUpdated';
 export { insertActivityForSpaceFollowedUnfollowed } from './insertActivityForSpaceFollowedUnfollowed';
 export { insertActivityForSpaceOwnershipTransfer } from './insertActivityForSpaceOwnershipTransfer';
+export { insertActivityForUsernameRegisteredUpdated } from './insertActivityForUsernameRegisteredUpdated';

@@ -7,7 +7,6 @@ import {
   EventName
 } from '../../model';
 import { getActivityEntityId, decorateEventName } from '../../common/utils';
-import { EventHandlerContext } from '../../common/contexts';
 import { getOrCreateAccount } from '../account';
 import * as insertActivityData from './activityUtils';
 import { Ctx } from '../../processor';
@@ -23,18 +22,20 @@ export const setActivity = async ({
   spacePrev,
   reaction,
   followingAccount,
-  syntheticEventName
+  syntheticEventName,
+  username
 }: {
   account: Account | string;
   ctx: Ctx;
   eventData: EventData;
   space?: Space;
-  spacePrev?: Space | null;
+  spacePrev?: Space;
   oldOwner?: Account;
   post?: Post;
   reaction?: Reaction;
   followingAccount?: Account;
   syntheticEventName?: EventName;
+  username?: string;
 }): Promise<Activity | null> => {
   const { indexInBlock, name: eventName, blockNumber, timestamp } = eventData;
 
@@ -118,7 +119,7 @@ export const setActivity = async ({
    */
   if (eventNameDecorated === EventName.PostMoved && post) {
     activity = await insertActivityData.insertActivityForPostMoved({
-      spacePrev: spacePrev || null,
+      spacePrev: spacePrev ?? null,
       post,
       activity,
       ctx
@@ -235,6 +236,24 @@ export const setActivity = async ({
         ctx
       }
     );
+  }
+
+  /**
+   * UserNameRegistered
+   * UserNameUpdated
+   */
+  if (
+    (eventNameDecorated === EventName.UserNameRegistered ||
+      eventNameDecorated === EventName.UserNameUpdated) &&
+    username
+  ) {
+    activity =
+      await insertActivityData.insertActivityForUsernameRegisteredUpdated({
+        space,
+        spacePrev,
+        username,
+        activity
+      });
   }
 
   await ctx.store.save(activity);

@@ -2,6 +2,7 @@ import {
   ensurePositiveOrZeroValue,
   getBodySummary,
   getDateWithoutTime,
+  getExperimentalFieldsFromIPFSContent,
   getJoinedList
 } from '../../common/utils';
 import {
@@ -23,7 +24,6 @@ import { StorageDataManager } from '../../storage';
  * Space instance will be created.
  * @param space
  * @param ctx
- * @param createIfNotExists
  */
 
 export const ensureSpace = async ({
@@ -36,16 +36,6 @@ export const ensureSpace = async ({
   eventData: SpaceCreatedData;
 }): Promise<Space> => {
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
-  const spaceStorageData = storageDataManagerInst.getStorageDataById(
-    'space',
-    eventData.blockHash,
-    spaceId
-  );
-
-  if (!spaceStorageData) {
-    new MissingSubsocialApiEntity('SpaceData', ctx, eventData);
-    throw new CommonCriticalError();
-  }
 
   const spaceIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'space',
@@ -80,7 +70,7 @@ export const ensureSpace = async ({
 
   spaceInst.id = spaceId;
   spaceInst.content = eventData.ipfsSrc;
-  spaceInst.handle = spaceStorageData.handle;
+  spaceInst.handle = null;
 
   spaceInst.postsCount = 0; // Initial value for counter
   spaceInst.hiddenPostsCount = 0; // Initial value for counter
@@ -105,6 +95,11 @@ export const ensureSpace = async ({
     spaceInst.image = spaceIpfsContent.image ?? null;
     spaceInst.tagsOriginal = null;
     spaceInst.linksOriginal = null;
+    spaceInst.appId = spaceIpfsContent.appId ?? null;
+
+    spaceInst.experimental =
+      getExperimentalFieldsFromIPFSContent(spaceIpfsContent, 'space', ctx) ??
+      null;
 
     if (spaceIpfsContent.tags) {
       spaceInst.tagsOriginal = getJoinedList(spaceIpfsContent.tags);

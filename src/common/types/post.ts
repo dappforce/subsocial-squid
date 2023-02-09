@@ -19,13 +19,22 @@ type SpaceContentWithInterests = {
   interests?: string[];
 };
 
+type SpaceContentWithAppId = {
+  appId?: string;
+};
+
 type PostContentWithTweet = {
   tweet?: PostTweetDetailsIPFS;
+};
+type PostContentWithAppId = {
+  appId?: string;
 };
 
 export type IpfsSpaceContentSummarized = IpfsSpaceContent &
   SummarizedContent &
-  SpaceContentWithInterests;
+  SpaceContentWithInterests &
+  SpaceContentWithAppId;
 export type IpfsPostContentSummarized = IpfsPostContent &
   SummarizedContent &
-  PostContentWithTweet;
+  PostContentWithTweet &
+  PostContentWithAppId;

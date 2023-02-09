@@ -95,6 +95,9 @@ enum EventName {
   CommentReplyReactionCreated # synthetic
   CommentReplyReactionUpdated # synthetic
   CommentReplyReactionDeleted # synthetic
+
+  UserNameRegistered # synthetic
+  UserNameUpdated # synthetic
 }
 
 """
@@ -222,6 +225,8 @@ type Account @entity {
   Block height when Account has been updated by Profiles.ProfileUpdated event
   """
   updatedAtBlock: BigInt
+  
+  usernames: [String]
 }
 
 """
@@ -415,6 +420,8 @@ type Post @entity {
   ! Deprecated field and will be removed !
   """
   proposalIndex: Int # postContent.meta[0]
+  experimental: JSON
+  appId: String
 }
 
 """
@@ -592,6 +599,7 @@ type Space @entity {
   Space handle (will be renamed to domain or username) (IPFS content)
   """
   handle: String
+  experimental: JSON
 
   """
   Space permissions rule
@@ -629,6 +637,8 @@ type Space @entity {
   Total number of all followers
   """
   followersCount: Int! @index
+  appId: String
+  username: String
 }
 
 """
@@ -709,6 +719,7 @@ type Activity @entity {
   Total number of Activities with the same event type for specific Account.
   """
   aggCount: BigInt!
+  username: String
 }
 
 """

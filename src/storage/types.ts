@@ -2,10 +2,11 @@ import {
   IpfsPostContentSummarized,
   IpfsSpaceContentSummarized,
   PostStorageData,
-  SpaceStorageData
+  SpaceStorageData,
+  DomainStorageData
 } from '../common/types';
 
-export type StorageSection = 'space' | 'post';
+export type StorageSection = 'space' | 'post' | 'domain';
 export type BlochHash = string;
 export type EntityId = string;
 
@@ -13,6 +14,8 @@ export type StorageData<T> = T extends 'space'
   ? SpaceStorageData
   : T extends 'post'
   ? PostStorageData
+  : T extends 'domain'
+  ? DomainStorageData
   : never;
 
 export type IpfsContent<T> = T extends 'space'
@@ -20,3 +23,34 @@ export type IpfsContent<T> = T extends 'space'
   : T extends 'post'
   ? IpfsPostContentSummarized
   : never;
+
+export const supportedIpfsContent = new Map<'post' | 'space', Set<string>>([
+  [
+    'post',
+    new Set<string>([
+      'title',
+      'image',
+      'link',
+      'format',
+      'canonical',
+      'body',
+      'slug',
+      'appId',
+      'tags',
+      'tweet'
+    ])
+  ],
+  [
+    'space',
+    new Set<string>([
+      'name',
+      'email',
+      'about',
+      'image',
+      'appId',
+      'tags',
+      'links',
+      'interests'
+    ])
+  ]
+]);

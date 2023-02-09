@@ -10,7 +10,11 @@ import { StorageDataManager } from '../../storage';
 import { setActivity } from '../activity';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
-import { getBodySummary, getJoinedList } from '../../common/utils';
+import {
+  getBodySummary,
+  getExperimentalFieldsFromIPFSContent,
+  getJoinedList
+} from '../../common/utils';
 
 export async function spaceUpdated(
   ctx: Ctx,
@@ -24,16 +28,6 @@ export async function spaceUpdated(
   }
 
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
-  const spaceStorageData = storageDataManagerInst.getStorageDataById(
-    'space',
-    eventData.blockHash,
-    eventData.spaceId
-  );
-
-  if (!spaceStorageData) {
-    new MissingSubsocialApiEntity('SpaceData', ctx, eventData);
-    throw new CommonCriticalError();
-  }
 
   const spaceIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'space',
@@ -46,13 +40,17 @@ export async function spaceUpdated(
 
   if (spaceIpfsContent) {
     const aboutSummary = getBodySummary(spaceIpfsContent.about);
-    space.handle = spaceStorageData.handle;
     space.name = spaceIpfsContent.name ?? null;
     space.email = spaceIpfsContent.email ?? null;
     space.about = spaceIpfsContent.about ?? null;
     space.summary = aboutSummary.summary;
     space.isShowMore = aboutSummary.isShowMore;
     space.image = spaceIpfsContent.image ?? null;
+    space.appId = spaceIpfsContent.appId ?? null;
+
+    space.experimental =
+      getExperimentalFieldsFromIPFSContent(spaceIpfsContent, 'space', ctx) ??
+      null;
 
     if (spaceIpfsContent.tags) {
       space.tagsOriginal = getJoinedList(spaceIpfsContent.tags);

@@ -147,6 +147,12 @@ export class Post {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new TweetDetails(undefined, obj)}, nullable: true})
     tweetDetails!: TweetDetails | undefined | null
 
+    @Column_("jsonb", {nullable: true})
+    experimental!: unknown | undefined | null
+
     @Column_("int4", {nullable: true})
     proposalIndex!: number | undefined | null
+
+    @Column_("text", {nullable: true})
+    appId!: string | undefined | null
 }

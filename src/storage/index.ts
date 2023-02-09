@@ -1,15 +1,17 @@
 import { Ctx } from '../processor';
 import { EventName } from '../model';
-import { resolveSpacesHandleStorage } from './space';
 import { ParsedEventsDataScope } from '../eventsCallsData';
 
 import {
   SpaceStorageData,
   PostStorageData,
   SpaceCreatedData,
-  SpaceUpdatedData
+  SpaceUpdatedData,
+  DomainRegisteredData,
+  DomainMetaUpdatedData,
+  DomainStorageData
 } from '../common/types';
-import * as v7 from '../types/generated/v7';
+import { InnerValue } from '../chains/interfaces/sharedTypes';
 import { addressStringToSs58 } from '../common/utils';
 import { IpfsDataManager } from '../ipfs';
 import {
@@ -19,19 +21,29 @@ import {
   StorageData,
   IpfsContent
 } from './types';
+import { getChain } from '../chains';
+
+const { getApiDecorated } = getChain();
 
 export class StorageDataManager {
   private static instance: StorageDataManager;
 
   public idsForFetchStorage: Map<
     StorageSection,
-    Map<BlochHash, Set<[EntityId, string | null] | [Uint8Array, v7.InnerValue]>>
+    Map<
+      BlochHash,
+      Set<[EntityId, string | null] | [Uint8Array, InnerValue] | Uint8Array>
+    >
   > = new Map();
 
   public storageDataCache: Map<
     StorageSection,
-    Map<BlochHash, Map<EntityId, SpaceStorageData | PostStorageData>>
+    Map<
+      BlochHash,
+      Map<EntityId, SpaceStorageData | PostStorageData | DomainStorageData>
+    >
   > = new Map([
+    ['domain', new Map()],
     ['space', new Map()],
     ['post', new Map()]
   ]);
@@ -100,24 +112,25 @@ export class StorageDataManager {
   async fetchStorageDataByEventsData(
     parsedEvents: ParsedEventsDataScope
   ): Promise<void> {
+    const api = getApiDecorated('subsocial');
+
     for (const [eventName, eventsData] of [...parsedEvents.entries()]) {
       switch (eventName) {
-        case EventName.SpaceCreated:
-        case EventName.SpaceUpdated: {
-          for (const event of [...eventsData.values()] as (SpaceCreatedData &
-            SpaceUpdatedData)[]) {
-            this.ensureIdsForFetchContainer('space', event.blockHash);
+        case EventName.UserNameRegistered:
+        case EventName.UserNameUpdated: {
+          for (const event of [
+            ...eventsData.values()
+          ] as (DomainRegisteredData & DomainMetaUpdatedData)[]) {
+            this.ensureIdsForFetchContainer('domain', event.blockHash);
 
             this.idsForFetchStorage
-              .get('space')!
+              .get('domain')!
               .get(event.blockHash)!
-              .add([
-                addressStringToSs58(event.accountId),
-                { __kind: 'Space', value: BigInt(event.spaceId) }
-              ]);
+              .add(event.domain);
           }
           break;
         }
+
         default:
       }
     }
@@ -126,43 +139,37 @@ export class StorageDataManager {
       ...this.idsForFetchStorage.entries()
     ]) {
       switch (section) {
-        case 'space': {
+        case 'domain': {
           for (const [blockHash, idsPairs] of [...idsListByBlock.entries()]) {
-            const idPairsList = [...idsPairs.values()] as [
-              Uint8Array,
-              v7.InnerValue
-            ][];
-            const spacesHandlesResp = await resolveSpacesHandleStorage(
-              idPairsList.map((d) => {
-                return [d[0], d[1]] as [Uint8Array, v7.InnerValue];
-              }),
+            const domainsList = [...idsPairs.values()] as Uint8Array[];
+            const domainsMetaResp = (await api.storage.getRegisteredDomainMeta(
               this.context,
-              // @ts-ignore
-              { header: { hash: blockHash } }
-            );
+              { hash: blockHash },
+              domainsList
+            )) as (DomainStorageData | undefined)[] | undefined;
+
+            if (!domainsMetaResp) break;
 
             this.ensureStorageDataCacheContainer(section, blockHash);
 
-            for (let i = 0; i < idPairsList.length; i++) {
-              const spaceIdStr = idPairsList[i][1].value.toString();
-              const spaceStorageData: SpaceStorageData = {
-                handle: null
-              };
+            for (let i = 0; i < domainsList.length; i++) {
+              const domainStr = domainsList[i].toString();
+              const domainMetaData: DomainStorageData | undefined =
+                domainsMetaResp && domainsMetaResp[i]
+                  ? domainsMetaResp[i]
+                  : undefined;
 
-              if (spacesHandlesResp && spacesHandlesResp[i])
-                spaceStorageData.handle = spacesHandlesResp[i]
-                  ? spacesHandlesResp[i]!.toString()
-                  : null;
-
+              if (!domainMetaData) continue;
               this.storageDataCache
                 .get(section)!
                 .get(blockHash)!
-                .set(spaceIdStr, spaceStorageData);
+                .set(domainStr, domainMetaData);
             }
           }
 
           break;
         }
+
         default:
       }
     }

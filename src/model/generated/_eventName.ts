@@ -31,4 +31,6 @@ export enum EventName {
     CommentReplyReactionCreated = "CommentReplyReactionCreated",
     CommentReplyReactionUpdated = "CommentReplyReactionUpdated",
     CommentReplyReactionDeleted = "CommentReplyReactionDeleted",
+    UserNameRegistered = "UserNameRegistered",
+    UserNameUpdated = "UserNameUpdated",
 }

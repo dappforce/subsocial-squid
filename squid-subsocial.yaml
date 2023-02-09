@@ -1,0 +1,23 @@
+manifestVersion: subsquid.io/v0.1
+name: subsocial
+version: 211
+description: |-
+  Squid for Subsocial
+build:
+
+deploy:
+  secrets:
+    - SUBSOCIAL_ELASTIC_SEARCH_ENDPOINT
+    - SUBSOCIAL_ELASTIC_SEARCH_USERNAME
+    - SUBSOCIAL_ELASTIC_SEARCH_PASSWORD
+  addons:
+    postgres:
+  processor:
+    env:
+      CHAIN:
+        subsocial
+    cmd: [ "node", "lib/processor" ]
+  api:
+    cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "5000", "--dumb-cache-size", "200", "--dumb-cache-max-age", "5000" ]
+scale:
+  dedicated: true

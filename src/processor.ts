@@ -14,21 +14,25 @@ import { Store, TypeormDatabase } from '@subsquid/typeorm-store';
 import envConfig from './config';
 import { getParsedEventsData } from './eventsCallsData';
 import { StorageDataManager } from './storage';
+
 import { handleSpaces } from './mappings/space';
 import { handlePosts } from './mappings/post';
 import { handleAccountFollowing } from './mappings/accountFollows';
 import { handleProfiles } from './mappings/account';
 import { handleSpacesFollowing } from './mappings/spaceFollows';
 import { handlePostReactions } from './mappings/reaction';
+import { handleDomains } from './mappings/domain';
+
 import { splitIntoBatches } from './common/utils';
 import { ElasticSearchIndexerManager } from './elasticsearch';
+import { getChain } from './chains';
+
+const chainConfig = getChain();
 
 export const processor = new SubstrateBatchProcessor()
   .setDataSource({
-    archive: lookupArchive('subsocial-parachain', {
-      release: 'FireSquid'
-    }),
-    chain: envConfig.chainNode
+    archive: chainConfig.config.dataSource.archive,
+    chain: chainConfig.config.dataSource.chain
   })
   // .setBlockRange({ from: 1093431 }) // PostCreated
   // .setBlockRange({ from: 1093209 }) // SpaceCreated
@@ -76,7 +80,13 @@ export const processor = new SubstrateBatchProcessor()
   } as const)
   .addEvent('AccountFollows.AccountUnfollowed', {
     data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const);
+  } as const)
+.addEvent('Domains.DomainRegistered', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
+.addEvent('Domains.DomainMetaUpdated', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
 
 if (!envConfig.chainNode) {
   throw new Error('no CHAIN_NODE in env');
@@ -144,6 +154,8 @@ async function blocksBatchHandler(ctx: Ctx) {
   await handleSpacesFollowing(ctx, parsedEvents);
 
   await handlePosts(ctx, parsedEvents);
+
+  await handleDomains(ctx, parsedEvents);
 
   await handlePostReactions(ctx, parsedEvents);
 

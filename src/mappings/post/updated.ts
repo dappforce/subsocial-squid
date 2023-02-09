@@ -1,5 +1,6 @@
 import {
   getBodySummary,
+  getExperimentalFieldsFromIPFSContent,
   getJoinedList,
   getSyntheticEventName,
   getTweetDetailsEntity,
@@ -72,6 +73,11 @@ export async function postUpdated(
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
     post.slug = null;
+    post.appId = postIpfsContent.appId ?? null;
+
+    post.experimental =
+      getExperimentalFieldsFromIPFSContent(postIpfsContent, 'post', ctx) ??
+      null;
 
     if (postIpfsContent.tags) {
       post.tagsOriginal = getJoinedList(postIpfsContent.tags);
