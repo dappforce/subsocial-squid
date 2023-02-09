@@ -1,7 +1,8 @@
 import { ChainContext, Event } from '../types/support';
 import {
   AccountFollowsAccountFollowedEvent,
-  AccountFollowsAccountUnfollowedEvent, DomainsDomainMetaUpdatedEvent,
+  AccountFollowsAccountUnfollowedEvent,
+  DomainsDomainMetaUpdatedEvent,
   DomainsDomainRegisteredEvent,
   PostsPostCreatedEvent,
   PostsPostMovedEvent,
@@ -34,7 +35,9 @@ import {
   AccountFollowedEventParsedData,
   AccountUnfollowedEventParsedData,
   SpaceOwnershipTransferAcceptedEventParsedData,
-  DomainRegisteredData, DomainRegisteredEventParsedData, DomainMetaUpdatedEventParsedData
+  DomainRegisteredData,
+  DomainRegisteredEventParsedData,
+  DomainMetaUpdatedEventParsedData
 } from '../../../common/types';
 
 import { UnknownVersionError } from '../../../common/errors';
