@@ -1,6 +1,9 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import {Account} from "./account.model"
 
+/**
+ * The junction table for the Many-to-Many relationship between follower and following Accounts
+ */
 @Entity_()
 export class AccountFollowers {
     constructor(props?: Partial<AccountFollowers>) {

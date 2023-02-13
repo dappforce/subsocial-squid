@@ -2,6 +2,9 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, M
 import {Account} from "./account.model"
 import {Space} from "./space.model"
 
+/**
+ * The junction table for Many-to-Many relationship between follower Account and following Space
+ */
 @Entity_()
 export class SpaceFollowers {
     constructor(props?: Partial<SpaceFollowers>) {

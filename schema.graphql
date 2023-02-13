@@ -16,6 +16,8 @@ The squid tracks these on-chain events:
   * SpaceOwnership.SpaceOwnershipTransferAccepted
   * AccountFollows.AccountFollowed
   * AccountFollows.AccountUnfollowed
+  * Domains.DomainRegistered
+  * Domains.DomainMetaUpdated
 
 ***
 
@@ -58,6 +60,8 @@ As a result, the squid uses synthetic events in addition to native on-chain even
 * CommentReplyReactionCreated - *synthetic*
 * CommentReplyReactionUpdated - *synthetic*
 * CommentReplyReactionDeleted - *synthetic*
+* UserNameRegistered - *synthetic*
+* UserNameUpdated - *synthetic*
 """
 enum EventName {
   PostCreated
@@ -427,10 +431,10 @@ type Post @entity {
   """
   experimental: JSON
 
-  """
-  The ID of the application that the current Post was created with.
-  """
-  appId: String
+#  """
+#  The ID of the application that the current Post was created with.
+#  """
+#  appId: String
 }
 
 """
@@ -611,7 +615,7 @@ type Space @entity {
   """
   The username of a Space (will be removed in further versions as it is deprecated. You should use the username field instead.) (IPFS content)
   """
-  handle: String
+  handle: String @index
 
   """
   The properties of a Space from its IPFS content which are not supported by the current squid's DB schema.
@@ -655,15 +659,15 @@ type Space @entity {
   """
   followersCount: Int! @index
 
-  """
-  The ID of application current Space has been created through.
-  """
-  appId: String
+#  """
+#  The ID of application current Space has been created through.
+#  """
+#  appId: String
 
   """
   The username of a Space (IPFS content)
   """
-  username: String
+  username: String @index
 }
 
 """

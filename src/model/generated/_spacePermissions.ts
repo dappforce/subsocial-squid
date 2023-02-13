@@ -1,6 +1,9 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 
+/**
+ * The permission settings of a Space
+ */
 export class SpacePermissions {
     private _manageRoles!: boolean | undefined | null
     private _representSpaceInternally!: boolean | undefined | null
