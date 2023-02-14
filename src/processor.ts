@@ -81,12 +81,12 @@ export const processor = new SubstrateBatchProcessor()
   .addEvent('AccountFollows.AccountUnfollowed', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
-.addEvent('Domains.DomainRegistered', {
+  .addEvent('Domains.DomainRegistered', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
-.addEvent('Domains.DomainMetaUpdated', {
+  .addEvent('Domains.DomainMetaUpdated', {
     data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
+  } as const);
 
 if (!envConfig.chainNode) {
   throw new Error('no CHAIN_NODE in env');
@@ -114,6 +114,8 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
   const currentBlocksListFull = [...ctx.blocks];
   let blocksBatchHandlerIndex = 1;
+
+  // TODO improve for work with different chains (subsocial || soonsocial)
   for (const blocksBatch of splitIntoBatches(
     currentBlocksListFull,
     ctx.blocks[ctx.blocks.length - 1].header.height > 11000000

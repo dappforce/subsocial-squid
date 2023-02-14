@@ -3,6 +3,7 @@ import {
   PostsForceCreatePostCall,
   PostsMovePostCall,
   PostsUpdatePostCall,
+  ProfilesCreateSpaceAsProfileCall,
   ProfilesSetProfileCall,
   ReactionsCreatePostReactionCall,
   ReactionsDeletePostReactionCall,
@@ -156,8 +157,11 @@ export function parsePostMoveCallArgs(
 export function parseSpaceCreateCallArgs(
   ctx: EventContext
 ): CreateSpaceCallParsedData {
-  let callInst: SpacesCreateSpaceCall | SpacesForceCreateSpaceCall | null =
-    null;
+  let callInst:
+    | SpacesCreateSpaceCall
+    | SpacesForceCreateSpaceCall
+    | ProfilesCreateSpaceAsProfileCall
+    | null = null;
   let response: CreateSpaceCallParsedData = {
     ipfsSrc: null,
     otherSrc: null,
@@ -185,6 +189,16 @@ export function parseSpaceCreateCallArgs(
           hidden
         },
         permissions: getSpacePermissionsDecorated(permissionsOpt)
+      };
+      break;
+    }
+    case 'Profiles.create_space_as_profile': {
+      callInst = new ProfilesCreateSpaceAsProfileCall(ctx, ctx.event.call!);
+      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      const { content } = callInst.asV1801;
+      response = {
+        ...response,
+        ...getContentSrcDecorated(content)
       };
       break;
     }

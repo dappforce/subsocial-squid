@@ -46,7 +46,7 @@ export async function spaceUpdated(
     space.summary = aboutSummary.summary;
     space.isShowMore = aboutSummary.isShowMore;
     space.image = spaceIpfsContent.image ?? null;
-    space.appId = spaceIpfsContent.appId ?? null;
+    // space.appId = spaceIpfsContent.appId ?? null;
 
     space.experimental =
       getExperimentalFieldsFromIPFSContent(spaceIpfsContent, 'space', ctx) ??

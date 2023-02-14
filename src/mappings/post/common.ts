@@ -191,7 +191,7 @@ export const ensurePost = async ({
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
     post.slug = null;
-    post.appId = postIpfsContent.appId ?? null;
+    // post.appId = postIpfsContent.appId ?? null;
 
     post.experimental =
       getExperimentalFieldsFromIPFSContent(postIpfsContent, 'post', ctx) ??

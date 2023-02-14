@@ -2,6 +2,9 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, M
 import {Account} from "./account.model"
 import {Post} from "./post.model"
 
+/**
+ * The junction table for Many-to-Many relationship between follower Account and following Post
+ */
 @Entity_()
 export class PostFollowers {
     constructor(props?: Partial<PostFollowers>) {

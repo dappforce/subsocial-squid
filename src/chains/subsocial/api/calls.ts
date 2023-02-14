@@ -11,7 +11,8 @@ import {
   ReactionsUpdatePostReactionCall,
   SpacesCreateSpaceCall,
   SpacesForceCreateSpaceCall,
-  SpacesUpdateSpaceCall
+  SpacesUpdateSpaceCall,
+  ProfilesCreateSpaceAsProfileCall
 } from '../types/calls';
 import { PostKind, ReactionKind } from '../../../model';
 
@@ -155,8 +156,11 @@ export function parsePostMoveCallArgs(
 export function parseSpaceCreateCallArgs(
   ctx: EventContext
 ): CreateSpaceCallParsedData {
-  let callInst: SpacesCreateSpaceCall | SpacesForceCreateSpaceCall | null =
-    null;
+  let callInst:
+    | SpacesCreateSpaceCall
+    | SpacesForceCreateSpaceCall
+    | ProfilesCreateSpaceAsProfileCall
+    | null = null;
   let response: CreateSpaceCallParsedData = {
     ipfsSrc: null,
     otherSrc: null,
@@ -184,6 +188,16 @@ export function parseSpaceCreateCallArgs(
           hidden
         },
         permissions: getSpacePermissionsDecorated(permissionsOpt)
+      };
+      break;
+    }
+    case 'Profiles.create_space_as_profile': {
+      callInst = new ProfilesCreateSpaceAsProfileCall(ctx, ctx.event.call!);
+      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      const { content } = callInst.asV19;
+      response = {
+        ...response,
+        ...getContentSrcDecorated(content)
       };
       break;
     }

@@ -3,6 +3,9 @@ import * as marshal from "./marshal"
 import {ReferencedTweetDetails} from "./_referencedTweetDetails"
 import {TweetAttachmentsDetails} from "./_tweetAttachmentsDetails"
 
+/**
+ * Detailed information about the Tweet attached to a Post
+ */
 export class TweetDetails {
     private _createdAt!: string | undefined | null
     private _username!: string | undefined | null

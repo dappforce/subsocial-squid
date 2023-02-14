@@ -35,7 +35,6 @@ export const supportedIpfsContent = new Map<'post' | 'space', Set<string>>([
       'canonical',
       'body',
       'slug',
-      'appId',
       'tags',
       'tweet'
     ])
@@ -47,7 +46,6 @@ export const supportedIpfsContent = new Map<'post' | 'space', Set<string>>([
       'email',
       'about',
       'image',
-      'appId',
       'tags',
       'links',
       'interests'
