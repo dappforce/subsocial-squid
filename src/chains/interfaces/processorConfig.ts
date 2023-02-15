@@ -5,6 +5,7 @@ export interface ProcessorConfig {
   prefix?: number | string;
   dataSource: Parameters<SubstrateProcessor<any>['setDataSource']>[0];
   blockRange?: Parameters<SubstrateProcessor<any>['setBlockRange']>[0];
+  elasticSearchMaxResultLimit: string;
   elasticSearchEndpoint: string;
   elasticSearchUsername: string;
   elasticSearchPassword: string;

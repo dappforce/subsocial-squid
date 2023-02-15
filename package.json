@@ -18,9 +18,10 @@
     "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.6.0",
     "@ipld/dag-cbor": "7.0.3",
     "@subsocial/api": "^0.7.10",
-    "@subsocial/elasticsearch": "^0.7.9",
+    "@subsocial/elasticsearch": "^0.7.13",
     "@subsocial/types": "^0.6.11",
     "@subsocial/utils": "^0.6.11",
     "@subsquid/archive-registry": "^2.0.2",
@@ -49,6 +50,7 @@
     "pg": "^8.7.3",
     "tslib": "^2.4.0",
     "twitter-api-v2": "^1.14.0",
+    "type-graphql": "^1.2.0-rc.1",
     "typeorm": "0.3.9",
     "uint8arrays": "^4.0.2",
     "yesql": "^5.0.0"
@@ -58,6 +60,7 @@
     "@subsquid/substrate-typegen": "^2.1.0",
     "@subsquid/typeorm-codegen": "^0.3.1",
     "@types/blake2b": "^2.1.0",
+    "@types/elasticsearch": "^5.0.40",
     "@types/md5": "^2.3.2",
     "@types/node": "^16.11.56",
     "@types/pg": "^8.6.5",
