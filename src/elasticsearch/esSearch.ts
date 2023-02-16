@@ -6,9 +6,17 @@ import {
 } from './searchUtils';
 import {
   ElasticQueryParamsWithSpaceId,
-  ElasticQueryParamsWithSpaceIdRaw
+  ElasticQueryParamsWithSpaceIdRaw,
+  ESErrorType,
+  ESQueryResponseContent,
+  OkOrError
 } from './types';
 import { ErrorResponseBase } from '@elastic/elasticsearch/lib/api/types';
+import { getChain } from '../chains';
+import { parseNumStr } from '@subsocial/utils';
+const chainConfig = getChain();
+const maxResultLimit: number =
+  parseNumStr(chainConfig.config.elasticSearchMaxResultLimit) || 20;
 
 export class ElasticSearchSearchManager {
   private static instance: ElasticSearchSearchManager;
@@ -31,15 +39,12 @@ export class ElasticSearchSearchManager {
     this.processorContext = processorCtx;
   }
 
-  async query(esParams: ElasticQueryParamsWithSpaceIdRaw): Promise<{
-    ok: boolean;
-    data?: { hits: Array<any>; totalRecords: number; maxScore: number };
-    err?: ErrorResponseBase;
-  }> {
+  async query(
+    esParams: ElasticQueryParamsWithSpaceIdRaw
+  ): Promise<OkOrError<ESQueryResponseContent>> {
     try {
-      const esQuery = buildElasticSearchQuery(
-        getElasticQueryParamsDecorated(esParams)
-      );
+      const paramsDecorated = getElasticQueryParamsDecorated(esParams);
+      const esQuery = buildElasticSearchQuery(paramsDecorated);
 
       const result = await this.esClient.client.search(esQuery);
 
@@ -52,17 +57,37 @@ export class ElasticSearchSearchManager {
 
         return {
           ok: true,
-          data: { hits, totalRecords: total.value, maxScore: max_score }
+          data: {
+            hits,
+            totalResults: total.value,
+            maxScore: max_score,
+            perPageLimit: paramsDecorated.limit ?? maxResultLimit
+          }
         };
       }
     } catch (err) {
+      console.dir(err, { depth: null });
+      let errorContent: ESErrorType = { reason: JSON.stringify(err) };
+      // @ts-ignore
+      if (err.meta && err.meta.body && err.meta.body.error) {
+        // @ts-ignore
+        const esErr: ErrorResponseBase = err.meta.body;
+        errorContent = {
+          status: esErr.status.toString(),
+          reason: esErr.error.reason as string
+        };
+      }
+
       // elasticLog.warn('Failed to query ElasticSearch:', err.message)
-      return { ok: false, err } as {
-        ok: boolean;
-        err: ErrorResponseBase;
+      return {
+        ok: false,
+        err: errorContent
       };
       // res.status(err.statusCode).send(err.meta)
     }
-    return { ok: false };
+    return {
+      ok: false,
+      err: { reason: 'Unknown error has been occurred' }
+    };
   }
 }

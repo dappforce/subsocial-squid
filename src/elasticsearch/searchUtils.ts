@@ -1,7 +1,6 @@
 import {
   ElasticQueryParamsWithSpaceId,
-  ElasticQueryParamsWithSpaceIdRaw,
-  OkOrError
+  ElasticQueryParamsWithSpaceIdRaw
 } from './types';
 import {
   ElasticIndexTypes,
@@ -107,7 +106,7 @@ export const buildElasticSearchQuery = (
     : {
         bool: {
           must: searchQueryPart,
-          filter: [tagFilterQueryPart]
+          filter: tagFilterQueryPart
         }
       };
 

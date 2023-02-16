@@ -34,8 +34,20 @@ type ErrorType =
       data: string;
     };
 
+export type ESErrorType = {
+  status?: string;
+  reason: string;
+};
+
 export type OkOrError<T = null> = {
   ok: boolean;
-  errors?: Record<string, ErrorType>;
+  err?: ESErrorType;
   data?: T;
+};
+
+export type ESQueryResponseContent = {
+  hits: Array<any>;
+  totalResults: number;
+  maxScore: number;
+  perPageLimit: number;
 };

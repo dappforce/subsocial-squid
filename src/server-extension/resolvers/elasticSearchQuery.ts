@@ -27,20 +27,26 @@ registerEnumType(ElasticSearchIndexType, {
 
 @ArgsType()
 class SearchQueryArgs {
-  @Field({ nullable: true })
+  @Field({ nullable: true, description: 'Query value' })
   q?: string;
 
-  @Field({ nullable: true })
+  @Field({
+    nullable: true,
+    description: 'Space ID what content will be searched in.'
+  })
   spaceId?: string;
 
-  @Field(() => [String], { nullable: true })
+  @Field(() => [String], {
+    nullable: true,
+    description: 'Tags for filtering. Can be array of string tags values.'
+  })
   tags?: string[];
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int, { nullable: true, description: 'Results per page limit.' })
   @Min(1)
   limit?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int, { nullable: true, description: 'Offset of results list.' })
   offset?: number;
 
   @Field(() => [ElasticSearchIndexType], {
@@ -57,21 +63,6 @@ export class ElasticSearchQueryResolver {
   async elasticSearchQuery(
     @Args() { q, spaceId, tags, limit, offset, indexes }: SearchQueryArgs
   ): Promise<ElasticSearchQueryResultEntity> {
-    console.log('tags >>>');
-    console.dir(tags, { depth: null });
-
-    console.log('indexes >>>');
-    console.dir(indexes, { depth: null });
-
-    console.log('limit >>>');
-    console.dir(limit, { depth: null });
-
-    console.log('offset >>>');
-    console.dir(offset, { depth: null });
-
-    console.log('spaceId >>>');
-    console.dir(spaceId, { depth: null });
-
     const searchResult = await ElasticSearchManager.search().query({
       q,
       spaceId,
@@ -84,15 +75,22 @@ export class ElasticSearchQueryResolver {
     if (!searchResult.ok || (searchResult.ok && !searchResult.data))
       return {
         hits: [],
-        total: { totalRecords: 0, maxScore: 0, offset: offset ?? 0 }
+        total: {
+          totalResults: 0,
+          maxScore: 0,
+          offset: offset ?? 0,
+          limit: limit ?? 0
+        },
+        err: searchResult.err
       };
 
     return {
       hits: searchResult.data!.hits,
       total: {
-        totalRecords: searchResult.data!.totalRecords,
-        maxScore: searchResult.data!.maxScore,
-        offset: offset ?? 0
+        totalResults: searchResult.data!.totalResults ?? 0,
+        maxScore: searchResult.data!.maxScore ?? 0,
+        offset: offset ?? 0,
+        limit: searchResult.data!.perPageLimit ?? 0
       }
     };
   }
