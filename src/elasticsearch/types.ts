@@ -51,3 +51,19 @@ export type ESQueryResponseContent = {
   maxScore: number;
   perPageLimit: number;
 };
+
+export type ESSearchResultHitItem = {
+  _id: string;
+  _index: string;
+  _score: string;
+  _source: {
+    about?: string;
+    body?: string;
+    handle?: string;
+    name?: string;
+    space?: string;
+    tags?: string[];
+    title?: string;
+  };
+  _type: string;
+};

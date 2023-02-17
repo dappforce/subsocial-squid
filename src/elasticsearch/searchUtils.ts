@@ -90,14 +90,21 @@ export const buildElasticSearchQuery = (
         }
       };
 
-  const tagFilterQueryPart = tags.map((tag) => ({
-    multi_match: {
-      query: tag,
-      fields: tagFields
-    }
-  }));
+  const tagFilterQueryPart = !isEmptyArray(tags)
+    ? {
+        terms: {
+          ...(() => {
+            const tagsScope: Record<string, Array<string>> = {};
+            for (const tagF of tagFields) {
+              tagsScope[tagF] = tags.map((t) => t.toLowerCase());
+            }
+            return tagsScope;
+          })()
+        }
+      }
+    : null;
 
-  const searchBody = isEmptyArray(tagFilterQueryPart)
+  const searchBody = !tagFilterQueryPart
     ? {
         bool: {
           must: [searchQueryPart, spaceIdQuery]

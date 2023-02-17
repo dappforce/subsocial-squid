@@ -9,6 +9,7 @@ import {
   ElasticQueryParamsWithSpaceIdRaw,
   ESErrorType,
   ESQueryResponseContent,
+  ESSearchResultHitItem,
   OkOrError
 } from './types';
 import { ErrorResponseBase } from '@elastic/elasticsearch/lib/api/types';
@@ -53,12 +54,40 @@ export class ElasticSearchSearchManager {
           body: {
             hits: { hits, total, max_score }
           }
+        }: {
+          body: {
+            hits: {
+              hits: ESSearchResultHitItem[];
+              total: { value: number };
+              max_score: number;
+            };
+          };
         } = result;
 
         return {
           ok: true,
           data: {
-            hits,
+            hits: hits.map(
+              ({
+                _id,
+                _index,
+                _score,
+                _source: { about, body, handle, name, space, tags, title }
+              }) => ({
+                _id,
+                _index,
+                _score,
+                _content: {
+                  username: handle,
+                  about,
+                  body,
+                  name,
+                  space,
+                  tags,
+                  title
+                }
+              })
+            ),
             totalResults: total.value,
             maxScore: max_score,
             perPageLimit: paramsDecorated.limit ?? maxResultLimit

@@ -60,7 +60,7 @@ class SearchQueryArgs {
 @Resolver()
 export class ElasticSearchQueryResolver {
   @Query(() => ElasticSearchQueryResultEntity)
-  async elasticSearchQuery(
+  async searchQuery(
     @Args() { q, spaceId, tags, limit, offset, indexes }: SearchQueryArgs
   ): Promise<ElasticSearchQueryResultEntity> {
     const searchResult = await ElasticSearchManager.search().query({

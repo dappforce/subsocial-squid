@@ -63,7 +63,7 @@ class HitItemSource {
   name?: string;
 
   @Field((type) => String, { nullable: true })
-  handle?: string;
+  username?: string;
 
   @Field((type) => String, { nullable: true })
   about?: string;
@@ -87,14 +87,11 @@ class HitItem {
   _index!: string;
 
   @Field((type) => String, { nullable: false })
-  _type!: string;
-
-  @Field((type) => String, { nullable: false })
   _id!: string;
 
   @Field((type) => Float, { nullable: false })
   _score!: number;
 
   @Field((type) => HitItemSource, { nullable: false })
-  _source!: HitItemSource;
+  _content!: HitItemSource;
 }
