@@ -58,7 +58,7 @@ export class ElasticSearchQueryResultEntity {
 }
 
 @ObjectType()
-class HitItemSource {
+class HitItemContent {
   @Field((type) => String, { nullable: true })
   name?: string;
 
@@ -72,7 +72,7 @@ class HitItemSource {
   tags?: string[];
 
   @Field((type) => String, { nullable: true })
-  space?: string;
+  spaceId?: string;
 
   @Field((type) => String, { nullable: true })
   title?: string;
@@ -92,6 +92,6 @@ class HitItem {
   @Field((type) => Float, { nullable: false })
   _score!: number;
 
-  @Field((type) => HitItemSource, { nullable: false })
-  _content!: HitItemSource;
+  @Field((type) => HitItemContent, { nullable: false })
+  _content!: HitItemContent;
 }

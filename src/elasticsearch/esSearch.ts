@@ -72,7 +72,7 @@ export class ElasticSearchSearchManager {
                 _id,
                 _index,
                 _score,
-                _source: { about, body, handle, name, space, tags, title }
+                _source: { about, body, handle, name, spaceId, tags, title }
               }) => ({
                 _id,
                 _index,
@@ -82,7 +82,7 @@ export class ElasticSearchSearchManager {
                   about,
                   body,
                   name,
-                  space,
+                  spaceId,
                   tags,
                   title
                 }

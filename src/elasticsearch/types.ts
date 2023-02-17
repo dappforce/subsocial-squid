@@ -61,7 +61,7 @@ export type ESSearchResultHitItem = {
     body?: string;
     handle?: string;
     name?: string;
-    space?: string;
+    spaceId?: string;
     tags?: string[];
     title?: string;
   };

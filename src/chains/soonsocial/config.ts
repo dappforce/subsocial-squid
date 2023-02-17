@@ -1,6 +1,6 @@
 import { ProcessorConfig } from '../interfaces/processorConfig';
 import * as dotenv from 'dotenv';
-dotenv.config({ path: `${__dirname}/../../../.env.local` });
+dotenv.config({ path: `${__dirname}/../../../.local.env` });
 
 export const config: ProcessorConfig = {
   chainName: 'subsocial',

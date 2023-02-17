@@ -124,6 +124,7 @@ export const buildElasticSearchQuery = (
     }
   };
 
+  // TODO Add logs
   // log.debug('Final ElasticSearch query:', searchReq);
   console.log('searchReq >>>');
   console.dir(searchReq, { depth: null });
@@ -140,7 +141,7 @@ export function getElasticQueryParamsDecorated(
   return {
     indexes: toArray(indexes),
     spaceId,
-    q: q ? q.toString() : undefined,
+    q: q ? q.toString().toLowerCase() : undefined,
     tags: tags ? toArray(tags) : undefined,
     offset: offset ?? 0,
     limit: limit ?? maxResultLimit

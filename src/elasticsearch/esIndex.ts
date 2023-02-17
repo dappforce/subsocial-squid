@@ -9,12 +9,16 @@ import { Ctx } from '../processor';
 import { Post, Space } from '../model';
 import { Entity } from '@subsquid/typeorm-store/lib/store';
 import { splitIntoBatches } from '../common/utils';
+import SpacesMapping from './mappings/spaces.json';
+import PostsMapping from './mappings/posts.json';
+import ProfilesMapping from './mappings/profiles.json';
 
 export class ElasticSearchIndexerManager {
   private static instance: ElasticSearchIndexerManager;
   private processorContext: Ctx | undefined;
+  private indexesEnsured: boolean = false;
 
-  private indexingQueue: Map<
+  public indexingQueue: Map<
     ESEntityTypeName,
     Map<string, ElasticPostDoc | ElasticSpaceDoc>
   > = new Map([
@@ -37,6 +41,18 @@ export class ElasticSearchIndexerManager {
 
   constructor(private esClient: SubsocialElasticApi, processorCtx?: Ctx) {
     this.processorContext = processorCtx;
+  }
+
+  /**
+   * Ensure all required indexes for further entities indexing
+   */
+  async maybeCreateIndices() {
+    if (this.indexesEnsured) return;
+    // TODO Should be refactored :: Subsocial SDK must expose const with indexes names for using here
+    await this.createIndexIfNotFound('subsocial_spaces', SpacesMapping);
+    await this.createIndexIfNotFound('subsocial_posts', PostsMapping);
+    await this.createIndexIfNotFound('subsocial_profiles', ProfilesMapping);
+    this.indexesEnsured = true;
   }
 
   /**
@@ -67,6 +83,8 @@ export class ElasticSearchIndexerManager {
    */
   async processIndexingQueue() {
     if (process.env.ELASTIC_SEARCH_MODE !== 'develop') {
+      await this.maybeCreateIndices();
+
       for (const [entityType, contentScope] of this.indexingQueue.entries()) {
         switch (entityType) {
           case 'post':
@@ -98,7 +116,7 @@ export class ElasticSearchIndexerManager {
   private getContentForIndex<T extends Entity>(entity: T): ESContentData<T> {
     if (entity instanceof Post) {
       return {
-        ...(entity.space ? { space: entity.space.id } : {}),
+        ...(entity.space ? { spaceId: entity.space.id } : {}),
         ...(entity.title ? { title: entity.title } : {}),
         ...(entity.body ? { body: entity.body } : {}),
         ...(entity.tagsOriginal && entity.tagsOriginal.length > 0
@@ -145,9 +163,37 @@ export class ElasticSearchIndexerManager {
     }) => Promise<unknown>
   ) {
     for (const batch of splitIntoBatches([...list.entries()], 100)) {
-      const promises = batch.map(([id, content]) => handler({ id, content }));
+      const promises = batch.map(([id, content]) => {
+        console.log('content - ', content);
+        return handler({ id, content });
+      });
 
       const indexingRes = await Promise.allSettled(promises);
+    }
+  }
+
+  private async createIndexIfNotFound(indexName: string, mapping: any) {
+    const result = await this.esClient.client.indices.exists(
+      { index: indexName },
+      { ignore: [404] }
+    );
+
+    if (result.statusCode === 404) {
+      await this.esClient.client.indices.create({
+        index: indexName,
+        body: mapping
+      });
+      if (this.processorContext) {
+        this.processorContext.log
+          .child('ElasticSearch')
+          .info(`${indexName} index created`);
+      } else console.log(`${indexName} index created`);
+    } else {
+      if (this.processorContext) {
+        this.processorContext.log
+          .child('ElasticSearch')
+          .info(`${indexName} index already exists`);
+      } else console.log(`${indexName} index already exists`);
     }
   }
 
