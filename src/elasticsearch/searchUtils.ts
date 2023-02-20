@@ -112,7 +112,7 @@ export const buildElasticSearchQuery = (
       }
     : {
         bool: {
-          must: searchQueryPart,
+          must: [searchQueryPart, spaceIdQuery],
           filter: tagFilterQueryPart
         }
       };
