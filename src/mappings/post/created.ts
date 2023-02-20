@@ -1,22 +1,19 @@
 import { getSyntheticEventName } from '../../common/utils';
-import { Post, Activity, Account, EventName, Space } from '../../model';
+import { Account, Activity, EventName, Post } from '../../model';
 import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
 import { postFollowed } from '../postCommentFollows';
 import { addPostToFeeds } from '../newsFeed';
 import {
-  EntityProvideFailWarning,
-  CommonCriticalError
+  CommonCriticalError,
+  EntityProvideFailWarning
 } from '../../common/errors';
-import { SpaceCountersAction, PostCreatedData } from '../../common/types';
+import { PostCreatedData, SpaceCountersAction } from '../../common/types';
 import { ensurePost } from './common';
-import {
-  addNotificationForAccount,
-  addNotificationForAccountFollowers
-} from '../notification';
 import { Ctx } from '../../processor';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { NotificationsFeedManager } from '../notification/notificationsManager';
 
 export async function postCreated(
   ctx: Ctx,
@@ -69,32 +66,50 @@ export async function postCreated(
 
   if (post.sharedPost) return;
 
-  if (!post.isComment) {
-    await addNotificationForAccount(post.ownedByAccount, activity, ctx);
-  } else if (post.isComment && post.rootPost && !post.parentPost) {
-    await addNotificationForAccount(post.ownedByAccount, activity, ctx);
-    await addNotificationForAccount(
-      post.rootPost.ownedByAccount,
-      activity,
-      ctx
-    );
-    // TODO do we need send notification for comment creator as well?
+  let eventName: EventName = EventName.PostCreated;
+
+  if (post.isComment && !post.parentPost) {
+    eventName = EventName.CommentCreated;
   } else if (post.isComment && post.parentPost && post.rootPost) {
-    /**
-     * Notifications should not be added for owner followers if post is reply
-     */
-    await addNotificationForAccount(post.ownedByAccount, activity, ctx);
-    await addNotificationForAccount(
-      post.rootPost.ownedByAccount,
-      activity,
-      ctx
-    );
-    await addNotificationForAccount(
-      post.parentPost.ownedByAccount,
-      activity,
-      ctx
-    );
+    eventName = EventName.CommentReplyCreated;
   }
+
+  await NotificationsFeedManager.getInstance().handleNotifications(
+    EventName.PostCreated,
+    {
+      account: post.ownedByAccount,
+      post,
+      activity,
+      ctx
+    }
+  );
+
+  // if (!post.isComment) {
+  //   await addNotificationForAccount(post.ownedByAccount, activity, ctx);
+  // } else if (post.isComment && post.rootPost && !post.parentPost) {
+  //   await addNotificationForAccount(post.ownedByAccount, activity, ctx);
+  //   await addNotificationForAccount(
+  //     post.rootPost.ownedByAccount,
+  //     activity,
+  //     ctx
+  //   );
+  //   // TODO do we need send notification for comment creator as well?
+  // } else if (post.isComment && post.parentPost && post.rootPost) {
+  //   /**
+  //    * Notifications should not be added for owner followers if post is reply
+  //    */
+  //   await addNotificationForAccount(post.ownedByAccount, activity, ctx);
+  //   await addNotificationForAccount(
+  //     post.rootPost.ownedByAccount,
+  //     activity,
+  //     ctx
+  //   );
+  //   await addNotificationForAccount(
+  //     post.parentPost.ownedByAccount,
+  //     activity,
+  //     ctx
+  //   );
+  // }
 }
 
 async function handlePostShare(
@@ -124,33 +139,54 @@ async function handlePostShare(
     throw new CommonCriticalError();
   }
 
-  if (
-    !originPost.isComment ||
-    (originPost.isComment && !originPost.parentPost)
-  ) {
-    await addNotificationForAccountFollowers(
-      originPost.ownedByAccount,
-      activity,
-      ctx
-    );
-    await addNotificationForAccount(originPost.ownedByAccount, activity, ctx);
+  let eventName: EventName = EventName.PostShared;
+
+  if (originPost.isComment && !originPost.parentPost) {
+    eventName = EventName.CommentShared;
   } else if (
     originPost.isComment &&
     originPost.parentPost &&
     originPost.rootPost
   ) {
-    /**
-     * Notifications should not be added for owner followers if post is reply
-     */
-    await addNotificationForAccount(
-      originPost.rootPost.ownedByAccount,
-      activity,
-      ctx
-    );
-    await addNotificationForAccount(
-      originPost.parentPost.ownedByAccount,
-      activity,
-      ctx
-    );
+    eventName = EventName.CommentReplyShared;
   }
+
+  await NotificationsFeedManager.getInstance().handleNotifications(eventName, {
+    account: originPost.ownedByAccount,
+    post: originPost,
+    activity,
+    ctx
+  });
+
+  // if (
+  //   !originPost.isComment ||
+  //   (originPost.isComment && !originPost.parentPost)
+  // ) {
+  //
+  //
+  //   await addNotificationForAccountFollowers(
+  //     originPost.ownedByAccount,
+  //     activity,
+  //     ctx
+  //   );
+  //   await addNotificationForAccount(originPost.ownedByAccount, activity, ctx);
+  // } else if (
+  //   originPost.isComment &&
+  //   originPost.parentPost &&
+  //   originPost.rootPost
+  // ) {
+  //   /**
+  //    * Notifications should not be added for owner followers if post is reply
+  //    */
+  //   await addNotificationForAccount(
+  //     originPost.rootPost.ownedByAccount,
+  //     activity,
+  //     ctx
+  //   );
+  //   await addNotificationForAccount(
+  //     originPost.parentPost.ownedByAccount,
+  //     activity,
+  //     ctx
+  //   );
+  // }
 }

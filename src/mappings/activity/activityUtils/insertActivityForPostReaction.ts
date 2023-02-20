@@ -35,6 +35,7 @@ export async function insertActivityForPostReaction(
       : null; // Owner of either root post or parent comment
 
   activity.aggregated = activity.account.id !== ownerId;
+  // TODO Must be reviewed and probably fixed
   activity.aggCount = BigInt(ensurePositiveOrZeroValue(aggCountNum));
 
   await updateAggregatedStatus({
