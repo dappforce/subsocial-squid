@@ -13,7 +13,7 @@ import { PostCreatedData, SpaceCountersAction } from '../../common/types';
 import { ensurePost } from './common';
 import { Ctx } from '../../processor';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
-import { NotificationsFeedManager } from '../notification/notificationsManager';
+import { NotificationsFeedManager } from '../notification/notifiactionsManager';
 
 export async function postCreated(
   ctx: Ctx,

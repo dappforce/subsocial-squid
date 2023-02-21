@@ -26,7 +26,7 @@ import { handleDomains } from './mappings/domain';
 import { splitIntoBatches } from './common/utils';
 import { ElasticSearchIndexerManager } from './elasticsearch';
 import { getChain } from './chains';
-import { NotificationsFeedManager } from './mappings/notification/notificationsManager';
+import { NotificationsFeedManager } from './mappings/notification/notifiactionsManager';
 
 const chainConfig = getChain();
 

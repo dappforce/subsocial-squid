@@ -5,11 +5,13 @@ import {
   Notification,
   Space,
   AccountFollowers,
-  EventName
-} from '../../model';
-import { getOrCreateAccount } from '../account';
-import { getNotificationEntityId } from '../../common/utils';
-import { Ctx } from '../../processor';
+  EventName,
+  Reaction
+} from '../../../model';
+import { getOrCreateAccount } from '../../account';
+import { getNotificationEntityId } from '../../../common/utils';
+import { Ctx } from '../../../processor';
+import { FindManyOptions, Entity } from '@subsquid/typeorm-store/src/store';
 
 export const addNotificationForAccount = async (
   account: Account | string,
@@ -32,17 +34,12 @@ export const addNotificationForAccount = async (
 };
 
 export const addNotificationForAccountFollowers = async (
-  account: Account | string,
+  accountId: string,
   activity: Activity,
   ctx: Ctx
 ): Promise<void> => {
-  const accountInst =
-    account instanceof Account
-      ? account
-      : await getOrCreateAccount(account, ctx);
-
   const accountFollowersRelations = await ctx.store.find(AccountFollowers, {
-    where: { followingAccount: { id: accountInst.id } },
+    where: { followingAccount: { id: accountId } },
     relations: { followerAccount: true }
   });
 
@@ -74,7 +71,7 @@ export const addNotificationForAccountFollowers = async (
  */
 export const deleteAllNotificationsAboutSpace = async (
   accountId: string,
-  followingSpace: Space,
+  followingSpaceId: string,
   ctx: Ctx
 ): Promise<void> => {
   const relatedNotifications = await ctx.store.find(Notification, {
@@ -82,7 +79,7 @@ export const deleteAllNotificationsAboutSpace = async (
       {
         account: { id: accountId },
         activity: {
-          space: { id: followingSpace.id }
+          space: { id: followingSpaceId }
         }
       }
     ]
@@ -92,25 +89,40 @@ export const deleteAllNotificationsAboutSpace = async (
 };
 
 export const deleteAllNotificationsAboutAccount = async (
+  accountId: string,
+  followingAccountId: string,
+  ctx: Ctx,
+  customQuery?: FindManyOptions<Notification>
+): Promise<void> => {
+  const findQuery: FindManyOptions<Notification> = customQuery || {
+    where: {
+      account: { id: accountId },
+      activity: {
+        account: { id: followingAccountId }
+      }
+    }
+  };
+  const relatedNotifications = await ctx.store.find(Notification, findQuery);
+
+  await ctx.store.remove(relatedNotifications);
+};
+
+export const deleteAllNotificationsAboutReaction = async (
   account: Account | string,
-  followingAccount: Account | string,
+  reaction: Reaction,
   ctx: Ctx
 ): Promise<void> => {
   const accountInst =
     account instanceof Account
       ? account
       : await getOrCreateAccount(account, ctx);
-  const followingAccountInst =
-    followingAccount instanceof Account
-      ? followingAccount
-      : await getOrCreateAccount(followingAccount, ctx);
 
   const relatedNotifications = await ctx.store.find(Notification, {
     where: [
       {
         account: { id: accountInst.id },
         activity: {
-          account: { id: followingAccountInst.id }
+          reaction: { id: reaction.id }
         }
       }
     ]
@@ -119,15 +131,18 @@ export const deleteAllNotificationsAboutAccount = async (
   await ctx.store.remove(relatedNotifications);
 };
 
-export function InvalidNotificationHandlerParamsForTargetWarn(
-  eventName: EventName,
-  target: string,
-  ctx: Ctx
-) {
-  const msg = `Notifications handlers on event "${eventName}" for target "${target}" receiver invalid parameters.`;
-  if (ctx) {
-    ctx.log.warn(msg);
-  } else {
-    console.log(msg);
+export const notificationsHelpers = {
+  add: {
+    one: {
+      forAccount: addNotificationForAccount,
+      forAccountFollowers: addNotificationForAccountFollowers
+    }
+  },
+  remove: {
+    all: {
+      aboutSpace: deleteAllNotificationsAboutSpace,
+      aboutAccount: deleteAllNotificationsAboutAccount,
+      aboutReaction: deleteAllNotificationsAboutReaction
+    }
   }
-}
+};
