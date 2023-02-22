@@ -7,6 +7,7 @@ export { updatePostsCountersInSpace } from './common';
 import { spaceCreated } from './created';
 import { spaceUpdated } from './updated';
 import { spaceOwnershipTransferAccepted } from './ownershipTransferAccepted';
+import { spaceOwnershipTransferCreated } from './ownershipTransferCreated';
 
 export async function handleSpaces(
   ctx: Ctx,
@@ -23,6 +24,11 @@ export async function handleSpaces(
       .getSectionByEventName(EventName.SpaceOwnershipTransferAccepted)
       .values()
   ];
+  const spaceOwnershipTransferCreatedEvents = [
+    ...parsedEvents
+      .getSectionByEventName(EventName.SpaceOwnershipTransferCreated)
+      .values()
+  ];
 
   for (const eventData of getOrderedListByBlockNumber(spaceCreatedEvents)) {
     await spaceCreated(ctx, eventData);
@@ -35,5 +41,10 @@ export async function handleSpaces(
     spaceOwnershipTransferAcceptedEvents
   )) {
     await spaceOwnershipTransferAccepted(ctx, eventData);
+  }
+  for (const eventData of getOrderedListByBlockNumber(
+    spaceOwnershipTransferCreatedEvents
+  )) {
+    await spaceOwnershipTransferCreated(ctx, eventData);
   }
 }

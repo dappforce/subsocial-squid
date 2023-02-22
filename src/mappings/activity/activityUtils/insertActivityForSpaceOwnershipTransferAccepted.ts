@@ -9,7 +9,7 @@ type InsertActivityForSpaceOwnershipTransferParams = {
   ctx: Ctx;
 };
 
-export async function insertActivityForSpaceOwnershipTransfer(
+export async function insertActivityForSpaceOwnershipTransferAccepted(
   params: InsertActivityForSpaceOwnershipTransferParams
 ): Promise<Activity> {
   const { activity, oldOwner, space } = params;

@@ -22,6 +22,8 @@ export type NotificationHandlerInputParams = {
   reaction?: Reaction;
   space?: Space | null;
   spacePrev?: Space | null;
+  oldOwner?: Account | string;
+  newOwner?: Account | string;
   followingAccount?: Account | string;
   followingSpace?: Space;
   activity: Activity;
@@ -75,6 +77,10 @@ type NotificationsParamsOnSpaceFollowed = NotificationsParamsBase & {
 type NotificationsParamsOnSpaceOwnershipAccepted = NotificationsParamsBase & {
   space: Space;
   oldOwner: Account;
+};
+type NotificationsParamsOnSpaceOwnershipCreated = NotificationsParamsBase & {
+  space: Space;
+  newOwner: Account;
 };
 type NotificationsParamsOnAccountFollowed = NotificationsParamsBase & {
   followingAccount: Account;
@@ -142,6 +148,8 @@ export type NotificationsHandlerBinderParams<E extends EventName> =
     ? NotificationsParamsOnSpaceFollowed
     : E extends EventName.SpaceOwnershipTransferAccepted
     ? NotificationsParamsOnSpaceOwnershipAccepted
+    : E extends EventName.SpaceOwnershipTransferCreated
+    ? NotificationsParamsOnSpaceOwnershipCreated
     : E extends EventName.AccountFollowed
     ? NotificationsParamsOnAccountFollowed
     : E extends EventName.AccountUnfollowed

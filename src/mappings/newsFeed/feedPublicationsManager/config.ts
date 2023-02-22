@@ -90,5 +90,6 @@ export const EVENT_FEED_PUBLICATION_RELATIONS: Partial<
   SpaceCreated: {},
   SpaceFollowed: {},
   SpaceOwnershipTransferAccepted: {},
+  SpaceOwnershipTransferCreated: {},
   AccountFollowed: {}
 };

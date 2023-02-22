@@ -76,6 +76,9 @@ export const processor = new SubstrateBatchProcessor()
   .addEvent('SpaceOwnership.SpaceOwnershipTransferAccepted', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
+  .addEvent('SpaceOwnership.SpaceOwnershipTransferCreated', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
   .addEvent('AccountFollows.AccountFollowed', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)

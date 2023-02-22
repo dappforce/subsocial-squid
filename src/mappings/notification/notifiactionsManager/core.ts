@@ -97,16 +97,13 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
   async addNotificationForAccount(
     params: NotificationHandlerParamsWithTarget
   ): Promise<void> {
-    console.log(
-      `addNotificationForAccount >>> ${params.target} | ${params.activity.event}`
-    );
-
     const {
       target,
       account,
       post,
       space,
       activity,
+      newOwner,
       followingAccount,
       followingSpace,
       ctx
@@ -133,6 +130,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = post.ownedByAccount;
+        break;
       }
       case 'SharedPostSpaceOwner':
       case 'OriginPostSpaceOwner': {
@@ -141,6 +139,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = post.space.ownedByAccount;
+        break;
       }
       case 'RootPostOwner': {
         if (!post || !post.rootPost || !post.rootPost.ownedByAccount) {
@@ -148,6 +147,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = post.rootPost.ownedByAccount;
+        break;
       }
       case 'ParentPostOwner': {
         if (!post || !post.parentPost || !post.parentPost.ownedByAccount) {
@@ -155,6 +155,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = post.parentPost.ownedByAccount;
+        break;
       }
       case 'RootPostSpaceOwner': {
         if (
@@ -164,9 +165,11 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           !post.rootPost.space.ownedByAccount
         ) {
           paramsWarning();
+          console.dir(post, { depth: null });
           break;
         }
         targetAccount = post.rootPost.space.ownedByAccount;
+        break;
       }
       case 'SpaceOwnerAccount': {
         if (!space || !space.ownedByAccount) {
@@ -174,6 +177,15 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = space.ownedByAccount;
+        break;
+      }
+      case 'SpaceNewOwnerAccount': {
+        if (!newOwner) {
+          paramsWarning();
+          break;
+        }
+        targetAccount = newOwner;
+        break;
       }
       case 'FollowingAccount': {
         if (!followingAccount) {
@@ -181,6 +193,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = followingAccount;
+        break;
       }
       default:
     }
@@ -193,10 +206,6 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
   async addNotificationForAccountFollowers(
     params: NotificationHandlerParamsWithTarget
   ): Promise<void> {
-    console.log(
-      `addNotificationForAccountFollowers >>> ${params.target} | ${params.activity.event}`
-    );
-
     const { target, space, activity, ctx } = params;
 
     let targetAccount: Account | string | null = null;
@@ -216,6 +225,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = space.ownedByAccount;
+        break;
       }
       default:
     }
@@ -232,10 +242,6 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
   async deleteAllNotificationsAboutReaction(
     params: NotificationHandlerParamsWithTarget
   ): Promise<void> {
-    console.log(
-      `deleteAllNotificationsAboutReaction >>> ${params.target} | ${params.activity.event}`
-    );
-
     const { target, post, activity, reaction, ctx } = params;
 
     let targetAccount: Account | string | null = null;
@@ -255,6 +261,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = post.ownedByAccount;
+        break;
       }
       default:
     }
@@ -271,10 +278,6 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
   async deleteAllNotificationsAboutSpace(
     params: NotificationHandlerParamsWithTarget
   ): Promise<void> {
-    console.log(
-      `deleteAllNotificationsAboutSpace >>> ${params.target} | ${params.activity.event}`
-    );
-
     const { target, activity, account, space, ctx } = params;
 
     let targetAccount: Account | string | null = null;
@@ -294,6 +297,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
           break;
         }
         targetAccount = account;
+        break;
       }
       default:
     }
@@ -310,10 +314,6 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
   async deleteAllNotificationsAboutAccount(
     params: NotificationHandlerParamsWithTarget
   ): Promise<void> {
-    console.log(
-      `deleteAllNotificationsAboutAccount >>> ${params.target} | ${params.activity.event}`
-    );
-
     const { target, activity, account, followingAccount, ctx } = params;
 
     let targetAccount: Account | string | null = null;
@@ -403,6 +403,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
             ]
           };
         }
+        break;
       }
       default:
     }

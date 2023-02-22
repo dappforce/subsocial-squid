@@ -34,7 +34,12 @@ async function getPostWithRelations({
       },
       relations: {
         ...(rootOrParentPost
-          ? { ownedByAccount: true }
+          ? {
+              ownedByAccount: true,
+              space: {
+                ownedByAccount: true
+              }
+            }
           : {
               ownedByAccount: true,
               rootPost: {

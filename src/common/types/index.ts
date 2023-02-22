@@ -289,6 +289,20 @@ export type SpaceUnfollowedEventParsedData = SpaceFollowedEventParsedData;
 export type SpaceUnfollowedData = SpaceFollowedData;
 
 /**
+ * :::::: SPACE OWNERSHIP CREATED ::::::
+ */
+
+export interface SpaceOwnershipTransferCreatedEventParsedData {
+  currentOwnerId: string;
+  newOwnerId: string;
+  spaceId: string;
+}
+
+export type SpaceOwnershipTransferCreatedData = EventData &
+  SpaceOwnershipTransferCreatedEventParsedData;
+
+
+/**
  * :::::: SPACE OWNERSHIP ACCEPTED ::::::
  */
 
@@ -355,6 +369,7 @@ export type ParsedEventsData =
   | SpaceCreatedData
   | SpaceUpdatedData
   | SpaceOwnershipTransferAcceptedData
+  | SpaceOwnershipTransferCreatedData
   | PostReactionCreatedData
   | PostReactionUpdatedData
   | PostReactionDeletedData

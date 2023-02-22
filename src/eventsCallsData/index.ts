@@ -11,6 +11,7 @@ import {
   SpaceCreatedData,
   SpaceUpdatedData,
   SpaceOwnershipTransferAcceptedData,
+  SpaceOwnershipTransferCreatedData,
   PostMovedData,
   AccountFollowedData,
   AccountUnfollowedData,
@@ -46,6 +47,8 @@ type EventDataType<T> = T extends EventName.SpaceCreated
   ? SpaceUnfollowedData
   : T extends EventName.SpaceOwnershipTransferAccepted
   ? SpaceOwnershipTransferAcceptedData
+  : T extends EventName.SpaceOwnershipTransferCreated
+  ? SpaceOwnershipTransferCreatedData
   : T extends EventName.ProfileUpdated
   ? ProfileUpdatedData
   : T extends EventName.PostReactionCreated
@@ -284,6 +287,21 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
           totalEventsNumber++;
           break;
         }
+        case 'SpaceOwnership.SpaceOwnershipTransferCreated': {
+          const eventData =
+            api.events.parseSpaceOwnershipTransferCreatedEventArgs(
+              eventHandlerContext
+            );
+
+          parsedData.set(EventName.SpaceOwnershipTransferCreated, {
+            ...getEventMetadata(block, item.event as SubstrateEvent),
+            ...eventData
+          });
+
+          totalEventsNumber++;
+          break;
+        }
+
         case 'SpaceOwnership.SpaceOwnershipTransferAccepted': {
           const eventData =
             api.events.parseSpaceOwnershipTransferAcceptedEventArgs(

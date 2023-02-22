@@ -1,6 +1,4 @@
-import {
-  NotificationsBehaviour,
-} from '../types';
+import { NotificationsBehaviour } from '../types';
 import { EventName } from '../../../model';
 
 /**
@@ -107,6 +105,9 @@ const onSpaceUnfollowed: NotificationsBehaviour = {
 const onSpaceOwnershipTransferAccepted: NotificationsBehaviour = {
   addNotificationForAccountFollowers: ['SpaceOwnerAccountFollowers']
 };
+const onSpaceOwnershipTransferCreated: NotificationsBehaviour = {
+  addNotificationForAccount: ['SpaceNewOwnerAccount']
+};
 
 /**
  * ACCOUNT
@@ -145,6 +146,7 @@ export const EVENT_NOTIFICATION_RELATIONS: Partial<
   SpaceFollowed: onSpaceFollowed,
   SpaceUnfollowed: onSpaceUnfollowed,
   SpaceOwnershipTransferAccepted: onSpaceOwnershipTransferAccepted,
+  SpaceOwnershipTransferCreated: onSpaceOwnershipTransferCreated,
 
   AccountFollowed: onAccountFollowed,
   AccountUnfollowed: onAccountUnfollowed,

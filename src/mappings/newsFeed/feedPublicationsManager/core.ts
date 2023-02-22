@@ -85,20 +85,7 @@ export class FeedPublicationsManager extends FeedHandlersManager {
   async addFeedPublicationForAccount(
     params: FeedHandlerParamsWithTarget
   ): Promise<void> {
-    console.log(
-      `addFeedPublicationForAccount >>> ${params.target} | ${params.activity.event}`
-    );
-
-    const {
-      target,
-      account,
-      post,
-      space,
-      activity,
-      followingAccount,
-      followingSpace,
-      ctx
-    } = params;
+    const { target, post, activity, ctx } = params;
 
     const paramsWarning = () => {
       InvalidFeedHandlerParamsForTargetWarn(activity.event, target, ctx);
@@ -144,14 +131,11 @@ export class FeedPublicationsManager extends FeedHandlersManager {
   async deleteFeedPublicationFromAccount(
     params: FeedHandlerParamsWithTarget
   ): Promise<void> {
-    console.log(
-      `deleteFeedPublicationFromAccount >>> ${params.target} | ${params.activity.event}`
-    );
-
     const {
       target,
       post,
       activity,
+      account,
       followerAccount,
       followingAccount,
       space,
@@ -198,25 +182,25 @@ export class FeedPublicationsManager extends FeedHandlersManager {
         break;
       }
       case 'FollowerAccount': {
-        if (!followerAccount || !followingAccount) {
+        if (!account || !followingAccount) {
           paramsWarning();
           break;
         }
         await feedPublicationHelpers.delete.all.accountPosts.fromAccountFollower(
-          getEntityIdFromEntityOrString(followerAccount),
+          getEntityIdFromEntityOrString(account),
           getEntityIdFromEntityOrString(followingAccount),
           ctx
         );
         break;
       }
       case 'SpaceFollowerAccount': {
-        if (!post || !post.space || !followerAccount) {
+        if (!post || !post.space || !account) {
           paramsWarning();
           break;
         }
         await feedPublicationHelpers.delete.all.spacePosts.fromSpaceFollower(
           getEntityIdFromEntityOrString(post.space),
-          getEntityIdFromEntityOrString(followerAccount),
+          getEntityIdFromEntityOrString(account),
           ctx
         );
         break;
