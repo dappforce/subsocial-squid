@@ -13,6 +13,7 @@ import { InvalidNotificationHandlerParamsForTargetWarn } from '../common';
 import { notificationsHelpers } from './helpers';
 import { In, Not } from 'typeorm';
 import { FindManyOptions } from '@subsquid/typeorm-store/src/store';
+import { getEntityIdFromEntityOrString } from '../../../common/utils';
 
 export abstract class NotificationsHandlersManager {
   abstract addNotificationForAccount(
@@ -193,16 +194,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
       `addNotificationForAccountFollowers >>> ${params.target} | ${params.activity.event}`
     );
 
-    const {
-      target,
-      account,
-      post,
-      space,
-      activity,
-      followingAccount,
-      followingSpace,
-      ctx
-    } = params;
+    const { target, space, activity, ctx } = params;
 
     let targetAccount: Account | string | null = null;
 
@@ -228,7 +220,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
     if (!targetAccount) return;
 
     await notificationsHelpers.add.one.forAccountFollowers(
-      typeof targetAccount === 'string' ? targetAccount : targetAccount.id,
+      getEntityIdFromEntityOrString(targetAccount),
       activity,
       ctx
     );
@@ -306,7 +298,7 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
     if (!targetAccount || !space) return;
 
     await notificationsHelpers.remove.all.aboutSpace(
-      typeof targetAccount === 'string' ? targetAccount : targetAccount.id,
+      getEntityIdFromEntityOrString(targetAccount),
       space.id,
       ctx
     );
@@ -340,11 +332,9 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
         }
         targetAccount = followingAccount;
         if (activity.event === EventName.AccountUnfollowed) {
-          const accId = typeof account === 'string' ? account : account.id;
+          const accId = getEntityIdFromEntityOrString(account);
           const followingAccId =
-            typeof followingAccount === 'string'
-              ? followingAccount
-              : followingAccount.id;
+            getEntityIdFromEntityOrString(followingAccount);
 
           customQueryParams = {
             where: [
@@ -417,8 +407,8 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
     if (!targetAccount) return;
 
     await notificationsHelpers.remove.all.aboutAccount(
-      typeof account === 'string' ? account : account.id,
-      typeof targetAccount === 'string' ? targetAccount : targetAccount.id,
+      getEntityIdFromEntityOrString(account),
+      getEntityIdFromEntityOrString(targetAccount),
       ctx,
       customQueryParams
     );

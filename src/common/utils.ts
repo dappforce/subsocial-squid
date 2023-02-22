@@ -18,6 +18,7 @@ import { summarizeMd } from '@subsocial/utils';
 import { NamedLink } from '@subsocial/api/types/ipfs';
 import { IpfsContent, supportedIpfsContent } from '../storage/types';
 import { Ctx } from '../processor';
+import { Entity } from '@subsquid/typeorm-store/lib/store';
 
 let subsocialSs58CodecInst: ss58.Codec | null = null;
 
@@ -303,4 +304,10 @@ export function getExperimentalFieldsFromIPFSContent<
   if (Object.getOwnPropertyNames(experimentalFields).length > 0)
     return experimentalFields;
   return null;
+}
+
+export function getEntityIdFromEntityOrString(entityOrString: Entity | string): string {
+  return typeof entityOrString === 'string'
+    ? entityOrString
+    : entityOrString.id;
 }

@@ -24,6 +24,9 @@ export {
   IpfsPostContentSummarized,
   PostTweetDetailsIPFS
 } from './post';
+
+export { NotificationFeedTarget } from './notificationsFeed';
+
 import { IpfsPostContentSummarized } from './post';
 
 export type DbEntity =

@@ -1,7 +1,5 @@
 import {
-  NotificationAction,
   NotificationsBehaviour,
-  NotificationTarget
 } from '../types';
 import { EventName } from '../../../model';
 
@@ -23,15 +21,15 @@ import { EventName } from '../../../model';
 /**
  * POST CREATED
  */
-const relationsOnPostCreated: NotificationsBehaviour = {
+const onPostCreated: NotificationsBehaviour = {
   addNotificationForAccount: ['OriginPostSpaceOwner']
 };
 
-const relationsOnCommentCreated: NotificationsBehaviour = {
+const onCommentCreated: NotificationsBehaviour = {
   addNotificationForAccount: ['RootPostOwner', 'RootPostSpaceOwner']
 };
 
-const relationsOnCommentReplyCreated: NotificationsBehaviour = {
+const onCommentReplyCreated: NotificationsBehaviour = {
   addNotificationForAccount: ['RootPostOwner', 'ParentPostOwner']
 };
 
@@ -39,18 +37,18 @@ const relationsOnCommentReplyCreated: NotificationsBehaviour = {
  * POST SHARED
  */
 
-const relationsOnPostShared: NotificationsBehaviour = {
+const onPostShared: NotificationsBehaviour = {
   addNotificationForAccount: [
     'OriginPostSpaceOwner',
     'SharedPostOwner',
     'SharedPostSpaceOwner'
   ]
 };
-const relationsOnCommentShared: NotificationsBehaviour = {
+const onCommentShared: NotificationsBehaviour = {
   addNotificationForAccount: ['OriginPostSpaceOwner', 'SharedPostOwner']
 };
 
-const relationsOnCommentReplyShared: NotificationsBehaviour = {
+const onCommentReplyShared: NotificationsBehaviour = {
   addNotificationForAccount: [
     'SharedPostSpaceOwner',
     'RootPostOwner',
@@ -61,63 +59,63 @@ const relationsOnCommentReplyShared: NotificationsBehaviour = {
 /**
  * REACTION
  */
-const relationsOnPostReactionCreated: NotificationsBehaviour = {
+const onPostReactionCreated: NotificationsBehaviour = {
   addNotificationForAccount: ['OriginPostOwner']
 };
-const relationsOnPostReactionUpdated: NotificationsBehaviour = {
+const onPostReactionUpdated: NotificationsBehaviour = {
   addNotificationForAccount: ['OriginPostOwner']
 };
-const relationsOnPostReactionDeleted: NotificationsBehaviour = {
+const onPostReactionDeleted: NotificationsBehaviour = {
   deleteAllNotificationsAboutReaction: ['OriginPostOwner']
 };
 
-const relationsOnCommentReactionCreated: NotificationsBehaviour = {
+const onCommentReactionCreated: NotificationsBehaviour = {
   addNotificationForAccount: ['OriginPostOwner']
 };
-const relationsOnCommentReactionUpdated: NotificationsBehaviour = {
+const onCommentReactionUpdated: NotificationsBehaviour = {
   addNotificationForAccount: ['OriginPostOwner']
 };
-const relationsOnCommentReactionDeleted: NotificationsBehaviour = {
+const onCommentReactionDeleted: NotificationsBehaviour = {
   deleteAllNotificationsAboutReaction: ['OriginPostOwner']
 };
 
-const relationsOnCommentReplyReactionCreated: NotificationsBehaviour = {
+const onCommentReplyReactionCreated: NotificationsBehaviour = {
   addNotificationForAccount: ['OriginPostOwner']
 };
-const relationsOnCommentReplyReactionUpdated: NotificationsBehaviour = {
+const onCommentReplyReactionUpdated: NotificationsBehaviour = {
   addNotificationForAccount: ['OriginPostOwner']
 };
-const relationsOnCommentReplyReactionDeleted: NotificationsBehaviour = {
+const onCommentReplyReactionDeleted: NotificationsBehaviour = {
   deleteAllNotificationsAboutReaction: ['OriginPostOwner']
 };
 
 /**
  * SPACE
  */
-const relationsOnSpaceCreated: NotificationsBehaviour = {
+const onSpaceCreated: NotificationsBehaviour = {
   addNotificationForAccountFollowers: ['SpaceOwnerAccountFollowers']
 };
 
-const relationsOnSpaceFollowed: NotificationsBehaviour = {
+const onSpaceFollowed: NotificationsBehaviour = {
   addNotificationForAccount: ['SpaceOwnerAccount']
 };
 
-const relationsOnSpaceUnfollowed: NotificationsBehaviour = {
+const onSpaceUnfollowed: NotificationsBehaviour = {
   addNotificationForAccount: ['SpaceOwnerAccount'],
   deleteAllNotificationsAboutSpace: ['SpaceFollowerAccount']
 };
-const relationsOnSpaceOwnershipTransferAccepted: NotificationsBehaviour = {
+const onSpaceOwnershipTransferAccepted: NotificationsBehaviour = {
   addNotificationForAccountFollowers: ['SpaceOwnerAccountFollowers']
 };
 
 /**
  * ACCOUNT
  */
-const relationsOnAccountFollowed: NotificationsBehaviour = {
+const onAccountFollowed: NotificationsBehaviour = {
   addNotificationForAccount: ['FollowingAccount']
 };
 
-const relationsOnAccountUnfollowed: NotificationsBehaviour = {
+const onAccountUnfollowed: NotificationsBehaviour = {
   addNotificationForAccount: ['FollowingAccount'],
   deleteAllNotificationsAboutAccount: ['FollowerAccount']
 };
@@ -125,31 +123,31 @@ const relationsOnAccountUnfollowed: NotificationsBehaviour = {
 export const EVENT_NOTIFICATION_RELATIONS: Partial<
   Record<EventName, NotificationsBehaviour>
 > = {
-  PostCreated: relationsOnPostCreated,
-  CommentCreated: relationsOnCommentCreated,
-  CommentReplyCreated: relationsOnCommentReplyCreated,
+  PostCreated: onPostCreated,
+  CommentCreated: onCommentCreated,
+  CommentReplyCreated: onCommentReplyCreated,
 
-  PostShared: relationsOnPostShared,
-  CommentShared: relationsOnCommentShared,
-  CommentReplyShared: relationsOnCommentReplyShared,
+  PostShared: onPostShared,
+  CommentShared: onCommentShared,
+  CommentReplyShared: onCommentReplyShared,
 
-  PostReactionCreated: relationsOnPostReactionCreated,
-  PostReactionUpdated: relationsOnPostReactionUpdated,
-  PostReactionDeleted: relationsOnPostReactionDeleted,
-  CommentReactionCreated: relationsOnCommentReactionCreated,
-  CommentReactionUpdated: relationsOnCommentReactionUpdated,
-  CommentReactionDeleted: relationsOnCommentReactionDeleted,
-  CommentReplyReactionCreated: relationsOnCommentReplyReactionCreated,
-  CommentReplyReactionUpdated: relationsOnCommentReplyReactionUpdated,
-  CommentReplyReactionDeleted: relationsOnCommentReplyReactionDeleted,
+  PostReactionCreated: onPostReactionCreated,
+  PostReactionUpdated: onPostReactionUpdated,
+  PostReactionDeleted: onPostReactionDeleted,
+  CommentReactionCreated: onCommentReactionCreated,
+  CommentReactionUpdated: onCommentReactionUpdated,
+  CommentReactionDeleted: onCommentReactionDeleted,
+  CommentReplyReactionCreated: onCommentReplyReactionCreated,
+  CommentReplyReactionUpdated: onCommentReplyReactionUpdated,
+  CommentReplyReactionDeleted: onCommentReplyReactionDeleted,
 
-  SpaceCreated: relationsOnSpaceCreated,
-  SpaceFollowed: relationsOnSpaceFollowed,
-  SpaceUnfollowed: relationsOnSpaceUnfollowed,
-  SpaceOwnershipTransferAccepted: relationsOnSpaceOwnershipTransferAccepted,
+  SpaceCreated: onSpaceCreated,
+  SpaceFollowed: onSpaceFollowed,
+  SpaceUnfollowed: onSpaceUnfollowed,
+  SpaceOwnershipTransferAccepted: onSpaceOwnershipTransferAccepted,
 
-  AccountFollowed: relationsOnAccountFollowed,
-  AccountUnfollowed: relationsOnAccountUnfollowed,
+  AccountFollowed: onAccountFollowed,
+  AccountUnfollowed: onAccountUnfollowed,
 
   SpaceUpdated: {},
   UserNameRegistered: {},

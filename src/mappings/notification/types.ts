@@ -8,36 +8,12 @@ import {
   Reaction
 } from '../../model';
 import { Ctx } from '../../processor';
-
-export type NotificationTarget =
-  | 'OriginPostOwner'
-  | 'OriginPostOwnerFollowers'
-  | 'OriginPostSpaceOwner'
-  | 'OriginPostSpaceFollowers'
-  | 'SharedPostOwner'
-  | 'SharedPostOwnerFollowers'
-  | 'SharedPostSpaceOwner'
-  | 'SharedPostSpaceFollowers'
-  | 'RootPostOwner'
-  | 'RootPostOwnerFollowers'
-  | 'RootPostSpaceOwner'
-  | 'RootPostSpaceFollowers'
-  | 'ParentPostOwner'
-  | 'ParentPostOwnerFollowers'
-  | 'ParentPostSpaceOwner'
-  | 'ParentPostSpaceFollowers'
-  | 'FollowingAccount'
-  | 'FollowerAccount'
-  | 'SpaceOwnerAccount'
-  | 'SpaceOwnerAccountFollowers'
-  | 'SpaceFollowerAccount'
-  | 'SpaceNewOwnerAccount'
-  | 'PreviousSpaceOriginPostSpaceFollowers';
+import { NotificationFeedTarget } from '../../common/types';
 
 export type NotificationAction = keyof NotificationsHandlersManager;
 
 export type NotificationsBehaviour = Partial<
-  Record<NotificationAction, Array<NotificationTarget>>
+  Record<NotificationAction, Array<NotificationFeedTarget>>
 >;
 
 export type NotificationHandlerInputParams = {
@@ -54,12 +30,8 @@ export type NotificationHandlerInputParams = {
 
 export type NotificationHandlerParamsWithTarget =
   NotificationHandlerInputParams & {
-    target: NotificationTarget;
+    target: NotificationFeedTarget;
   };
-
-export interface NotificationsHandlersManagerInterface {
-  [kay: string]: (params: NotificationHandlerParamsWithTarget) => Promise<void>;
-}
 
 type NotificationsParamsBase = {
   account: Account | string; // this account is a followerAccount in following events

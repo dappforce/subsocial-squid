@@ -119,3 +119,16 @@ export const deleteAccountPostsFromFeedForAccount = async (
 
   await ctx.store.remove(feedsForDelete);
 };
+
+export function InvalidFeedHandlerParamsForTargetWarn(
+  eventName: EventName,
+  target: string,
+  ctx: Ctx
+) {
+  const msg = `Feed publication handlers on event "${eventName}" for target "${target}" receiver invalid parameters.`;
+  if (ctx) {
+    ctx.log.warn(msg);
+  } else {
+    console.log(msg);
+  }
+}
