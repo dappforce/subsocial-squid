@@ -1,11 +1,11 @@
 import { Ctx } from '../../../processor';
-import { EventName } from '../../../model';
+import { EventName, Post } from '../../../model';
 import { EVENT_FEED_PUBLICATION_RELATIONS } from './config';
 import {
-  FeedPublicationsAction,
+  FeedHandlerBinderParams,
   FeedHandlerInputParams,
   FeedHandlerParamsWithTarget,
-  FeedHandlerBinderParams
+  FeedPublicationsAction
 } from '../types';
 import { InvalidFeedHandlerParamsForTargetWarn } from '../common';
 import { feedPublicationHelpers } from './helpers';
@@ -71,7 +71,7 @@ export class FeedPublicationsManager extends FeedHandlersManager {
     }
   }
 
-  async handleNotifications<E extends EventName>(
+  async handleFeedPublications<E extends EventName>(
     eventName: E,
     params: FeedHandlerBinderParams<E>
   ) {
@@ -104,26 +104,33 @@ export class FeedPublicationsManager extends FeedHandlersManager {
       InvalidFeedHandlerParamsForTargetWarn(activity.event, target, ctx);
     };
 
+    let originPostForProcessing: Post | undefined = post;
+    if (activity.event === EventName.PostShared && post && post.sharedPost)
+      originPostForProcessing = post.sharedPost;
+
     switch (target) {
       case 'OriginPostOwnerFollowers': {
-        if (!post || !post.ownedByAccount) {
+        if (
+          !originPostForProcessing ||
+          !originPostForProcessing.ownedByAccount
+        ) {
           paramsWarning();
           break;
         }
         await feedPublicationHelpers.add.one.forAccountFollowers(
-          post.ownedByAccount.id,
+          originPostForProcessing.ownedByAccount.id,
           activity,
           ctx
         );
         break;
       }
       case 'OriginPostSpaceFollowers': {
-        if (!post || !post.space) {
+        if (!originPostForProcessing || !originPostForProcessing.space) {
           paramsWarning();
           break;
         }
         await feedPublicationHelpers.add.one.forSpaceFollowers(
-          post,
+          originPostForProcessing,
           activity,
           ctx
         );
@@ -141,8 +148,16 @@ export class FeedPublicationsManager extends FeedHandlersManager {
       `deleteFeedPublicationFromAccount >>> ${params.target} | ${params.activity.event}`
     );
 
-    const { target, post, activity, followerAccount, followingAccount, ctx } =
-      params;
+    const {
+      target,
+      post,
+      activity,
+      followerAccount,
+      followingAccount,
+      space,
+      spacePrev,
+      ctx
+    } = params;
 
     const paramsWarning = () => {
       InvalidFeedHandlerParamsForTargetWarn(activity.event, target, ctx);
@@ -167,6 +182,17 @@ export class FeedPublicationsManager extends FeedHandlersManager {
         }
         await feedPublicationHelpers.delete.all.spacePosts.fromAllSpaceFollowers(
           post.space.id,
+          ctx
+        );
+        break;
+      }
+      case 'PreviousSpaceOriginPostSpaceFollowers': {
+        if (!spacePrev) {
+          paramsWarning();
+          break;
+        }
+        await feedPublicationHelpers.delete.all.spacePosts.fromAllSpaceFollowers(
+          spacePrev.id,
           ctx
         );
         break;

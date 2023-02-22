@@ -32,15 +32,15 @@ const onPostDeleted: FeedPublicationsBehaviour = {
   ]
 };
 
-/**
- * POST SHARED
- */
-
 const onPostShared: FeedPublicationsBehaviour = {
   addFeedPublicationForAccount: [
     'OriginPostOwnerFollowers',
     'OriginPostSpaceFollowers'
   ]
+};
+const onPostMoved: FeedPublicationsBehaviour = {
+  addFeedPublicationForAccount: ['OriginPostSpaceFollowers'],
+  deleteFeedPublicationFromAccount: ['PreviousSpaceOriginPostSpaceFollowers']
 };
 
 /**
@@ -67,12 +67,12 @@ export const EVENT_FEED_PUBLICATION_RELATIONS: Partial<
   PostShared: onPostShared,
   SpaceUnfollowed: onSpaceUnfollowed,
   AccountUnfollowed: onAccountUnfollowed,
+  PostMoved: onPostMoved,
 
   SpaceUpdated: {},
   UserNameRegistered: {},
   UserNameUpdated: {},
   PostUpdated: {},
-  PostMoved: {},
   ProfileUpdated: {},
   CommentCreated: {},
   CommentReplyCreated: {},

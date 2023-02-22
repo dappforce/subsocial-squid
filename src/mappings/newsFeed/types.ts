@@ -57,6 +57,7 @@ type FeedPublicationParamsOnPostShared = FeedPublicationParamsBase & {
 type FeedPublicationParamsOnPostMoved = FeedPublicationParamsBase & {
   post: Post;
   space: Space | null;
+  spacePrev: Space | null;
 };
 type FeedPublicationParamsOnPostFollowed = FeedPublicationParamsBase & {
   post: Post;
@@ -70,9 +71,11 @@ type FeedPublicationParamsOnSpaceCreated = FeedPublicationParamsBase & {
 type FeedPublicationParamsOnSpaceFollowed = FeedPublicationParamsBase & {
   space: Space;
 };
-type FeedPublicationParamsOnSpaceOwnership = FeedPublicationParamsBase & {
-  space: Space;
-};
+type FeedPublicationParamsOnSpaceOwnershipAccepted =
+  FeedPublicationParamsBase & {
+    space: Space;
+    oldOwner: Account;
+  };
 type FeedPublicationParamsOnAccountFollowed = FeedPublicationParamsBase & {
   followingAccount: Account;
 };
@@ -138,7 +141,7 @@ export type FeedHandlerBinderParams<E extends EventName> =
     : E extends EventName.SpaceUnfollowed
     ? FeedPublicationParamsOnSpaceFollowed
     : E extends EventName.SpaceOwnershipTransferAccepted
-    ? FeedPublicationParamsOnSpaceOwnership
+    ? FeedPublicationParamsOnSpaceOwnershipAccepted
     : E extends EventName.AccountFollowed
     ? FeedPublicationParamsOnAccountFollowed
     : E extends EventName.AccountUnfollowed

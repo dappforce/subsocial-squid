@@ -1,6 +1,5 @@
 import { ReactionKind, Post, Reaction, Activity, EventName } from '../../model';
 import { setActivity } from '../activity';
-import { addNotificationForAccount } from '../notification';
 import { getOrCreateAccount } from '../account';
 import {
   ensurePositiveOrZeroValue,
@@ -13,6 +12,8 @@ import {
 import { Ctx } from '../../processor';
 import { PostReactionUpdatedData } from '../../common/types';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
+import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postReactionUpdated(
   ctx: Ctx,
@@ -59,11 +60,12 @@ export async function postReactionUpdated(
 
   await ctx.store.save(post);
 
+  const syntheticEventName = getSyntheticEventName(
+    EventName.PostReactionUpdated,
+    post
+  );
   const activity = await setActivity({
-    syntheticEventName: getSyntheticEventName(
-      EventName.PostReactionCreated,
-      post
-    ),
+    syntheticEventName,
     account,
     reaction,
     post,
@@ -75,5 +77,20 @@ export async function postReactionUpdated(
     new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
     throw new CommonCriticalError();
   }
-  await addNotificationForAccount(post.ownedByAccount, activity, ctx);
+
+  await NotificationsFeedManager.getInstance().handleNotifications(
+    syntheticEventName,
+    {
+      account: reaction.account,
+      post,
+      reaction,
+      activity,
+      ctx
+    }
+  );
+
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    syntheticEventName,
+    { post, account: reaction.account, reaction, activity, ctx }
+  );
 }

@@ -121,7 +121,10 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
         ctx
       );
     };
-
+    // TODO refactor adding notifications for shared posts - add condition
+    //  for Shared Event and handle both Shared and Origin post (right now here
+    //  SharedPost === Post which has been shared, but not exactly new post which
+    //  contains shared post and origin)
     switch (target) {
       case 'OriginPostOwner':
       case 'SharedPostOwner': {

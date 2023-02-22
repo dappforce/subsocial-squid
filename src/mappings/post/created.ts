@@ -4,7 +4,6 @@ import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
 import { postFollowed } from '../postCommentFollows';
-import { addPostToFeeds } from '../newsFeed';
 import {
   CommonCriticalError,
   EntityProvideFailWarning
@@ -14,6 +13,7 @@ import { ensurePost } from './common';
 import { Ctx } from '../../processor';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
 import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postCreated(
   ctx: Ctx,
@@ -28,6 +28,8 @@ export async function postCreated(
   });
 
   await ctx.store.save(post);
+
+  const syntheticEventName = getSyntheticEventName(EventName.PostCreated, post);
 
   ElasticSearchIndexerManager.getInstance(ctx).addToQueue(post);
 
@@ -50,7 +52,7 @@ export async function postCreated(
   await postFollowed(post, ctx);
 
   const activity = await setActivity({
-    syntheticEventName: getSyntheticEventName(EventName.PostCreated, post),
+    syntheticEventName,
     account,
     post,
     ctx,
@@ -62,20 +64,15 @@ export async function postCreated(
     return;
   }
 
-  await addPostToFeeds(post, activity, ctx);
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    syntheticEventName,
+    { post, account, activity, ctx }
+  );
 
   if (post.sharedPost) return;
 
-  let eventName: EventName = EventName.PostCreated;
-
-  if (post.isComment && !post.parentPost) {
-    eventName = EventName.CommentCreated;
-  } else if (post.isComment && post.parentPost && post.rootPost) {
-    eventName = EventName.CommentReplyCreated;
-  }
-
   await NotificationsFeedManager.getInstance().handleNotifications(
-    EventName.PostCreated,
+    syntheticEventName,
     {
       account: post.ownedByAccount,
       post,
@@ -83,53 +80,30 @@ export async function postCreated(
       ctx
     }
   );
-
-  // if (!post.isComment) {
-  //   await addNotificationForAccount(post.ownedByAccount, activity, ctx);
-  // } else if (post.isComment && post.rootPost && !post.parentPost) {
-  //   await addNotificationForAccount(post.ownedByAccount, activity, ctx);
-  //   await addNotificationForAccount(
-  //     post.rootPost.ownedByAccount,
-  //     activity,
-  //     ctx
-  //   );
-  //   // TODO do we need send notification for comment creator as well?
-  // } else if (post.isComment && post.parentPost && post.rootPost) {
-  //   /**
-  //    * Notifications should not be added for owner followers if post is reply
-  //    */
-  //   await addNotificationForAccount(post.ownedByAccount, activity, ctx);
-  //   await addNotificationForAccount(
-  //     post.rootPost.ownedByAccount,
-  //     activity,
-  //     ctx
-  //   );
-  //   await addNotificationForAccount(
-  //     post.parentPost.ownedByAccount,
-  //     activity,
-  //     ctx
-  //   );
-  // }
 }
 
 async function handlePostShare(
-  sharedPost: Post,
+  newPost: Post,
   callerAccount: Account,
   ctx: Ctx,
   eventData: PostCreatedData
 ): Promise<void> {
-  if (!sharedPost.sharedPost) return;
+  if (!newPost.sharedPost) return;
 
-  const originPost = sharedPost.sharedPost;
+  const originSharedPost = newPost.sharedPost;
+  const syntheticEventName = getSyntheticEventName(
+    EventName.PostShared,
+    originSharedPost
+  );
 
-  originPost.sharesCount += 1;
+  originSharedPost.sharesCount += 1;
 
-  await ctx.store.save(originPost);
+  await ctx.store.save(originSharedPost);
 
   const activity = await setActivity({
     account: callerAccount,
-    post: sharedPost,
-    syntheticEventName: getSyntheticEventName(EventName.PostShared, originPost),
+    post: newPost,
+    syntheticEventName,
     ctx,
     eventData
   });
@@ -139,54 +113,18 @@ async function handlePostShare(
     throw new CommonCriticalError();
   }
 
-  let eventName: EventName = EventName.PostShared;
+  await NotificationsFeedManager.getInstance().handleNotifications(
+    syntheticEventName,
+    {
+      account: originSharedPost.ownedByAccount,
+      post: originSharedPost,
+      activity,
+      ctx
+    }
+  );
 
-  if (originPost.isComment && !originPost.parentPost) {
-    eventName = EventName.CommentShared;
-  } else if (
-    originPost.isComment &&
-    originPost.parentPost &&
-    originPost.rootPost
-  ) {
-    eventName = EventName.CommentReplyShared;
-  }
-
-  await NotificationsFeedManager.getInstance().handleNotifications(eventName, {
-    account: originPost.ownedByAccount,
-    post: originPost,
-    activity,
-    ctx
-  });
-
-  // if (
-  //   !originPost.isComment ||
-  //   (originPost.isComment && !originPost.parentPost)
-  // ) {
-  //
-  //
-  //   await addNotificationForAccountFollowers(
-  //     originPost.ownedByAccount,
-  //     activity,
-  //     ctx
-  //   );
-  //   await addNotificationForAccount(originPost.ownedByAccount, activity, ctx);
-  // } else if (
-  //   originPost.isComment &&
-  //   originPost.parentPost &&
-  //   originPost.rootPost
-  // ) {
-  //   /**
-  //    * Notifications should not be added for owner followers if post is reply
-  //    */
-  //   await addNotificationForAccount(
-  //     originPost.rootPost.ownedByAccount,
-  //     activity,
-  //     ctx
-  //   );
-  //   await addNotificationForAccount(
-  //     originPost.parentPost.ownedByAccount,
-  //     activity,
-  //     ctx
-  //   );
-  // }
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    syntheticEventName,
+    { post: newPost, account: newPost.ownedByAccount, activity, ctx }
+  );
 }
