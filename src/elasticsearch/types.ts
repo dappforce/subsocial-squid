@@ -59,7 +59,7 @@ export type ESSearchResultHitItem = {
   _source: {
     about?: string;
     body?: string;
-    handle?: string;
+    username?: string;
     name?: string;
     spaceId?: string;
     tags?: string[];

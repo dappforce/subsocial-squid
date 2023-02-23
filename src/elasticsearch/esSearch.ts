@@ -5,7 +5,6 @@ import {
   getElasticQueryParamsDecorated
 } from './searchUtils';
 import {
-  ElasticQueryParamsWithSpaceId,
   ElasticQueryParamsWithSpaceIdRaw,
   ESErrorType,
   ESQueryResponseContent,
@@ -67,27 +66,12 @@ export class ElasticSearchSearchManager {
         return {
           ok: true,
           data: {
-            hits: hits.map(
-              ({
-                _id,
-                _index,
-                _score,
-                _source: { about, body, handle, name, spaceId, tags, title }
-              }) => ({
-                _id,
-                _index,
-                _score,
-                _content: {
-                  username: handle,
-                  about,
-                  body,
-                  name,
-                  spaceId,
-                  tags,
-                  title
-                }
-              })
-            ),
+            hits: hits.map(({ _id, _index, _score, _source }) => ({
+              _id,
+              _index,
+              _score,
+              _content: _source
+            })),
             totalResults: total.value,
             maxScore: max_score,
             perPageLimit: paramsDecorated.limit ?? maxResultLimit
@@ -107,12 +91,10 @@ export class ElasticSearchSearchManager {
         };
       }
 
-      // elasticLog.warn('Failed to query ElasticSearch:', err.message)
       return {
         ok: false,
         err: errorContent
       };
-      // res.status(err.statusCode).send(err.meta)
     }
     return {
       ok: false,

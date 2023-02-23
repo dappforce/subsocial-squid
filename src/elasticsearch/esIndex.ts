@@ -1,6 +1,7 @@
 import { SubsocialElasticApi } from '@subsocial/elasticsearch';
 
 import {
+  ElasticIndexName,
   ElasticPostDoc,
   ElasticSpaceDoc
 } from '@subsocial/elasticsearch/types';
@@ -11,7 +12,6 @@ import { Entity } from '@subsquid/typeorm-store/lib/store';
 import { splitIntoBatches } from '../common/utils';
 import SpacesMapping from './mappings/spaces.json';
 import PostsMapping from './mappings/posts.json';
-import ProfilesMapping from './mappings/profiles.json';
 
 export class ElasticSearchIndexerManager {
   private static instance: ElasticSearchIndexerManager;
@@ -48,10 +48,8 @@ export class ElasticSearchIndexerManager {
    */
   async maybeCreateIndices() {
     if (this.indexesEnsured) return;
-    // TODO Should be refactored :: Subsocial SDK must expose const with indexes names for using here
     await this.createIndexIfNotFound('subsocial_spaces', SpacesMapping);
     await this.createIndexIfNotFound('subsocial_posts', PostsMapping);
-    await this.createIndexIfNotFound('subsocial_profiles', ProfilesMapping);
     this.indexesEnsured = true;
   }
 
@@ -126,7 +124,7 @@ export class ElasticSearchIndexerManager {
     } else if (entity instanceof Space) {
       return {
         ...(entity.name ? { name: entity.name } : {}),
-        ...(entity.handle ? { handle: entity.handle } : {}),
+        ...(entity.username ? { username: entity.username } : {}),
         ...(entity.about ? { body: entity.about } : {}),
         ...(entity.tagsOriginal && entity.tagsOriginal.length > 0
           ? { tags: entity.tagsOriginal.split(',') }
@@ -172,7 +170,10 @@ export class ElasticSearchIndexerManager {
     }
   }
 
-  private async createIndexIfNotFound(indexName: string, mapping: any) {
+  private async createIndexIfNotFound(
+    indexName: ElasticIndexName,
+    mapping: any
+  ) {
     const result = await this.esClient.client.indices.exists(
       { index: indexName },
       { ignore: [404] }
@@ -196,8 +197,4 @@ export class ElasticSearchIndexerManager {
       } else console.log(`${indexName} index already exists`);
     }
   }
-
-  // private async refreshIndex(): Promise<void> {
-  //   await this.esClient.client.indices.refresh();
-  // }
 }

@@ -15,6 +15,9 @@ import {
   isEmptyArray
 } from '@subsocial/utils';
 import { getChain } from '../chains';
+import { createLogger } from '@subsquid/logger';
+
+const sqdLogger = createLogger('sqd:search');
 
 const chainConfig = getChain();
 const maxResultLimit: number =
@@ -56,7 +59,7 @@ export const buildElasticSearchQuery = (
 
   const searchFields = [
     `${ElasticFields.space.name}^3`,
-    `${ElasticFields.space.handle}^2`,
+    `${ElasticFields.space.username}^2`,
     `${ElasticFields.space.about}^1`,
     `${ElasticFields.space.tags}^2`,
 
@@ -124,10 +127,7 @@ export const buildElasticSearchQuery = (
     }
   };
 
-  // TODO Add logs
-  // log.debug('Final ElasticSearch query:', searchReq);
-  console.log('searchReq >>>');
-  console.dir(searchReq, { depth: null });
+  sqdLogger.debug(searchReq, 'Final ElasticSearch query:');
 
   return searchReq;
 };

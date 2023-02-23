@@ -9,14 +9,11 @@ import {
   Int
 } from 'type-graphql';
 import { Min, Max } from 'class-validator';
-import type { EntityManager } from 'typeorm';
 import { ElasticSearchQueryResultEntity } from '../models/elasticSearchQuery.model';
-import assert from 'assert';
 import { ElasticSearchManager } from '../../elasticsearch';
 
 export enum ElasticSearchIndexType {
   all = 'all',
-  profiles = 'profiles',
   spaces = 'spaces',
   posts = 'posts'
 }
@@ -52,7 +49,7 @@ class SearchQueryArgs {
   @Field(() => [ElasticSearchIndexType], {
     nullable: false,
     defaultValue: [ElasticSearchIndexType.all],
-    description: `Can contain next values: all, profiles, spaces, posts.`
+    description: `Can be list of next values: all, spaces, posts.`
   })
   indexes?: ElasticSearchIndexType[];
 }

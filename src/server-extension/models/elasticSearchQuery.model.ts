@@ -2,12 +2,12 @@ import { Field, Float, Int, ObjectType } from 'type-graphql';
 
 @ObjectType()
 class ESError {
-  @Field((type) => Int, { nullable: true })
+  @Field((type) => Int, { nullable: true, description: 'Error status.' })
   status?: string;
 
   @Field((type) => String, {
     description:
-      'Offset value which has been used in particular search request.'
+      'Error message.'
   })
   reason!: string;
 }
@@ -48,7 +48,7 @@ export class ElasticSearchQueryResultEntity {
 
   @Field((type) => ESError, {
     nullable: true,
-    description: 'General information about particular search query result.'
+    description: 'Occurred error.'
   })
   err?: ESError;
 
