@@ -1,4 +1,4 @@
-import { Space } from '../../model';
+import { Activity, EventName, Space } from '../../model';
 import {
   CommonCriticalError,
   EntityProvideFailWarning,
@@ -15,6 +15,8 @@ import {
   getExperimentalFieldsFromIPFSContent,
   getJoinedList
 } from '../../common/utils';
+import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function spaceUpdated(
   ctx: Ctx,
@@ -67,10 +69,30 @@ export async function spaceUpdated(
 
   ElasticSearchIndexerManager.getInstance(ctx).addToQueue(space);
 
-  await setActivity({
+  const activity = await setActivity({
     account: eventData.accountId,
     space,
     ctx,
     eventData
   });
+
+  if (!activity) {
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    throw new CommonCriticalError();
+  }
+
+  await NotificationsFeedManager.getInstance().handleNotifications(
+    EventName.SpaceUpdated,
+    {
+      account: space.ownedByAccount,
+      space,
+      activity,
+      ctx
+    }
+  );
+
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    EventName.SpaceUpdated,
+    { account: space.ownedByAccount, space, activity, ctx }
+  );
 }

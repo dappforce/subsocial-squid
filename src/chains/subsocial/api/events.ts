@@ -14,6 +14,7 @@ import {
   SpaceFollowsSpaceFollowedEvent,
   SpaceFollowsSpaceUnfollowedEvent,
   SpaceOwnershipSpaceOwnershipTransferAcceptedEvent,
+  SpaceOwnershipSpaceOwnershipTransferCreatedEvent,
   SpacesSpaceCreatedEvent,
   SpacesSpaceUpdatedEvent
 } from '../types/events';
@@ -37,7 +38,8 @@ import {
   SpaceOwnershipTransferAcceptedEventParsedData,
   DomainRegisteredData,
   DomainRegisteredEventParsedData,
-  DomainMetaUpdatedEventParsedData
+  DomainMetaUpdatedEventParsedData,
+  SpaceOwnershipTransferCreatedEventParsedData
 } from '../../../common/types';
 
 import { UnknownVersionError } from '../../../common/errors';
@@ -225,6 +227,22 @@ export function parseSpaceOwnershipTransferAcceptedEventArgs(
 
   return {
     accountId: addressSs58ToString(account),
+    spaceId: spaceId.toString()
+  };
+}
+export function parseSpaceOwnershipTransferCreatedEventArgs(
+  ctx: EventContext
+): SpaceOwnershipTransferCreatedEventParsedData {
+  const event = new SpaceOwnershipSpaceOwnershipTransferCreatedEvent(
+    ctx,
+    ctx.event
+  );
+
+  const { currentOwner, newOwner, spaceId } = event.asV13;
+
+  return {
+    currentOwnerId: addressSs58ToString(currentOwner),
+    newOwnerId: addressSs58ToString(newOwner),
     spaceId: spaceId.toString()
   };
 }

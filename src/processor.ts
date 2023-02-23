@@ -26,6 +26,7 @@ import { handleDomains } from './mappings/domain';
 import { splitIntoBatches } from './common/utils';
 import { ElasticSearchIndexerManager } from './elasticsearch';
 import { getChain } from './chains';
+import { NotificationsFeedManager } from './mappings/notification/notifiactionsManager';
 
 const chainConfig = getChain();
 
@@ -75,6 +76,9 @@ export const processor = new SubstrateBatchProcessor()
   .addEvent('SpaceOwnership.SpaceOwnershipTransferAccepted', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
+  .addEvent('SpaceOwnership.SpaceOwnershipTransferCreated', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
   .addEvent('AccountFollows.AccountFollowed', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
@@ -96,6 +100,8 @@ export type Item = BatchProcessorItem<typeof processor>;
 export type EventItem = BatchProcessorEventItem<typeof processor>;
 export type Ctx = BatchContext<Store, Item>;
 export type Block = BatchBlock<Item>;
+
+NotificationsFeedManager.getInstance().initHandlersMatrix();
 
 processor.run(new TypeormDatabase(), async (ctx) => {
   ctx.log

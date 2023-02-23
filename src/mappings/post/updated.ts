@@ -19,6 +19,8 @@ import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postUpdated(
   ctx: Ctx,
@@ -108,11 +110,30 @@ export async function postUpdated(
     ctx
   });
 
-  await setActivity({
-    syntheticEventName: getSyntheticEventName(EventName.PostUpdated, post),
+  const syntheticEventName = getSyntheticEventName(EventName.PostUpdated, post);
+
+  const activity = await setActivity({
+    syntheticEventName,
     account: eventData.accountId,
     post,
     ctx,
     eventData
   });
+
+  if (!activity) return;
+
+  await NotificationsFeedManager.getInstance().handleNotifications(
+    syntheticEventName,
+    {
+      account: post.ownedByAccount,
+      post,
+      activity,
+      ctx
+    }
+  );
+
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    syntheticEventName,
+    { post, account: post.ownedByAccount, activity, ctx }
+  );
 }

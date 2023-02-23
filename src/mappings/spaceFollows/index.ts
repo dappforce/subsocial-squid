@@ -3,7 +3,6 @@ import { ParsedEventsDataScope } from '../../eventsCallsData';
 import { EventName } from '../../model';
 import { getOrderedListByBlockNumber } from '../../common/utils';
 
-import { processSpaceFollowingUnfollowingRelations } from './common';
 import { spaceFollowed } from './followed';
 import { spaceUnfollowed } from './unfollowed';
 

@@ -7,5 +7,6 @@ export { insertActivityForPostReaction } from './insertActivityForPostReaction';
 export { insertActivityForPostShared } from './insertActivityForPostShared';
 export { insertActivityForSpaceCreatedUpdated } from './insertActivityForSpaceCreatedUpdated';
 export { insertActivityForSpaceFollowedUnfollowed } from './insertActivityForSpaceFollowedUnfollowed';
-export { insertActivityForSpaceOwnershipTransfer } from './insertActivityForSpaceOwnershipTransfer';
+export { insertActivityForSpaceOwnershipTransferAccepted } from './insertActivityForSpaceOwnershipTransferAccepted';
+export { insertActivityForSpaceOwnershipTransferCreated } from './insertActivityForSpaceOwnershipTransferCreated';
 export { insertActivityForUsernameRegisteredUpdated } from './insertActivityForUsernameRegisteredUpdated';

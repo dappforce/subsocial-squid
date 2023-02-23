@@ -21,6 +21,7 @@ import {
   ProfileUpdatedEventParsedData,
   SpaceFollowedEventParsedData,
   SpaceOwnershipTransferAcceptedEventParsedData,
+  SpaceOwnershipTransferCreatedEventParsedData,
   SpaceUnfollowedEventParsedData,
   UpdatedSpaceEventParsedData,
   UpdatePostCallParsedData,
@@ -30,6 +31,7 @@ import {
 import * as v7 from '../subsocial/types/v7';
 import { InnerValue } from './sharedTypes';
 import { getRegisteredDomainMeta } from '../subsocial/api/storage';
+import { parseSpaceOwnershipTransferCreatedEventArgs } from '../subsocial/api/events';
 
 export type ChainApi = {
   events: {
@@ -45,6 +47,7 @@ export type ChainApi = {
     parseSpaceFollowedEventArgs?: EventGetter<SpaceFollowedEventParsedData>;
     parseSpaceUnfollowedEventArgs?: EventGetter<SpaceUnfollowedEventParsedData>;
     parseSpaceOwnershipTransferAcceptedEventArgs?: EventGetter<SpaceOwnershipTransferAcceptedEventParsedData>;
+    parseSpaceOwnershipTransferCreatedEventArgs?: EventGetter<SpaceOwnershipTransferCreatedEventParsedData>;
     parseAccountFollowedEventArgs?: EventGetter<AccountFollowedEventParsedData>;
     parseAccountUnfollowedEventArgs?: EventGetter<AccountUnfollowedEventParsedData>;
     parseDomainRegisteredEventArgs?: EventGetter<DomainRegisteredEventParsedData>;
@@ -91,6 +94,7 @@ type SubsocialChainEvents =
   | 'parseSpaceFollowedEventArgs'
   | 'parseSpaceUnfollowedEventArgs'
   | 'parseSpaceOwnershipTransferAcceptedEventArgs'
+  | 'parseSpaceOwnershipTransferCreatedEventArgs'
   | 'parseAccountFollowedEventArgs'
   | 'parseAccountUnfollowedEventArgs'
   | 'parseDomainRegisteredEventArgs'
@@ -109,6 +113,7 @@ type SoonsocialChainEvents =
   | 'parseSpaceFollowedEventArgs'
   | 'parseSpaceUnfollowedEventArgs'
   | 'parseSpaceOwnershipTransferAcceptedEventArgs'
+  | 'parseSpaceOwnershipTransferCreatedEventArgs'
   | 'parseAccountFollowedEventArgs'
   | 'parseAccountUnfollowedEventArgs'
   | 'parseDomainRegisteredEventArgs'

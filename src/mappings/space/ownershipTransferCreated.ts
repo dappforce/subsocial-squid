@@ -4,18 +4,22 @@ import {
   EntityProvideFailWarning
 } from '../../common/errors';
 import { Ctx } from '../../processor';
-import { SpaceOwnershipTransferAcceptedData } from '../../common/types';
+import { SpaceOwnershipTransferCreatedData } from '../../common/types';
 import { setActivity } from '../activity';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { getOrCreateAccount } from '../account';
 import { NotificationsFeedManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
-export async function spaceOwnershipTransferAccepted(
+export async function spaceOwnershipTransferCreated(
   ctx: Ctx,
-  eventData: SpaceOwnershipTransferAcceptedData
+  eventData: SpaceOwnershipTransferCreatedData
 ): Promise<void> {
-  const newOwnerAccount = await getOrCreateAccount(eventData.accountId, ctx);
+  const currentOwnerAccount = await getOrCreateAccount(
+    eventData.currentOwnerId,
+    ctx
+  );
+  const newOwnerAccount = await getOrCreateAccount(eventData.newOwnerId, ctx);
 
   const space = await getEntityWithRelations.space(eventData.spaceId, ctx);
 
@@ -24,15 +28,9 @@ export async function spaceOwnershipTransferAccepted(
     throw new CommonCriticalError();
   }
 
-  const oldOwnerAccount = space.ownedByAccount;
-
-  space.ownedByAccount = newOwnerAccount;
-
-  await ctx.store.save(space);
-
   const activity = await setActivity({
-    account: eventData.accountId,
-    oldOwner: oldOwnerAccount,
+    account: currentOwnerAccount,
+    newOwner: newOwnerAccount,
     space,
     ctx,
     eventData
@@ -44,10 +42,10 @@ export async function spaceOwnershipTransferAccepted(
   }
 
   await NotificationsFeedManager.getInstance().handleNotifications(
-    EventName.SpaceOwnershipTransferAccepted,
+    EventName.SpaceOwnershipTransferCreated,
     {
-      account: space.ownedByAccount,
-      oldOwner: oldOwnerAccount,
+      account: currentOwnerAccount,
+      newOwner: newOwnerAccount,
       space,
       activity,
       ctx
@@ -55,10 +53,10 @@ export async function spaceOwnershipTransferAccepted(
   );
 
   await FeedPublicationsManager.getInstance().handleFeedPublications(
-    EventName.SpaceOwnershipTransferAccepted,
+    EventName.SpaceOwnershipTransferCreated,
     {
-      account: space.ownedByAccount,
-      oldOwner: oldOwnerAccount,
+      account: currentOwnerAccount,
+      newOwner: newOwnerAccount,
       space,
       activity,
       ctx

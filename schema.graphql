@@ -43,6 +43,7 @@ As a result, the squid uses synthetic events in addition to native on-chain even
 * SpaceFollowed
 * SpaceUnfollowed
 * SpaceOwnershipTransferAccepted
+* SpaceOwnershipTransferCreated
 * AccountFollowed
 * AccountUnfollowed
 * ProfileUpdated
@@ -80,6 +81,7 @@ enum EventName {
   SpaceFollowed
   SpaceUnfollowed
   SpaceOwnershipTransferAccepted
+  SpaceOwnershipTransferCreated
 
   AccountFollowed
   AccountUnfollowed
@@ -431,10 +433,10 @@ type Post @entity {
   """
   experimental: JSON
 
-#  """
-#  The ID of the application that the current Post was created with.
-#  """
-#  appId: String
+  #  """
+  #  The ID of the application that the current Post was created with.
+  #  """
+  #  appId: String
 }
 
 """
@@ -659,10 +661,10 @@ type Space @entity {
   """
   followersCount: Int! @index
 
-#  """
-#  The ID of application current Space has been created through.
-#  """
-#  appId: String
+  #  """
+  #  The ID of application current Space has been created through.
+  #  """
+  #  appId: String
 
   """
   The username of a Space (IPFS content)
