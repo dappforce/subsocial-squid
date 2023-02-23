@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-dotenv.config({ path: `${__dirname}/../.env.local` });
+dotenv.config({ path: `${__dirname}/../.local.env` });
 
 export default {
   ipfsReadOnlyNodeUrl:

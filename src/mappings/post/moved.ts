@@ -15,7 +15,7 @@ import { PostMovedData, SpaceCountersAction } from '../../common/types';
 import { postFollowed, postUnfollowed } from '../postCommentFollows';
 import { Ctx } from '../../processor';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { ElasticSearchManager } from '../../elasticsearch';
 
 export async function postMoved(
   ctx: Ctx,
@@ -81,7 +81,7 @@ export async function postMoved(
 
   await ctx.store.save(post);
 
-  ElasticSearchIndexerManager.getInstance(ctx).addToQueue(post);
+  ElasticSearchManager.index(ctx).addToQueue(post);
 
   if (!newSpaceInst) {
     await postUnfollowed(post, ctx);

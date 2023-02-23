@@ -16,7 +16,7 @@ import {
   addNotificationForAccountFollowers
 } from '../notification';
 import { Ctx } from '../../processor';
-import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { ElasticSearchManager } from '../../elasticsearch';
 
 export async function postCreated(
   ctx: Ctx,
@@ -32,7 +32,7 @@ export async function postCreated(
 
   await ctx.store.save(post);
 
-  ElasticSearchIndexerManager.getInstance(ctx).addToQueue(post);
+  ElasticSearchManager.index(ctx).addToQueue(post);
 
   post.ownedByAccount.ownedPostsCount += 1;
 

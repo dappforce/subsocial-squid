@@ -24,7 +24,7 @@ import { handlePostReactions } from './mappings/reaction';
 import { handleDomains } from './mappings/domain';
 
 import { splitIntoBatches } from './common/utils';
-import { ElasticSearchIndexerManager } from './elasticsearch';
+import { ElasticSearchManager } from './elasticsearch';
 import { getChain } from './chains';
 
 const chainConfig = getChain();
@@ -110,7 +110,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
       }]`
     );
 
-  await ElasticSearchIndexerManager.getInstance(ctx).processIndexingQueue();
+  await ElasticSearchManager.index(ctx).processIndexingQueue();
 
   const currentBlocksListFull = [...ctx.blocks];
   let blocksBatchHandlerIndex = 1;
