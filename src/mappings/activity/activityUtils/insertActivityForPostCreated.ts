@@ -37,7 +37,7 @@ export async function insertActivityForPostCreated(
     activity.post = post;
     activity.space = post.rootPost.space;
 
-    activity.aggregated = activity.account.id !== ownerId;
+    // activity.aggregated = activity.account.id !== ownerId;
 
     activity.aggCount = BigInt(
       await getAggregationCount({

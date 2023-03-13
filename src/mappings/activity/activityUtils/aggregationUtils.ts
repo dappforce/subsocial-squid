@@ -28,9 +28,9 @@ export async function getAggregationCount(
     where: {
       event: eventName,
       post: { id: postId },
-      account: {
-        id: Not(accountId)
-      }
+      // account: {
+      //   id: Not(accountId)
+      // }
     }
   });
 

@@ -25,7 +25,7 @@ export async function insertActivityForPostShared(
     ? post.rootPost.ownedByAccount.id
     : null; // Owner of either root post or parent comment
 
-  activity.aggregated = activity.account.id !== ownerId;
+  // activity.aggregated = activity.account.id !== ownerId;
 
   activity.aggCount = BigInt(
     await getAggregationCount({

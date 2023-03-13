@@ -26,16 +26,17 @@ export async function insertActivityForPostReaction(
   activity.post = post;
   activity.space = post.space;
 
-  const aggCountNum = post.upvotesCount + post.downvotesCount - 1;
+  // const aggCountNum = post.upvotesCount + post.downvotesCount - 1;
+  const aggCountNum = post.upvotesCount + post.downvotesCount;
 
   const ownerId = post.parentPost
     ? post.parentPost.ownedByAccount.id
     : post.rootPost
-      ? post.rootPost.ownedByAccount.id
-      : null; // Owner of either root post or parent comment
+    ? post.rootPost.ownedByAccount.id
+    : null; // Owner of either root post or parent comment
 
-  activity.aggregated = activity.account.id !== ownerId;
-  // TODO Must be reviewed and probably fixed
+  // activity.aggregated = activity.account.id !== ownerId;
+
   activity.aggCount = BigInt(ensurePositiveOrZeroValue(aggCountNum));
 
   await updateAggregatedStatus({
