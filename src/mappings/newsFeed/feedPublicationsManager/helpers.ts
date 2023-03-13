@@ -123,6 +123,17 @@ export const deleteAllSpacePostsFromSpaceFollower = async (
     ]
   });
 
+  console.log('-------------');
+  console.log('-------------');
+  console.log('-------------');
+  console.log(
+    'deleteAllSpacePostsFromSpaceFollower relatedFeedItems - ',
+    relatedFeedItems ? relatedFeedItems.length : null
+  );
+  console.log('-------------');
+  console.log('-------------');
+  console.log('-------------');
+
   await ctx.store.remove(relatedFeedItems);
 };
 
@@ -146,6 +157,17 @@ async function deleteAllSpacePostsFromAllSpaceFollowers(
     }
   });
 
+  console.log('-------------');
+  console.log('-------------');
+  console.log('-------------');
+  console.log(
+    'deleteAllSpacePostsFromAllSpaceFollowers relatedFeedItems - ',
+    feedsForDelete ? feedsForDelete.length : null
+  );
+  console.log('-------------');
+  console.log('-------------');
+  console.log('-------------');
+
   await ctx.store.remove(feedsForDelete);
 }
 
@@ -164,6 +186,18 @@ async function deleteAllAccountPostsFromAccountFollower(
     }
   });
 
+  console.log('-------------');
+  console.log('-------------');
+  console.log('-------------');
+  console.log(
+    'deleteAllAccountPostsFromAccountFollower relatedFeedItems - ',
+    feedsForDelete ? feedsForDelete.length : null
+  );
+  console.log('-------------');
+  console.log('-------------');
+  console.log('-------------');
+
+
   await ctx.store.remove(feedsForDelete);
 }
 async function deleteAllAccountPostsFromAllAccountFollowers(
@@ -181,6 +215,17 @@ async function deleteAllAccountPostsFromAllAccountFollowers(
       }
     }
   });
+
+  console.log('-------------');
+  console.log('-------------');
+  console.log('-------------');
+  console.log(
+    'deleteAllAccountPostsFromAllAccountFollowers relatedFeedItems - ',
+    feedsForDelete ? feedsForDelete.length : null
+  );
+  console.log('-------------');
+  console.log('-------------');
+  console.log('-------------');
 
   await ctx.store.remove(feedsForDelete);
 }

@@ -12,7 +12,7 @@ import { PostCreatedData, SpaceCountersAction } from '../../common/types';
 import { ensurePost } from './common';
 import { Ctx } from '../../processor';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postCreated(
@@ -64,14 +64,14 @@ export async function postCreated(
     return;
   }
 
+  if (post.sharedPost) return;
+
   await FeedPublicationsManager.getInstance().handleFeedPublications(
     syntheticEventName,
     { post, account, activity, ctx }
   );
 
-  if (post.sharedPost) return;
-
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
     {
       account: post.ownedByAccount,
@@ -113,7 +113,7 @@ async function handlePostShare(
     throw new CommonCriticalError();
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
     {
       account: sharedPost.ownedByAccount,

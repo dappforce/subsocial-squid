@@ -9,7 +9,7 @@ import {
 import { ensureReaction } from './common';
 import { Ctx } from '../../processor';
 import { PostReactionCreatedData } from '../../common/types';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postReactionCreated(
@@ -77,7 +77,7 @@ export async function postReactionCreated(
     throw new CommonCriticalError();
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
     {
       account: reaction.account,

@@ -6,7 +6,7 @@ import { setActivity } from '../activity';
 import { getAccountFollowersEntityId } from '../../common/utils';
 import { AccountFollowers, EventName } from '../../model';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 
 export async function accountUnfollowed(
   ctx: Ctx,
@@ -45,7 +45,7 @@ export async function accountUnfollowed(
   currentFollowingCountOfFollowerAcc -= 1;
   await ctx.store.remove(accountFollowersEntity);
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     EventName.AccountUnfollowed,
     {
       account: followerAccount,

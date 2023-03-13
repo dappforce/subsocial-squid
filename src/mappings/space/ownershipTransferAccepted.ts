@@ -8,7 +8,7 @@ import { SpaceOwnershipTransferAcceptedData } from '../../common/types';
 import { setActivity } from '../activity';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { getOrCreateAccount } from '../account';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function spaceOwnershipTransferAccepted(
@@ -43,7 +43,7 @@ export async function spaceOwnershipTransferAccepted(
     throw new CommonCriticalError();
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     EventName.SpaceOwnershipTransferAccepted,
     {
       account: space.ownedByAccount,

@@ -6,7 +6,7 @@ import { setActivity } from '../activity';
 import { getAccountFollowersEntityId } from '../../common/utils';
 import { AccountFollowers, EventName } from '../../model';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 
 export async function accountFollowed(
   ctx: Ctx,
@@ -51,7 +51,7 @@ export async function accountFollowed(
 
   await ctx.store.save(newAccountFollowersEnt);
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     EventName.AccountFollowed,
     {
       account: followerAccount,

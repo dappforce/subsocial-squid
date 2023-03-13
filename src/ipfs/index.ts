@@ -58,28 +58,28 @@ export class IpfsDataManager {
 
   private async fetchContent(cid: IpfsCid, timeout?: number) {
     // TODO remove debug mode
-    return null;
-    // const cidEnsured = asIpfsCid(cid);
-    //
-    // if (!cidEnsured) return null;
-    //
-    // const isCbor = cidEnsured.code === CID_KIND.CBOR;
-    //
-    // if (isCbor) {
-    //   const res = await this.ipfsClient.dag.get(cidEnsured, { timeout });
-    //   return res.value;
-    // } else {
-    //   const res = await axios.get(
-    //     `${
-    //       this.ipfsReadOnlyNodeUrl
-    //     }/ipfs/${cidEnsured.toV1()}?timeout=${timeout}`,
-    //     {
-    //       responseType: 'arraybuffer'
-    //     }
-    //   );
-    //
-    //   const data = new Uint8Array(res.data);
-    //   return JSON.parse(String.fromCharCode(...data));
-    // }
+    // return null;
+    const cidEnsured = asIpfsCid(cid);
+
+    if (!cidEnsured) return null;
+
+    const isCbor = cidEnsured.code === CID_KIND.CBOR;
+
+    if (isCbor) {
+      const res = await this.ipfsClient.dag.get(cidEnsured, { timeout });
+      return res.value;
+    } else {
+      const res = await axios.get(
+        `${
+          this.ipfsReadOnlyNodeUrl
+        }/ipfs/${cidEnsured.toV1()}?timeout=${timeout}`,
+        {
+          responseType: 'arraybuffer'
+        }
+      );
+
+      const data = new Uint8Array(res.data);
+      return JSON.parse(String.fromCharCode(...data));
+    }
   }
 }

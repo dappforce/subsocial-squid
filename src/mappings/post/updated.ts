@@ -19,7 +19,7 @@ import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postUpdated(
@@ -122,7 +122,7 @@ export async function postUpdated(
 
   if (!activity) return;
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
     {
       account: post.ownedByAccount,

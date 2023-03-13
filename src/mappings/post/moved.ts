@@ -13,7 +13,7 @@ import { Ctx } from '../../processor';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchIndexerManager } from '../../elasticsearch';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 
 export async function postMoved(
   ctx: Ctx,
@@ -105,7 +105,7 @@ export async function postMoved(
     throw new CommonCriticalError();
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
     {
       account: post.ownedByAccount,

@@ -10,7 +10,7 @@ import {
   EntityProvideFailWarning
 } from '../../common/errors';
 import { Activity, EventName } from '../../model';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function spaceCreated(ctx: Ctx, eventData: SpaceCreatedData) {
@@ -45,7 +45,7 @@ export async function spaceCreated(ctx: Ctx, eventData: SpaceCreatedData) {
     throw new CommonCriticalError();
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     EventName.SpaceCreated,
     {
       account: space.ownedByAccount,

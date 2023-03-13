@@ -5,7 +5,7 @@ import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { EntityProvideFailWarning } from '../../common/errors';
 import { Activity, EventName, Space } from '../../model';
 import { ensurePositiveOrZeroValue } from '../../common/utils';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 import { setActivity } from '../activity';
 import { processSpaceFollowingUnfollowingRelations } from './common';
@@ -40,7 +40,7 @@ export async function spaceUnfollowed(
     return;
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     EventName.SpaceUnfollowed,
     {
       account: followerAccount,

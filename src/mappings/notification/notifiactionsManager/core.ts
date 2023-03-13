@@ -36,8 +36,8 @@ export abstract class NotificationsHandlersManager {
   ): Promise<void>;
 }
 
-export class NotificationsFeedManager extends NotificationsHandlersManager {
-  private static instance: NotificationsFeedManager;
+export class NotificationsManager extends NotificationsHandlersManager {
+  private static instance: NotificationsManager;
 
   private processorContext: Ctx | null = null;
 
@@ -46,11 +46,11 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
     Array<(params: NotificationHandlerInputParams) => Promise<void>>
   > = new Map();
 
-  static getInstance(): NotificationsFeedManager {
-    if (!NotificationsFeedManager.instance) {
-      NotificationsFeedManager.instance = new NotificationsFeedManager();
+  static getInstance(): NotificationsManager {
+    if (!NotificationsManager.instance) {
+      NotificationsManager.instance = new NotificationsManager();
     }
-    return NotificationsFeedManager.instance;
+    return NotificationsManager.instance;
   }
 
   constructor() {

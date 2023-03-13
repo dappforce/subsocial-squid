@@ -15,7 +15,7 @@ import {
   getExperimentalFieldsFromIPFSContent,
   getJoinedList
 } from '../../common/utils';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function spaceUpdated(
@@ -81,7 +81,7 @@ export async function spaceUpdated(
     throw new CommonCriticalError();
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     EventName.SpaceUpdated,
     {
       account: space.ownedByAccount,

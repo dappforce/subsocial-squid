@@ -26,7 +26,7 @@ import { handleDomains } from './mappings/domain';
 import { splitIntoBatches } from './common/utils';
 import { ElasticSearchIndexerManager } from './elasticsearch';
 import { getChain } from './chains';
-import { NotificationsFeedManager } from './mappings/notification/notifiactionsManager';
+import { NotificationsManager } from './mappings/notification/notifiactionsManager';
 
 const chainConfig = getChain();
 
@@ -101,7 +101,7 @@ export type EventItem = BatchProcessorEventItem<typeof processor>;
 export type Ctx = BatchContext<Store, Item>;
 export type Block = BatchBlock<Item>;
 
-NotificationsFeedManager.getInstance().initHandlersMatrix();
+NotificationsManager.getInstance().initHandlersMatrix();
 
 processor.run(new TypeormDatabase(), async (ctx) => {
   ctx.log

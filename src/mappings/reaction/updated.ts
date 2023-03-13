@@ -12,7 +12,7 @@ import {
 import { Ctx } from '../../processor';
 import { PostReactionUpdatedData } from '../../common/types';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postReactionUpdated(
@@ -78,7 +78,7 @@ export async function postReactionUpdated(
     throw new CommonCriticalError();
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
     {
       account: reaction.account,

@@ -1,1 +1,1 @@
-export { NotificationsFeedManager, NotificationsHandlersManager } from './core';
+export { NotificationsManager, NotificationsHandlersManager } from './core';

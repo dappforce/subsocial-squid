@@ -17,7 +17,7 @@ import {
 } from '../../common/errors';
 import { PostReactionDeletedData } from '../../common/types';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-import { NotificationsFeedManager } from '../notification/notifiactionsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postReactionDeleted(
@@ -77,7 +77,7 @@ export async function postReactionDeleted(
     throw new CommonCriticalError();
   }
 
-  await NotificationsFeedManager.getInstance().handleNotifications(
+  await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
     {
       account: reaction.account,
