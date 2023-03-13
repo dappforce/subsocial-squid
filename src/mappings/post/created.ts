@@ -90,15 +90,15 @@ async function handlePostShare(
 ): Promise<void> {
   if (!newPost.sharedPost) return;
 
-  const originSharedPost = newPost.sharedPost;
+  const sharedPost = newPost.sharedPost;
   const syntheticEventName = getSyntheticEventName(
     EventName.PostShared,
     newPost
   );
 
-  originSharedPost.sharesCount += 1;
+  sharedPost.sharesCount += 1;
 
-  await ctx.store.save(originSharedPost);
+  await ctx.store.save(sharedPost);
 
   const activity = await setActivity({
     account: callerAccount,
@@ -116,8 +116,9 @@ async function handlePostShare(
   await NotificationsFeedManager.getInstance().handleNotifications(
     syntheticEventName,
     {
-      account: originSharedPost.ownedByAccount,
-      post: originSharedPost,
+      account: sharedPost.ownedByAccount,
+      post: newPost,
+      sharedPost,
       activity,
       ctx
     }

@@ -19,6 +19,7 @@ export type NotificationsBehaviour = Partial<
 export type NotificationHandlerInputParams = {
   account: Account | string;
   post?: Post;
+  sharedPost?: Post;
   reaction?: Reaction;
   space?: Space | null;
   spacePrev?: Space | null;
@@ -55,6 +56,7 @@ type NotificationsParamsOnPostDeleted = NotificationsParamsBase & {
 
 type NotificationsParamsOnPostShared = NotificationsParamsBase & {
   post: Post;
+  sharedPost: Post | null;
 };
 
 type NotificationsParamsOnPostMoved = NotificationsParamsBase & {

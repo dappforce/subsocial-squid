@@ -14,6 +14,7 @@ import { notificationsHelpers } from './helpers';
 import { In, Not } from 'typeorm';
 import { FindManyOptions } from '@subsquid/typeorm-store/src/store';
 import { getEntityIdFromEntityOrString } from '../../../common/utils';
+import { getTargetAccForNotificationForAcc } from './utils';
 
 export abstract class NotificationsHandlersManager {
   abstract addNotificationForAccount(
@@ -97,110 +98,16 @@ export class NotificationsFeedManager extends NotificationsHandlersManager {
   async addNotificationForAccount(
     params: NotificationHandlerParamsWithTarget
   ): Promise<void> {
-    const {
-      target,
-      account,
-      post,
-      space,
-      activity,
-      newOwner,
-      followingAccount,
-      followingSpace,
-      ctx
-    } = params;
-
-    let targetAccount: Account | string | null = null;
-
-    const paramsWarning = () => {
-      InvalidNotificationHandlerParamsForTargetWarn(
-        activity.event,
-        target,
-        ctx
-      );
-    };
-    // TODO refactor adding notifications for shared posts - add condition
-    //  for Shared Event and handle both Shared and Origin post (right now here
-    //  SharedPost === Post which has been shared, but not exactly new post which
-    //  contains shared post and origin)
-    switch (target) {
-      case 'OriginPostOwner':
-      case 'SharedPostOwner': {
-        if (!post || !post.ownedByAccount) {
-          paramsWarning();
-          break;
-        }
-        targetAccount = post.ownedByAccount;
-        break;
-      }
-      case 'SharedPostSpaceOwner':
-      case 'OriginPostSpaceOwner': {
-        if (!post || !post.space || !post.space.ownedByAccount) {
-          paramsWarning();
-          break;
-        }
-        targetAccount = post.space.ownedByAccount;
-        break;
-      }
-      case 'RootPostOwner': {
-        if (!post || !post.rootPost || !post.rootPost.ownedByAccount) {
-          paramsWarning();
-          break;
-        }
-        targetAccount = post.rootPost.ownedByAccount;
-        break;
-      }
-      case 'ParentPostOwner': {
-        if (!post || !post.parentPost || !post.parentPost.ownedByAccount) {
-          paramsWarning();
-          break;
-        }
-        targetAccount = post.parentPost.ownedByAccount;
-        break;
-      }
-      case 'RootPostSpaceOwner': {
-        if (
-          !post ||
-          !post.rootPost ||
-          !post.rootPost.space ||
-          !post.rootPost.space.ownedByAccount
-        ) {
-          paramsWarning();
-          console.dir(post, { depth: null });
-          break;
-        }
-        targetAccount = post.rootPost.space.ownedByAccount;
-        break;
-      }
-      case 'SpaceOwnerAccount': {
-        if (!space || !space.ownedByAccount) {
-          paramsWarning();
-          break;
-        }
-        targetAccount = space.ownedByAccount;
-        break;
-      }
-      case 'SpaceNewOwnerAccount': {
-        if (!newOwner) {
-          paramsWarning();
-          break;
-        }
-        targetAccount = newOwner;
-        break;
-      }
-      case 'FollowingAccount': {
-        if (!followingAccount) {
-          paramsWarning();
-          break;
-        }
-        targetAccount = followingAccount;
-        break;
-      }
-      default:
-    }
+    let targetAccount: Account | string | null =
+      getTargetAccForNotificationForAcc(params);
 
     if (!targetAccount) return;
 
-    await notificationsHelpers.add.one.forAccount(targetAccount, activity, ctx);
+    await notificationsHelpers.add.one.forAccount(
+      targetAccount,
+      params.activity,
+      params.ctx
+    );
   }
 
   async addNotificationForAccountFollowers(

@@ -26,7 +26,7 @@ export const addNotificationForAccount = async (
   const notification = new Notification({
     id: getNotificationEntityId(accountInst.id, activity.id),
     account: accountInst,
-    activity: activity
+    activity
   });
 
   await ctx.store.save(notification);

@@ -43,14 +43,18 @@ const onPostShared: NotificationsBehaviour = {
   ]
 };
 const onCommentShared: NotificationsBehaviour = {
-  addNotificationForAccount: ['OriginPostSpaceOwner', 'SharedPostOwner']
+  addNotificationForAccount: [
+    'SharedPostOwner',
+    'SharedPostSpaceOwner',
+    'SharedPostRootPostSpaceOwner'
+  ]
 };
 
 const onCommentReplyShared: NotificationsBehaviour = {
   addNotificationForAccount: [
-    'SharedPostSpaceOwner',
-    'RootPostOwner',
-    'ParentPostOwner'
+    'SharedPostOwner',
+    'SharedPostRootPostOwner',
+    'SharedPostParentPostOwner'
   ]
 };
 
