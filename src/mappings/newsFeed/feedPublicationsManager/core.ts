@@ -92,8 +92,11 @@ export class FeedPublicationsManager extends FeedHandlersManager {
     };
 
     let originPostForProcessing: Post | undefined = post;
-    if (activity.event === EventName.PostShared && post && post.sharedPost)
-      originPostForProcessing = post.sharedPost;
+    // if (activity.event === EventName.PostShared && post && post.sharedPost) {
+    //   originPostForProcessing = post.sharedPost;
+    //   console.log('OriginPostOwnerFollowers - originPostForProcessing');
+    //   console.dir(originPostForProcessing, { depth: null });
+    // }
 
     switch (target) {
       case 'OriginPostOwnerFollowers': {
@@ -194,12 +197,12 @@ export class FeedPublicationsManager extends FeedHandlersManager {
         break;
       }
       case 'SpaceFollowerAccount': {
-        if (!post || !post.space || !account) {
+        if (!space || !account) {
           paramsWarning();
           break;
         }
         await feedPublicationHelpers.delete.all.spacePosts.fromSpaceFollower(
-          getEntityIdFromEntityOrString(post.space),
+          getEntityIdFromEntityOrString(space),
           getEntityIdFromEntityOrString(account),
           ctx
         );

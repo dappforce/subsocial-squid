@@ -16,7 +16,7 @@ import { EventName } from '../../../model';
  */
 
 /**
- * POST CREATED
+ * POST
  */
 const onPostCreated: FeedPublicationsBehaviour = {
   addFeedPublicationForAccount: [

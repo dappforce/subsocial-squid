@@ -15,7 +15,8 @@ export async function insertActivityForSpaceFollowedUnfollowed(
   const { activity, space, ctx } = params;
 
   activity.space = space;
-  activity.aggregated = activity.account.id !== space.ownedByAccount.id;
+  activity.aggregated = true;
+  // activity.aggregated = activity.account.id !== space.ownedByAccount.id;
   activity.aggCount = BigInt(
     // ensurePositiveOrZeroValue(space.followersCount - 1)
     ensurePositiveOrZeroValue(space.followersCount)

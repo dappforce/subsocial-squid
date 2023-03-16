@@ -93,7 +93,7 @@ async function handlePostShare(
   const sharedPost = newPost.sharedPost;
   const syntheticEventName = getSyntheticEventName(
     EventName.PostShared,
-    newPost
+    sharedPost
   );
 
   sharedPost.sharesCount += 1;

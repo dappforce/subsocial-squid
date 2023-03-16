@@ -113,8 +113,9 @@ export const getSyntheticEventName = (
   switch (originEvent) {
     case EventName.PostCreated:
       if (!post.rootPost) return EventName.PostCreated;
-      if (post.rootPost) return EventName.CommentCreated;
-      if (post.parentPost) return EventName.CommentReplyCreated;
+      if (post.rootPost && !post.parentPost) return EventName.CommentCreated;
+      if (post.rootPost && post.parentPost)
+        return EventName.CommentReplyCreated;
       break;
 
     case EventName.PostShared:
@@ -306,7 +307,9 @@ export function getExperimentalFieldsFromIPFSContent<
   return null;
 }
 
-export function getEntityIdFromEntityOrString(entityOrString: Entity | string): string {
+export function getEntityIdFromEntityOrString(
+  entityOrString: Entity | string
+): string {
   return typeof entityOrString === 'string'
     ? entityOrString
     : entityOrString.id;

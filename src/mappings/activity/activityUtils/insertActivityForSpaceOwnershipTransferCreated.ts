@@ -16,7 +16,7 @@ export async function insertActivityForSpaceOwnershipTransferCreated(
 
   activity.space = space;
   activity.newOwner = newOwner;
-  activity.aggregated = false;
+  activity.aggregated = true;
   activity.aggCount = BigInt(0);
   return activity;
 }

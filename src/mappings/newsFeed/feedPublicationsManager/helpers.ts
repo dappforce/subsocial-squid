@@ -120,23 +120,44 @@ export const deleteAllSpacePostsFromSpaceFollower = async (
           ])
         }
       }
-    ]
+    ],
+    relations: {
+      activity: {
+        post: {
+          ownedByAccount: true
+        }
+      }
+    }
   });
 
-  console.log('-------------');
-  console.log('-------------');
-  console.log('-------------');
-  console.log(
-    'deleteAllSpacePostsFromSpaceFollower relatedFeedItems - ',
-    relatedFeedItems ? relatedFeedItems.length : null
-  );
-  console.log('-------------');
-  console.log('-------------');
-  console.log('-------------');
+  const involvedPostOwnerIds = relatedFeedItems
+    .map((f) => f.activity.post?.ownedByAccount.id)
+    .filter((id) => !!id);
 
-  await ctx.store.remove(relatedFeedItems);
+  const accountFollowers = await ctx.store.find(AccountFollowers, {
+    where: {
+      followingAccount: { id: In(involvedPostOwnerIds) },
+      followerAccount: { id: followerAccountId }
+    },
+    relations: {
+      followingAccount: true
+    }
+  });
+
+  const accountsToIgnore = new Set(
+    accountFollowers.map((af) => af.followingAccount.id)
+  );
+
+  await ctx.store.remove(
+    relatedFeedItems.filter(
+      (f) =>
+        f.activity.post &&
+        !accountsToIgnore.has(f.activity.post.ownedByAccount.id)
+    )
+  );
 };
 
+// TODO add additional check to avoid redundant removes (removing wrong items in case target account has cross-following)
 async function deleteAllSpacePostsFromAllSpaceFollowers(
   spaceId: string,
   ctx: Ctx
@@ -157,17 +178,6 @@ async function deleteAllSpacePostsFromAllSpaceFollowers(
     }
   });
 
-  console.log('-------------');
-  console.log('-------------');
-  console.log('-------------');
-  console.log(
-    'deleteAllSpacePostsFromAllSpaceFollowers relatedFeedItems - ',
-    feedsForDelete ? feedsForDelete.length : null
-  );
-  console.log('-------------');
-  console.log('-------------');
-  console.log('-------------');
-
   await ctx.store.remove(feedsForDelete);
 }
 
@@ -183,23 +193,40 @@ async function deleteAllAccountPostsFromAccountFollower(
         account: { id: followingAccountId },
         event: In([EventName.PostCreated, EventName.PostShared])
       }
+    },
+    relations: {
+      activity: {
+        space: true
+      }
     }
   });
 
-  console.log('-------------');
-  console.log('-------------');
-  console.log('-------------');
-  console.log(
-    'deleteAllAccountPostsFromAccountFollower relatedFeedItems - ',
-    feedsForDelete ? feedsForDelete.length : null
+  const involvedSpaceIds = feedsForDelete
+    .map((f) => f.activity.space?.id)
+    .filter((id) => !!id);
+
+  const spaceFollowers = await ctx.store.find(SpaceFollowers, {
+    where: {
+      followingSpace: { id: In(involvedSpaceIds) },
+      followerAccount: { id: followerAccountId }
+    },
+    relations: {
+      followingSpace: true
+    }
+  });
+
+  const spacesToIgnore = new Set(
+    spaceFollowers.map((sf) => sf.followingSpace.id)
   );
-  console.log('-------------');
-  console.log('-------------');
-  console.log('-------------');
 
-
-  await ctx.store.remove(feedsForDelete);
+  await ctx.store.remove(
+    feedsForDelete.filter(
+      (f) => f.activity.space && !spacesToIgnore.has(f.activity.space.id)
+    )
+  );
 }
+
+// TODO add additional check to avoid redundant removes (removing wrong items in case target account has cross-following)
 async function deleteAllAccountPostsFromAllAccountFollowers(
   accountId: string,
   ctx: Ctx
@@ -215,17 +242,6 @@ async function deleteAllAccountPostsFromAllAccountFollowers(
       }
     }
   });
-
-  console.log('-------------');
-  console.log('-------------');
-  console.log('-------------');
-  console.log(
-    'deleteAllAccountPostsFromAllAccountFollowers relatedFeedItems - ',
-    feedsForDelete ? feedsForDelete.length : null
-  );
-  console.log('-------------');
-  console.log('-------------');
-  console.log('-------------');
 
   await ctx.store.remove(feedsForDelete);
 }

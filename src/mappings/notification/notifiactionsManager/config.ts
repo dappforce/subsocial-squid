@@ -45,7 +45,6 @@ const onPostShared: NotificationsBehaviour = {
 const onCommentShared: NotificationsBehaviour = {
   addNotificationForAccount: [
     'SharedPostOwner',
-    'SharedPostSpaceOwner',
     'SharedPostRootPostSpaceOwner'
   ]
 };

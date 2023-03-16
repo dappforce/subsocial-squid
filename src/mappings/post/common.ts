@@ -86,7 +86,10 @@ export const ensurePost = async ({
 
   let space = null;
 
-  if (eventData.postKind === PostKind.RegularPost) {
+  if (
+    eventData.postKind === PostKind.RegularPost ||
+    (eventData.postKind === PostKind.SharedPost && !eventData.rootPostId)
+  ) {
     space = await getEntityWithRelations.space(eventData.spaceId, ctx);
   }
   /**

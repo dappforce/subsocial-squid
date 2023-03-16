@@ -1,11 +1,6 @@
 import { NotificationHandlerParamsWithTarget } from '../types';
-import { Ctx } from '../../../processor';
 import { Account, EventName, Notification } from '../../../model';
 import { InvalidNotificationHandlerParamsForTargetWarn } from '../common';
-import { NotificationFeedTarget } from '../../../common/types';
-import { FindManyOptions } from '@subsquid/typeorm-store/src/store';
-import { getEntityIdFromEntityOrString } from '../../../common/utils';
-import { In, Not } from 'typeorm';
 
 export function getTargetAccForNotificationForAcc(
   params: NotificationHandlerParamsWithTarget
