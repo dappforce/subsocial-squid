@@ -9,7 +9,7 @@ import { SpaceUpdatedData } from '../../common/types';
 import { StorageDataManager } from '../../storage';
 import { setActivity } from '../activity';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { ElasticSearchManager } from '../../elasticsearch';
 import {
   getBodySummary,
   getExperimentalFieldsFromIPFSContent,
@@ -67,7 +67,7 @@ export async function spaceUpdated(
 
   await ctx.store.save(space);
 
-  ElasticSearchIndexerManager.getInstance(ctx).addToQueue(space);
+  ElasticSearchManager.index(ctx).addToQueue(space);
 
   const activity = await setActivity({
     account: eventData.accountId,

@@ -4,7 +4,7 @@ import { processSpaceFollowingUnfollowingRelations } from '../spaceFollows';
 import { Ctx } from '../../processor';
 import { ensureSpace } from './common';
 import { SpaceCreatedData } from '../../common/types';
-import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { ElasticSearchManager } from '../../elasticsearch';
 import {
   CommonCriticalError,
   EntityProvideFailWarning
@@ -24,7 +24,7 @@ export async function spaceCreated(ctx: Ctx, eventData: SpaceCreatedData) {
 
   await ctx.store.save(space);
 
-  ElasticSearchIndexerManager.getInstance(ctx).addToQueue(space);
+  ElasticSearchManager.index(ctx).addToQueue(space);
 
   await processSpaceFollowingUnfollowingRelations(
     account,

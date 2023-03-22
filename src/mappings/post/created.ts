@@ -11,7 +11,7 @@ import {
 import { PostCreatedData, SpaceCountersAction } from '../../common/types';
 import { ensurePost } from './common';
 import { Ctx } from '../../processor';
-import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { ElasticSearchManager } from '../../elasticsearch';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
@@ -31,7 +31,7 @@ export async function postCreated(
 
   const syntheticEventName = getSyntheticEventName(EventName.PostCreated, post);
 
-  ElasticSearchIndexerManager.getInstance(ctx).addToQueue(post);
+  ElasticSearchManager.index(ctx).addToQueue(post);
 
   post.ownedByAccount.ownedPostsCount += 1;
 
@@ -69,7 +69,7 @@ export async function postCreated(
   await FeedPublicationsManager.getInstance().handleFeedPublications(
     syntheticEventName,
     { post, account, activity, ctx }
-  );
+    );
 
   await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
@@ -79,7 +79,7 @@ export async function postCreated(
       activity,
       ctx
     }
-  );
+    );
 }
 
 async function handlePostShare(
@@ -122,10 +122,10 @@ async function handlePostShare(
       activity,
       ctx
     }
-  );
+    );
 
   await FeedPublicationsManager.getInstance().handleFeedPublications(
     syntheticEventName,
     { post: newPost, account: newPost.ownedByAccount, activity, ctx }
-  );
+    );
 }
