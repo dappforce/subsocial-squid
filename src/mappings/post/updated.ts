@@ -59,8 +59,9 @@ export async function postUpdated(
   );
 
   if (typeof eventData.hidden === 'boolean') post.hidden = eventData.hidden;
+  if (eventData.ipfsSrc) post.content = eventData.ipfsSrc;
+
   post.ownedByAccount = ownedByAccount;
-  post.content = eventData.ipfsSrc;
   post.updatedAtTime = eventData.timestamp;
 
   if (postIpfsContent) {
