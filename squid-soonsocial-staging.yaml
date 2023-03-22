@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: soonsocial-staging
-version: 11215
+version: 11217
 description: |-
   Squid for Soonsocial
 build:

@@ -40,14 +40,16 @@ export async function insertActivityForPostCreated(
 
     activity.space = post.rootPost.space;
 
-    activity.aggCount = BigInt(
-      await getAggregationCount({
-        eventName: activity.event,
-        accountId: activity.account.id,
-        postId: post.id,
-        ctx
-      })
-    );
+    activity.aggCount =
+      BigInt(
+        await getAggregationCount({
+          eventName: activity.event,
+          accountId: activity.account.id,
+          postId: post.id,
+          ctx
+        })
+      ) + 1n;
+
     await updateAggregatedStatus({
       eventName: activity.event,
       post,
