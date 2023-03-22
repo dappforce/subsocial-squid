@@ -11,7 +11,7 @@ import { PostMovedData, SpaceCountersAction } from '../../common/types';
 import { postFollowed, postUnfollowed } from '../postCommentFollows';
 import { Ctx } from '../../processor';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-iimport { ElasticSearchManager } from '../../elasticsearch';
+import { ElasticSearchManager } from '../../elasticsearch';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 

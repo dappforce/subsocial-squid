@@ -24,11 +24,11 @@
     "@subsocial/elasticsearch": "^0.8.1",
     "@subsocial/types": "^0.6.11",
     "@subsocial/utils": "^0.6.11",
-    "@subsquid/archive-registry": "^2.1.6",
-    "@subsquid/cli": "^2.1.2",
+    "@subsquid/archive-registry": "^2.1.9",
+    "@subsquid/cli": "^2.2.0",
     "@subsquid/graphql-server": "^3.3.2",
     "@subsquid/ss58": "^0.1.4",
-    "@subsquid/substrate-processor": "^2.4.0",
+    "@subsquid/substrate-processor": "^2.4.1",
     "@subsquid/typeorm-migration": "^0.1.6",
     "@subsquid/typeorm-store": "^0.2.2",
     "@subsquid/util-internal-hex": "^0.0.2",
@@ -56,7 +56,7 @@
     "yesql": "^5.0.0"
   },
   "devDependencies": {
-    "@subsquid/substrate-metadata-explorer": "^1.1.1",
+    "@subsquid/substrate-metadata-explorer": "^1.1.2",
     "@subsquid/substrate-typegen": "^2.2.1",
     "@subsquid/typeorm-codegen": "^0.3.3",
     "@types/blake2b": "^2.1.0",
