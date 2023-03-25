@@ -98,8 +98,8 @@ export const buildElasticSearchQuery = (
         terms: {
           ...(() => {
             const tagsScope: Record<string, Array<string>> = {};
-            for (const tagF of tagFields) {
-              tagsScope[tagF] = tags.map((t) => t.toLowerCase());
+            for (const tagField of tagFields) {
+              tagsScope[tagField] = tags;
             }
             return tagsScope;
           })()

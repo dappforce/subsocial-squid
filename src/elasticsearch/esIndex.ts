@@ -162,7 +162,6 @@ export class ElasticSearchIndexerManager {
   ) {
     for (const batch of splitIntoBatches([...list.entries()], 100)) {
       const promises = batch.map(([id, content]) => {
-        console.log('content - ', content);
         return handler({ id, content });
       });
 
