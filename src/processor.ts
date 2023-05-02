@@ -24,8 +24,9 @@ import { handlePostReactions } from './mappings/reaction';
 import { handleDomains } from './mappings/domain';
 
 import { splitIntoBatches } from './common/utils';
-import { ElasticSearchIndexerManager } from './elasticsearch';
+import { ElasticSearchManager } from './elasticsearch';
 import { getChain } from './chains';
+import { NotificationsManager } from './mappings/notification/notifiactionsManager';
 
 const chainConfig = getChain();
 
@@ -75,6 +76,9 @@ export const processor = new SubstrateBatchProcessor()
   .addEvent('SpaceOwnership.SpaceOwnershipTransferAccepted', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
+  .addEvent('SpaceOwnership.SpaceOwnershipTransferCreated', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
   .addEvent('AccountFollows.AccountFollowed', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
@@ -97,6 +101,8 @@ export type EventItem = BatchProcessorEventItem<typeof processor>;
 export type Ctx = BatchContext<Store, Item>;
 export type Block = BatchBlock<Item>;
 
+NotificationsManager.getInstance().initHandlersMatrix();
+
 processor.run(new TypeormDatabase(), async (ctx) => {
   ctx.log
     .child('sqd:processor')
@@ -110,7 +116,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
       }]`
     );
 
-  await ElasticSearchIndexerManager.getInstance(ctx).processIndexingQueue();
+  await ElasticSearchManager.index(ctx).processIndexingQueue();
 
   const currentBlocksListFull = [...ctx.blocks];
   let blocksBatchHandlerIndex = 1;

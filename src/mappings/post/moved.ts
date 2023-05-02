@@ -4,10 +4,6 @@ import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
 import {
-  addPostToFeeds,
-  deleteSpacePostsFromFeedForAccount
-} from '../newsFeed';
-import {
   CommonCriticalError,
   EntityProvideFailWarning
 } from '../../common/errors';
@@ -15,7 +11,9 @@ import { PostMovedData, SpaceCountersAction } from '../../common/types';
 import { postFollowed, postUnfollowed } from '../postCommentFollows';
 import { Ctx } from '../../processor';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { ElasticSearchManager } from '../../elasticsearch';
+import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 
 export async function postMoved(
   ctx: Ctx,
@@ -81,7 +79,7 @@ export async function postMoved(
 
   await ctx.store.save(post);
 
-  ElasticSearchIndexerManager.getInstance(ctx).addToQueue(post);
+  ElasticSearchManager.index(ctx).addToQueue(post);
 
   if (!newSpaceInst) {
     await postUnfollowed(post, ctx);
@@ -91,8 +89,10 @@ export async function postMoved(
 
   // await updateSpaceForPostChildren(post, newSpaceInst, ctx);
 
+  const syntheticEventName = getSyntheticEventName(EventName.PostMoved, post);
+
   const activity = await setActivity({
-    syntheticEventName: getSyntheticEventName(EventName.PostMoved, post),
+    syntheticEventName,
     spacePrev: prevSpaceInst ?? undefined,
     account,
     post,
@@ -105,9 +105,27 @@ export async function postMoved(
     throw new CommonCriticalError();
   }
 
-  await addPostToFeeds(post, activity, ctx);
+  await NotificationsManager.getInstance().handleNotifications(
+    syntheticEventName,
+    {
+      account: post.ownedByAccount,
+      space: newSpaceInst,
+      spacePrev: prevSpaceInst,
+      post,
+      activity,
+      ctx
+    }
+  );
 
-  if (prevSpaceInst)
-    // TODO account.id should be replaced to post.ownedByAccount.id
-    await deleteSpacePostsFromFeedForAccount(account.id, prevSpaceInst, ctx);
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    syntheticEventName,
+    {
+      account: post.ownedByAccount,
+      space: newSpaceInst ?? null,
+      spacePrev: prevSpaceInst ?? null,
+      post,
+      activity,
+      ctx
+    }
+  );
 }

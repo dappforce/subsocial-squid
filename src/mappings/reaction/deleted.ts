@@ -9,7 +9,6 @@ import {
 import { Ctx } from '../../processor';
 
 import { setActivity } from '../activity';
-import { addNotificationForAccount } from '../notification';
 import { getOrCreateAccount } from '../account';
 import { getSyntheticEventName } from '../../common/utils';
 import {
@@ -18,6 +17,8 @@ import {
 } from '../../common/errors';
 import { PostReactionDeletedData } from '../../common/types';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
+import { NotificationsManager } from '../notification/notifiactionsManager';
+import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postReactionDeleted(
   ctx: Ctx,
@@ -53,17 +54,17 @@ export async function postReactionDeleted(
   await ctx.store.save(post);
 
   const accountInst = await getOrCreateAccount(
-    forced && forcedData
-      ? forcedData.account
-      : eventData.accountId,
+    forced && forcedData ? forcedData.account : eventData.accountId,
     ctx
   );
 
+  const syntheticEventName = getSyntheticEventName(
+    EventName.PostReactionDeleted,
+    post
+  );
+
   const activity = await setActivity({
-    syntheticEventName: getSyntheticEventName(
-      EventName.PostReactionCreated,
-      post
-    ),
+    syntheticEventName,
     account: accountInst,
     post,
     reaction,
@@ -75,5 +76,20 @@ export async function postReactionDeleted(
     new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
     throw new CommonCriticalError();
   }
-  await addNotificationForAccount(post.ownedByAccount, activity, ctx);
+
+  await NotificationsManager.getInstance().handleNotifications(
+    syntheticEventName,
+    {
+      account: reaction.account,
+      post,
+      reaction,
+      activity,
+      ctx
+    }
+  );
+
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    syntheticEventName,
+    { post, account: reaction.account, reaction, activity, ctx }
+  );
 }

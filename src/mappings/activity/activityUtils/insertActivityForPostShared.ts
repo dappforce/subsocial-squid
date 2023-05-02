@@ -19,22 +19,24 @@ export async function insertActivityForPostShared(
   activity.post = post;
   activity.space = post.space;
 
-  const ownerId = post.parentPost
-    ? post.parentPost.ownedByAccount.id
-    : post.rootPost
-    ? post.rootPost.ownedByAccount.id
-    : null; // Owner of either root post or parent comment
+  // const ownerId = post.parentPost
+  //   ? post.parentPost.ownedByAccount.id
+  //   : post.rootPost
+  //   ? post.rootPost.ownedByAccount.id
+  //   : null; // Owner of either root post or parent comment
 
-  activity.aggregated = activity.account.id !== ownerId;
+  activity.aggregated = true;
+  // activity.aggregated = activity.account.id !== ownerId;
 
-  activity.aggCount = BigInt(
-    await getAggregationCount({
-      eventName: activity.event,
-      accountId: activity.account.id,
-      postId: post.id,
-      ctx
-    })
-  );
+  activity.aggCount =
+    BigInt(
+      await getAggregationCount({
+        eventName: activity.event,
+        accountId: activity.account.id,
+        postId: post.id,
+        ctx
+      })
+    ) + 1n;
 
   await updateAggregatedStatus({
     eventName: activity.event,

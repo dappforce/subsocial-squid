@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: soonsocial
-version: 112
+version: 301
 description: |-
   Squid for Soonsocial
 build:
@@ -18,4 +18,7 @@ deploy:
         soonsocial
     cmd: [ "node", "lib/processor" ]
   api:
+    env:
+      CHAIN:
+        soonsocial
     cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "5000", "--dumb-cache-size", "200", "--dumb-cache-max-age", "5000" ]

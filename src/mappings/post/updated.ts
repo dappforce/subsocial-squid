@@ -18,7 +18,9 @@ import { PostUpdatedData, SpaceCountersAction } from '../../common/types';
 import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-import { ElasticSearchIndexerManager } from '../../elasticsearch';
+import { ElasticSearchManager } from '../../elasticsearch';
+import { NotificationsManager } from '../notification/notifiactionsManager';
+import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postUpdated(
   ctx: Ctx,
@@ -57,8 +59,9 @@ export async function postUpdated(
   );
 
   if (typeof eventData.hidden === 'boolean') post.hidden = eventData.hidden;
+  if (eventData.ipfsSrc) post.content = eventData.ipfsSrc;
+
   post.ownedByAccount = ownedByAccount;
-  post.content = eventData.ipfsSrc;
   post.updatedAtTime = eventData.timestamp;
 
   if (postIpfsContent) {
@@ -98,7 +101,7 @@ export async function postUpdated(
 
   await ctx.store.save(post);
 
-  ElasticSearchIndexerManager.getInstance(ctx).addToQueue(post);
+  ElasticSearchManager.index(ctx).addToQueue(post);
 
   await updatePostsCountersInSpace({
     space: post.space ?? null,
@@ -108,11 +111,30 @@ export async function postUpdated(
     ctx
   });
 
-  await setActivity({
-    syntheticEventName: getSyntheticEventName(EventName.PostUpdated, post),
+  const syntheticEventName = getSyntheticEventName(EventName.PostUpdated, post);
+
+  const activity = await setActivity({
+    syntheticEventName,
     account: eventData.accountId,
     post,
     ctx,
     eventData
   });
+
+  if (!activity) return;
+
+  await NotificationsManager.getInstance().handleNotifications(
+    syntheticEventName,
+    {
+      account: post.ownedByAccount,
+      post,
+      activity,
+      ctx
+    }
+  );
+
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    syntheticEventName,
+    { post, account: post.ownedByAccount, activity, ctx }
+  );
 }

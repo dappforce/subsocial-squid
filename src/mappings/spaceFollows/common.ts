@@ -1,74 +1,11 @@
-import {
-  Account,
-  Activity,
-  Space,
-  SpaceFollowers,
-  EventName
-} from '../../model';
+import { Account, Space, SpaceFollowers, EventName } from '../../model';
 import {
   getSpaceFollowersEntityId,
-  decorateEventName,
-  ensurePositiveOrZeroValue
+  decorateEventName
 } from '../../common/utils';
 import { getOrCreateAccount } from '../account';
-import { setActivity } from '../activity';
-import { deleteSpacePostsFromFeedForAccount } from '../newsFeed';
-import {
-  addNotificationForAccount,
-  deleteAllNotificationsAboutSpace
-} from '../notification';
-import { EntityProvideFailWarning } from '../../common/errors';
-import { EventHandlerContext } from '../../common/contexts';
 import { EventData } from '../../common/types';
 import { Ctx } from '../../processor';
-import { getEntityWithRelations } from '../../common/gettersWithRelations';
-
-export async function handleEvent(
-  followerId: string,
-  spaceId: string,
-  ctx: Ctx,
-  eventData: EventData
-): Promise<void> {
-  const { name: eventName } = eventData;
-  const followerAccount = await getOrCreateAccount(followerId, ctx);
-  const eventNameDecorated = decorateEventName(eventName);
-
-  let { followingSpacesCount } = followerAccount;
-
-  const space = await getEntityWithRelations.space(spaceId, ctx);
-  if (!space) {
-    new EntityProvideFailWarning(Space, spaceId, ctx, eventData);
-    return;
-  }
-  await processSpaceFollowingUnfollowingRelations(
-    followerAccount,
-    space,
-    ctx,
-    eventData
-  );
-
-  const activity = await setActivity({
-    account: followerAccount,
-    ctx,
-    space,
-    eventData
-  });
-  if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
-    return;
-  }
-
-  if (eventNameDecorated === EventName.SpaceFollowed) {
-    await addNotificationForAccount(space.ownedByAccount, activity, ctx);
-    followingSpacesCount = !followingSpacesCount ? 1 : followingSpacesCount + 1;
-  } else if (eventNameDecorated === EventName.SpaceUnfollowed) {
-    await deleteSpacePostsFromFeedForAccount(activity.account.id, space, ctx);
-    await deleteAllNotificationsAboutSpace(followerAccount.id, space, ctx);
-    followingSpacesCount = ensurePositiveOrZeroValue(followingSpacesCount - 1);
-  }
-  followerAccount.followingSpacesCount = followingSpacesCount;
-  await ctx.store.save(followerAccount);
-}
 
 export async function processSpaceFollowingUnfollowingRelations(
   follower: Account | string,

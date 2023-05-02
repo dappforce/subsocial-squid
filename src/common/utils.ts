@@ -18,6 +18,7 @@ import { summarizeMd } from '@subsocial/utils';
 import { NamedLink } from '@subsocial/api/types/ipfs';
 import { IpfsContent, supportedIpfsContent } from '../storage/types';
 import { Ctx } from '../processor';
+import { Entity } from '@subsquid/typeorm-store/lib/store';
 
 let subsocialSs58CodecInst: ss58.Codec | null = null;
 
@@ -112,8 +113,9 @@ export const getSyntheticEventName = (
   switch (originEvent) {
     case EventName.PostCreated:
       if (!post.rootPost) return EventName.PostCreated;
-      if (post.rootPost) return EventName.CommentCreated;
-      if (post.parentPost) return EventName.CommentReplyCreated;
+      if (post.rootPost && !post.parentPost) return EventName.CommentCreated;
+      if (post.rootPost && post.parentPost)
+        return EventName.CommentReplyCreated;
       break;
 
     case EventName.PostShared:
@@ -303,4 +305,12 @@ export function getExperimentalFieldsFromIPFSContent<
   if (Object.getOwnPropertyNames(experimentalFields).length > 0)
     return experimentalFields;
   return null;
+}
+
+export function getEntityIdFromEntityOrString(
+  entityOrString: Entity | string
+): string {
+  return typeof entityOrString === 'string'
+    ? entityOrString
+    : entityOrString.id;
 }

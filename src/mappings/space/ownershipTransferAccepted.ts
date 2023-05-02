@@ -1,4 +1,4 @@
-import { Space } from '../../model';
+import { Activity, EventName, Space } from '../../model';
 import {
   CommonCriticalError,
   EntityProvideFailWarning
@@ -8,6 +8,8 @@ import { SpaceOwnershipTransferAcceptedData } from '../../common/types';
 import { setActivity } from '../activity';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { getOrCreateAccount } from '../account';
+import { NotificationsManager } from '../notification/notifiactionsManager';
+import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function spaceOwnershipTransferAccepted(
   ctx: Ctx,
@@ -28,11 +30,38 @@ export async function spaceOwnershipTransferAccepted(
 
   await ctx.store.save(space);
 
-  await setActivity({
+  const activity = await setActivity({
     account: eventData.accountId,
     oldOwner: oldOwnerAccount,
     space,
     ctx,
     eventData
   });
+
+  if (!activity) {
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    throw new CommonCriticalError();
+  }
+
+  await NotificationsManager.getInstance().handleNotifications(
+    EventName.SpaceOwnershipTransferAccepted,
+    {
+      account: space.ownedByAccount,
+      oldOwner: oldOwnerAccount,
+      space,
+      activity,
+      ctx
+    }
+  );
+
+  await FeedPublicationsManager.getInstance().handleFeedPublications(
+    EventName.SpaceOwnershipTransferAccepted,
+    {
+      account: space.ownedByAccount,
+      oldOwner: oldOwnerAccount,
+      space,
+      activity,
+      ctx
+    }
+  );
 }

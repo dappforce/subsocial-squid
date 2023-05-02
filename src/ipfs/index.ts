@@ -57,6 +57,8 @@ export class IpfsDataManager {
   }
 
   private async fetchContent(cid: IpfsCid, timeout?: number) {
+    // TODO remove debug mode
+    // return null;
     const cidEnsured = asIpfsCid(cid);
 
     if (!cidEnsured) return null;

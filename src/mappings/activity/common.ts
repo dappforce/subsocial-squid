@@ -11,6 +11,7 @@ import { getOrCreateAccount } from '../account';
 import * as insertActivityData from './activityUtils';
 import { Ctx } from '../../processor';
 import { EventData } from '../../common/types';
+import { insertActivityForSpaceOwnershipTransferCreated } from './activityUtils/insertActivityForSpaceOwnershipTransferCreated';
 
 export const setActivity = async ({
   account,
@@ -18,6 +19,7 @@ export const setActivity = async ({
   eventData,
   space,
   oldOwner,
+  newOwner,
   post,
   spacePrev,
   reaction,
@@ -31,6 +33,7 @@ export const setActivity = async ({
   space?: Space;
   spacePrev?: Space;
   oldOwner?: Account;
+  newOwner?: Account;
   post?: Post;
   reaction?: Reaction;
   followingAccount?: Account;
@@ -221,6 +224,24 @@ export const setActivity = async ({
   }
 
   /**
+   * SpaceOwnershipTransferCreated
+   */
+  if (
+    eventNameDecorated === EventName.SpaceOwnershipTransferCreated &&
+    newOwner &&
+    account &&
+    space
+  ) {
+    activity =
+      await insertActivityData.insertActivityForSpaceOwnershipTransferCreated({
+        space,
+        newOwner,
+        activity,
+        ctx
+      });
+  }
+
+  /**
    * SpaceOwnershipTransferAccepted
    */
   if (
@@ -228,14 +249,13 @@ export const setActivity = async ({
     oldOwner &&
     space
   ) {
-    activity = await insertActivityData.insertActivityForSpaceOwnershipTransfer(
-      {
+    activity =
+      await insertActivityData.insertActivityForSpaceOwnershipTransferAccepted({
         space,
         oldOwner,
         activity,
         ctx
-      }
-    );
+      });
   }
 
   /**
