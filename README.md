@@ -88,42 +88,42 @@ make serve
 
 ## Search API
 
-Indexer GraphQL API has search query (`searchQuery`) with various parameters for filtering and full text search.
+The Indexer GraphQL API has a search query (`searchQuery`) with various parameters for full text search and filtering.
 
 ### Search query arguments:
 
-- `indexes?: <string>` [ _default:_ `all` ] - _search within all or specific index (`all | spaces | posts`)_
-- `limit?: <number>` [ _default:_ `10` ] - _number of search hits per page._
-- `offset?: <number | null>` [ _default:_ `0` ] - _offset of search hits._
-- `q?: <string>` [ _default:_ `*` ] - _search query._
-- `spaceId?: <string>` - _filter search hits by provided `spaceId`._
-- `tags?: <string[]>` - _filter search hits by provided tags._
+- `indexes?: <string>` [ _default:_ `all` ] - _search within all indices, or a specific index (`all | spaces | posts`)_
+- `limit?: <number>` [ _default:_ `10` ] - _the number of search results per page._
+- `offset?: <number | null>` [ _default:_ `0` ] - _the offset of the search results._
+- `q?: <string>` [ _default:_ `*` ] - _the search query._
+- `spaceId?: <string>` - _filter the search results by the provided `spaceId`._
+- `tags?: <string[]>` - _filter the search results by the provided tags._
 
-All arguments listed above can be used together in any combination, except `spaceId + indexes:spaces`.
+All arguments listed above can be used together in any combination, except for `spaceId + indexes:spaces`.
 
 ### Search query results:
 
-- `err` - _search error if occurred. Can be `null` is not occurred._
+- `err` - _the search result if an error occurred. It can be `null` if no error occurred._
 
-  - `reason: <string>` - _text message of occurred error._
-  - `status: <number>` - _error status code._
+  - `reason: <string>` - _the text message of the error._
+  - `status: <number>` - _the status code of the error._
 
-- `hits` - _search results items list_.
-  - `_content` - _document source._
-    - `name: <string>` - _value of field `name` (actual only for Space entity)._
-    - `about: <string>` - _value of field `about` (actual only for Space entity)._
-    - `username: <string>` - _value of field `username` (actual only for Space entity)._
-    - `title: <string>` - _value of field `title` (actual only for Post entity)._
-    - `body: <string>` - _value of field `body` (actual only for Post entity)._
-    - `spaceId: <string>` - _value of field `spaceId` (actual only for Post entity)._
-    - `tags: <string[]>` - _list of tags._
-  - `_id: <string>` - _document ID (equal to on-chain entity ID)._
+- `hits` - _The list of search results_.
+  - `_content` - _the source of the document._
+    - `name: <string>` - _the value of the `name` field (actual only for Space entity)._
+    - `about: <string>` - _the value of the `about` field (actual only for Space entity)._
+    - `username: <string>` - _the value of the `username` field (actual only for Space entity)._
+    - `title: <string>` - _the value of the `title` field (actual only for Post entity)._
+    - `body: <string>` - _the value of the `body` field (actual only for Post entity)._
+    - `spaceId: <string>` - _the value of the `spaceId` field (actual only for Post entity)._
+    - `tags: <string[]>` - _a list of the tags._
+  - `_id: <string>` - _the document ID (equal to the on-chain entity's ID)._
   - `_index: <string>` - _index particular document is located in._
-  - `_score: <number>` - _search score of particular document._
-- `total` - _total metadata for particular search request._
-  - `limit: <string>` - _number of search hits per page, which has been used for this particular request._
-  - `maxScore: <string>` - _maximum score within results scope of this particular search request._
-  - `offset: <string>` - _page offset, which has been used for this particular request._
-  - `totalResults: <string>` - _total number of hits matched to this particular request._
+  - `_score: <number>` - _the search score of a particular document._
+- `total` - _the total metadata for a particular search request._
+  - `limit: <string>` - _number of search results per page that was used for this particular search request._
+  - `maxScore: <string>` - _the maximum score within the scope of this particular search's results._
+  - `offset: <string>` - _the page offset that was used for this particular search request._
+  - `totalResults: <string>` - _the total number of results matched to this particular search request._
 
-More detailed information about search API schema structure you can find in appropriate [model file](./src/server-extension/models/elasticSearchQuery.model.ts).
+More detailed information about the search API's schema structure can be found in the appropriate [model file](./src/server-extension/models/elasticSearchQuery.model.ts).
