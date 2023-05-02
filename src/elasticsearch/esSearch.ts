@@ -23,7 +23,7 @@ export class ElasticSearchSearchManager {
   private processorContext: Ctx | undefined;
 
   static getInstance(
-    esClient: SubsocialElasticApi,
+    esClient: SubsocialElasticApi | null,
     ctx?: Ctx
   ): ElasticSearchSearchManager {
     if (!ElasticSearchSearchManager.instance) {
@@ -35,13 +35,22 @@ export class ElasticSearchSearchManager {
     return ElasticSearchSearchManager.instance;
   }
 
-  constructor(private esClient: SubsocialElasticApi, processorCtx?: Ctx) {
+  constructor(
+    private esClient: SubsocialElasticApi | null,
+    processorCtx?: Ctx
+  ) {
     this.processorContext = processorCtx;
   }
 
   async query(
     esParams: ElasticQueryParamsWithSpaceIdRaw
   ): Promise<OkOrError<ESQueryResponseContent>> {
+    if (!this.esClient)
+      return {
+        ok: false,
+        err: { reason: 'ES client is not initialised' }
+      };
+
     try {
       const paramsDecorated = getElasticQueryParamsDecorated(esParams);
       const esQuery = buildElasticSearchQuery(paramsDecorated);

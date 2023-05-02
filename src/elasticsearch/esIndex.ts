@@ -12,11 +12,14 @@ import { Entity } from '@subsquid/typeorm-store/lib/store';
 import { splitIntoBatches } from '../common/utils';
 import SpacesMapping from './mappings/spaces.json';
 import PostsMapping from './mappings/posts.json';
+import { getChain } from '../chains';
+import { ProcessorConfig } from '../chains/interfaces/processorConfig';
 
 export class ElasticSearchIndexerManager {
   private static instance: ElasticSearchIndexerManager;
   private processorContext: Ctx | undefined;
   private indexesEnsured: boolean = false;
+  protected chainConfig: ProcessorConfig;
 
   public indexingQueue: Map<
     ESEntityTypeName,
@@ -27,7 +30,7 @@ export class ElasticSearchIndexerManager {
   ]);
 
   static getInstance(
-    esClient: SubsocialElasticApi,
+    esClient: SubsocialElasticApi | null,
     ctx?: Ctx
   ): ElasticSearchIndexerManager {
     if (!ElasticSearchIndexerManager.instance) {
@@ -39,8 +42,12 @@ export class ElasticSearchIndexerManager {
     return ElasticSearchIndexerManager.instance;
   }
 
-  constructor(private esClient: SubsocialElasticApi, processorCtx?: Ctx) {
+  constructor(
+    private esClient: SubsocialElasticApi | null,
+    processorCtx?: Ctx
+  ) {
     this.processorContext = processorCtx;
+    this.chainConfig = getChain().config;
   }
 
   /**
@@ -80,7 +87,7 @@ export class ElasticSearchIndexerManager {
    * be sure that entities are saved in DB after previous DB transaction commit.
    */
   async processIndexingQueue() {
-    if (process.env.ELASTIC_SEARCH_MODE !== 'develop') {
+    if (!this.chainConfig.elasticSearchSyncDisabled && this.esClient) {
       await this.maybeCreateIndices();
 
       for (const [entityType, contentScope] of this.indexingQueue.entries()) {
@@ -173,6 +180,8 @@ export class ElasticSearchIndexerManager {
     indexName: ElasticIndexName,
     mapping: any
   ) {
+    if (this.chainConfig.elasticSearchSyncDisabled || !this.esClient) return;
+
     const result = await this.esClient.client.indices.exists(
       { index: indexName },
       { ignore: [404] }
