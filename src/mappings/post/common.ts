@@ -1,3 +1,5 @@
+import { createPostSlug } from '@subsocial/utils';
+
 import {
   getDateWithoutTime,
   getBodySummary,
@@ -193,7 +195,11 @@ export const ensurePost = async ({
     post.body = postIpfsContent.body;
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
-    post.slug = null;
+    post.slug =
+      createPostSlug(postId, {
+        title: postIpfsContent.title,
+        body: postIpfsContent.body
+      }) ?? null;
     // post.appId = postIpfsContent.appId ?? null;
 
     post.experimental =
