@@ -77,10 +77,12 @@ export async function postUpdated(
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
     post.slug =
-      createPostSlug(eventData.postId, {
-        title: postIpfsContent.title,
-        body: postIpfsContent.body
-      }) ?? null;
+      !postIpfsContent.title && !postIpfsContent.body
+        ? eventData.postId
+        : createPostSlug(eventData.postId, {
+            title: postIpfsContent.title,
+            body: postIpfsContent.body
+          }) ?? null;
     // post.appId = postIpfsContent.appId ?? null;
 
     post.experimental =
@@ -102,6 +104,8 @@ export async function postUpdated(
     // if (meta && !isEmptyArray(meta)) {
     //   post.proposalIndex = meta[0].proposalIndex;
     // }
+  } else {
+    post.slug = eventData.postId;
   }
 
   await ctx.store.save(post);

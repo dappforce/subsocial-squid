@@ -196,10 +196,12 @@ export const ensurePost = async ({
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
     post.slug =
-      createPostSlug(postId, {
-        title: postIpfsContent.title,
-        body: postIpfsContent.body
-      }) ?? null;
+      !postIpfsContent.title && !postIpfsContent.body
+        ? postId
+        : createPostSlug(postId, {
+            title: postIpfsContent.title,
+            body: postIpfsContent.body
+          }) ?? null;
     // post.appId = postIpfsContent.appId ?? null;
 
     post.experimental =
@@ -215,6 +217,8 @@ export const ensurePost = async ({
         ? postIpfsContent.tweet.id
         : null;
     }
+  } else {
+    post.slug = postId;
   }
 
   return post;
