@@ -10,6 +10,7 @@ import {
   ReactionsForceCreatePostReactionCall,
   ReactionsForceDeletePostReactionCall,
   ReactionsUpdatePostReactionCall,
+  ResourceDiscussionsCreateResourceDiscussionCall,
   SpacesCreateSpaceCall,
   SpacesForceCreateSpaceCall,
   SpacesUpdateSpaceCall
@@ -42,7 +43,11 @@ function ensureSpaceId(srcVal: bigint | undefined) {
 export function parsePostCreatedCallArgs(
   ctx: EventContext
 ): CreatePostCallParsedData {
-  let callInst: PostsCreatePostCall | PostsForceCreatePostCall | null = null;
+  let callInst:
+    | PostsCreatePostCall
+    | PostsForceCreatePostCall
+    | ResourceDiscussionsCreateResourceDiscussionCall
+    | null = null;
   let extensionData: v102.PostExtension | null = null;
   let response: CreatePostCallParsedData = {
     ipfsSrc: null,
@@ -78,6 +83,23 @@ export function parsePostCreatedCallArgs(
           owner: addressSs58ToString(owner),
           hidden
         }
+      };
+      break;
+    }
+    case 'ResourceDiscussions.create_resource_discussion': {
+      callInst = new ResourceDiscussionsCreateResourceDiscussionCall(
+        ctx,
+        ctx.event.call!
+      );
+      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+
+      const { spaceId, content } = callInst.asV103;
+
+      extensionData = { __kind: 'RegularPost' };
+      response = {
+        ...response,
+        ...getContentSrcDecorated(content),
+        spaceId: ensureSpaceId(spaceId)
       };
       break;
     }
