@@ -30,8 +30,8 @@ export function getChain(): {
   getApiDecorated: ApiDecorator;
 } {
   switch (process.env.CHAIN) {
-    // case 'crust':
-    //     return require('./crust')
+    case 'xsocial':
+      return withDecorator(require('./xsocial'));
     case 'subsocial':
       return withDecorator(require('./subsocial'));
     case 'soonsocial':

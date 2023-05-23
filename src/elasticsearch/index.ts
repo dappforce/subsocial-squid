@@ -9,6 +9,7 @@ export class ElasticSearchManager {
   protected static esClient: SubsocialElasticApi;
 
   static _getESClientInstance() {
+    if (chainConfig.config.elasticSearchSyncDisabled) return null;
     if (!ElasticSearchManager.esClient) {
       ElasticSearchManager.esClient = new SubsocialElasticApi({
         url: chainConfig.config.elasticSearchEndpoint,

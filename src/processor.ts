@@ -121,7 +121,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
   const currentBlocksListFull = [...ctx.blocks];
   let blocksBatchHandlerIndex = 1;
 
-  // TODO improve for work with different chains (subsocial || soonsocial)
+  // TODO improve for work with different chains (subsocial || soonsocial || xsocial)
   for (const blocksBatch of splitIntoBatches(
     currentBlocksListFull,
     ctx.blocks[ctx.blocks.length - 1].header.height > 11000000
@@ -139,6 +139,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 });
 
 async function blocksBatchHandler(ctx: Ctx) {
+  console.log('ES disabled - ', chainConfig.config.elasticSearchSyncDisabled);
   /**
    * Collect data from all tracked events (postId, accountId, spaceId, etc.).
    */

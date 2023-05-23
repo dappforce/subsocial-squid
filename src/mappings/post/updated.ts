@@ -21,6 +21,7 @@ import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchManager } from '../../elasticsearch';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
+import { createPostSlug } from '@subsocial/utils';
 
 export async function postUpdated(
   ctx: Ctx,
@@ -75,7 +76,13 @@ export async function postUpdated(
     post.body = postIpfsContent.body ?? null;
     post.summary = bodySummary.summary;
     post.isShowMore = bodySummary.isShowMore;
-    post.slug = null;
+    post.slug =
+      !postIpfsContent.title && !postIpfsContent.body
+        ? eventData.postId
+        : createPostSlug(eventData.postId, {
+            title: postIpfsContent.title,
+            body: postIpfsContent.body
+          }) ?? null;
     // post.appId = postIpfsContent.appId ?? null;
 
     post.experimental =
@@ -97,6 +104,8 @@ export async function postUpdated(
     // if (meta && !isEmptyArray(meta)) {
     //   post.proposalIndex = meta[0].proposalIndex;
     // }
+  } else {
+    post.slug = eventData.postId;
   }
 
   await ctx.store.save(post);

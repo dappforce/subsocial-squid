@@ -9,7 +9,10 @@ export const config: ProcessorConfig = {
     archive: 'https://soonsocial.archive.subsquid.io/graphql',
     chain: 'wss://rco-para.subsocial.network'
   },
-
+  elasticSearchSyncDisabled: !!(
+    process.env.SOONSOCIAL_ELASTIC_SEARCH_SYNC_DISABLED &&
+    process.env.SOONSOCIAL_ELASTIC_SEARCH_SYNC_DISABLED === 'true'
+  ),
   elasticSearchMaxResultLimit:
     process.env.SOONSOCIAL_ELASTIC_SEARCH_MAX_RESULTS_LIMIT || '20',
   elasticSearchEndpoint: process.env.SOONSOCIAL_ELASTIC_SEARCH_ENDPOINT || '',

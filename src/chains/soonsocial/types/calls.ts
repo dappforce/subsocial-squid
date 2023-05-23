@@ -4,6 +4,8 @@ import * as v1500 from './v1500'
 import * as v1501 from './v1501'
 import * as v1800 from './v1800'
 import * as v1801 from './v1801'
+import * as v1901 from './v1901'
+import * as v1902 from './v1902'
 
 export class AccountFollowsFollowAccountCall {
     private readonly _chain: Chain
@@ -1070,6 +1072,41 @@ export class PolkadotXcmExecuteCall {
         assert(this.isV1500)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Execute an XCM message from a local, signed, origin.
+     * 
+     * An event is deposited indicating whether `msg` could be executed completely or only
+     * partially.
+     * 
+     * No more than `max_weight` will be used in its attempted execution. If this is less than the
+     * maximum amount of weight that the message could take to be executed, then no execution
+     * attempt will be made.
+     * 
+     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
+     * to completion; only that *some* of it was executed.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.execute') === '411d5e9bce7727b0b767af3f3f77a5cbe27fe9dcd7cdfca4c3ad0d0c05ac13e1'
+    }
+
+    /**
+     * Execute an XCM message from a local, signed, origin.
+     * 
+     * An event is deposited indicating whether `msg` could be executed completely or only
+     * partially.
+     * 
+     * No more than `max_weight` will be used in its attempted execution. If this is less than the
+     * maximum amount of weight that the message could take to be executed, then no execution
+     * attempt will be made.
+     * 
+     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
+     * to completion; only that *some* of it was executed.
+     */
+    get asV1902(): {message: v1902.Type_237, maxWeight: bigint} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class PolkadotXcmForceDefaultXcmVersionCall {
@@ -1142,6 +1179,27 @@ export class PolkadotXcmForceSubscribeVersionNotifyCall {
         assert(this.isV1500)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Ask a location to notify us regarding their XCM version and any changes to it.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we should subscribe for XCM version notifications.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_subscribe_version_notify') === '56aed4b742721d521279794a608d71ae9db256750e90b7beb3d50a9d01aff0f9'
+    }
+
+    /**
+     * Ask a location to notify us regarding their XCM version and any changes to it.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we should subscribe for XCM version notifications.
+     */
+    get asV1902(): {location: v1902.VersionedMultiLocation} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class PolkadotXcmForceUnsubscribeVersionNotifyCall {
@@ -1181,6 +1239,31 @@ export class PolkadotXcmForceUnsubscribeVersionNotifyCall {
         assert(this.isV1500)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Require that a particular destination should no longer notify us regarding any XCM
+     * version changes.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we are currently subscribed for XCM version
+     *   notifications which we no longer desire.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_unsubscribe_version_notify') === '56aed4b742721d521279794a608d71ae9db256750e90b7beb3d50a9d01aff0f9'
+    }
+
+    /**
+     * Require that a particular destination should no longer notify us regarding any XCM
+     * version changes.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we are currently subscribed for XCM version
+     *   notifications which we no longer desire.
+     */
+    get asV1902(): {location: v1902.VersionedMultiLocation} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class PolkadotXcmForceXcmVersionCall {
@@ -1218,6 +1301,31 @@ export class PolkadotXcmForceXcmVersionCall {
      */
     get asV1500(): {location: v1500.V1MultiLocation, xcmVersion: number} {
         assert(this.isV1500)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Extoll that a particular destination can be communicated with through a particular
+     * version of XCM.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The destination that is being described.
+     * - `xcm_version`: The latest version of XCM that `location` supports.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_xcm_version') === '855b9a66c3d6c203c5e887917dc681372ed5d32210a8c6cc86c7d5f227944d9c'
+    }
+
+    /**
+     * Extoll that a particular destination can be communicated with through a particular
+     * version of XCM.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The destination that is being described.
+     * - `xcm_version`: The latest version of XCM that `location` supports.
+     */
+    get asV1902(): {location: v1902.V1MultiLocation, xcmVersion: number} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1283,6 +1391,55 @@ export class PolkadotXcmLimitedReserveTransferAssetsCall {
         assert(this.isV1500)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Transfer some assets from the local chain to the sovereign account of a destination
+     * chain and forward a notification XCM.
+     * 
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
+     * is needed than `weight_limit`, then the operation will fail and the assets send may be
+     * at risk.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
+     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
+     *   an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
+     *   `dest` side.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.limited_reserve_transfer_assets') === '1818300d2dec2685942619973f1ec81b7ecf2b979534f1965b98b7b6c9d833ea'
+    }
+
+    /**
+     * Transfer some assets from the local chain to the sovereign account of a destination
+     * chain and forward a notification XCM.
+     * 
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
+     * is needed than `weight_limit`, then the operation will fail and the assets send may be
+     * at risk.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
+     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
+     *   an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
+     *   `dest` side.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    get asV1902(): {dest: v1902.VersionedMultiLocation, beneficiary: v1902.VersionedMultiLocation, assets: v1902.VersionedMultiAssets, feeAssetItem: number, weightLimit: v1902.V2WeightLimit} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class PolkadotXcmLimitedTeleportAssetsCall {
@@ -1344,6 +1501,53 @@ export class PolkadotXcmLimitedTeleportAssetsCall {
         assert(this.isV1500)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Teleport some assets from the local chain to some destination chain.
+     * 
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
+     * is needed than `weight_limit`, then the operation will fail and the assets send may be
+     * at risk.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
+     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
+     *   an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
+     *   `dest` side. May not be empty.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.limited_teleport_assets') === '1818300d2dec2685942619973f1ec81b7ecf2b979534f1965b98b7b6c9d833ea'
+    }
+
+    /**
+     * Teleport some assets from the local chain to some destination chain.
+     * 
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
+     * is needed than `weight_limit`, then the operation will fail and the assets send may be
+     * at risk.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
+     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
+     *   an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
+     *   `dest` side. May not be empty.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    get asV1902(): {dest: v1902.VersionedMultiLocation, beneficiary: v1902.VersionedMultiLocation, assets: v1902.VersionedMultiAssets, feeAssetItem: number, weightLimit: v1902.V2WeightLimit} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class PolkadotXcmReserveTransferAssetsCall {
@@ -1403,6 +1607,51 @@ export class PolkadotXcmReserveTransferAssetsCall {
         assert(this.isV1500)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Transfer some assets from the local chain to the sovereign account of a destination
+     * chain and forward a notification XCM.
+     * 
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
+     * with all fees taken as needed from the asset.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
+     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
+     *   an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
+     *   `dest` side.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.reserve_transfer_assets') === 'b79cf2a68b1db82f94409ee603047fcd82f4343b83df6736c115e3338c04cecc'
+    }
+
+    /**
+     * Transfer some assets from the local chain to the sovereign account of a destination
+     * chain and forward a notification XCM.
+     * 
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
+     * with all fees taken as needed from the asset.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
+     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
+     *   an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
+     *   `dest` side.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     */
+    get asV1902(): {dest: v1902.VersionedMultiLocation, beneficiary: v1902.VersionedMultiLocation, assets: v1902.VersionedMultiAssets, feeAssetItem: number} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class PolkadotXcmSendCall {
@@ -1424,6 +1673,15 @@ export class PolkadotXcmSendCall {
 
     get asV1500(): {dest: v1500.VersionedMultiLocation, message: v1500.VersionedXcm} {
         assert(this.isV1500)
+        return this._chain.decodeCall(this.call)
+    }
+
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.send') === '23ee62671c78b4c334d1aac87969a94e2d7514e9e9acd1949878df4525736480'
+    }
+
+    get asV1902(): {dest: v1902.VersionedMultiLocation, message: v1902.VersionedXcm} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1481,6 +1739,49 @@ export class PolkadotXcmTeleportAssetsCall {
      */
     get asV1500(): {dest: v1500.VersionedMultiLocation, beneficiary: v1500.VersionedMultiLocation, assets: v1500.VersionedMultiAssets, feeAssetItem: number} {
         assert(this.isV1500)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Teleport some assets from the local chain to some destination chain.
+     * 
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
+     * with all fees taken as needed from the asset.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
+     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
+     *   an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
+     *   `dest` side. May not be empty.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.teleport_assets') === 'b79cf2a68b1db82f94409ee603047fcd82f4343b83df6736c115e3338c04cecc'
+    }
+
+    /**
+     * Teleport some assets from the local chain to some destination chain.
+     * 
+     * Fee payment on the destination side is made from the asset in the `assets` vector of
+     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
+     * with all fees taken as needed from the asset.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
+     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
+     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
+     *   an `AccountId32` value.
+     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
+     *   `dest` side. May not be empty.
+     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
+     *   fees.
+     */
+    get asV1902(): {dest: v1902.VersionedMultiLocation, beneficiary: v1902.VersionedMultiLocation, assets: v1902.VersionedMultiAssets, feeAssetItem: number} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1805,6 +2106,76 @@ export class ProxyAddProxyCall {
         assert(this.isV1800)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Register a proxy account for the sender that is able to make calls on its behalf.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `proxy`: The account that the `caller` would like to make a proxy.
+     * - `proxy_type`: The permissions allowed for this proxy account.
+     * - `delay`: The announcement period required of the initial proxy. Will generally be
+     * zero.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Proxy.add_proxy') === '5a316e35fc36c69e7e47f46dab0b9366e072df09a7c7fd60226eb3cbe33d455c'
+    }
+
+    /**
+     * Register a proxy account for the sender that is able to make calls on its behalf.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `proxy`: The account that the `caller` would like to make a proxy.
+     * - `proxy_type`: The permissions allowed for this proxy account.
+     * - `delay`: The announcement period required of the initial proxy. Will generally be
+     * zero.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     */
+    get asV1901(): {delegate: Uint8Array, proxyType: v1901.ProxyType, delay: number} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Register a proxy account for the sender that is able to make calls on its behalf.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `proxy`: The account that the `caller` would like to make a proxy.
+     * - `proxy_type`: The permissions allowed for this proxy account.
+     * - `delay`: The announcement period required of the initial proxy. Will generally be
+     * zero.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.add_proxy') === '36931ac47efe90589bd72bbdc30667cce430a05eb7a07ed892312f2d111b35d6'
+    }
+
+    /**
+     * Register a proxy account for the sender that is able to make calls on its behalf.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `proxy`: The account that the `caller` would like to make a proxy.
+     * - `proxy_type`: The permissions allowed for this proxy account.
+     * - `delay`: The announcement period required of the initial proxy. Will generally be
+     * zero.
+     */
+    get asV1902(): {delegate: v1902.MultiAddress, proxyType: v1902.ProxyType, delay: number} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ProxyAnnounceCall {
@@ -1872,6 +2243,49 @@ export class ProxyAnnounceCall {
      */
     get asV1501(): {real: Uint8Array, callHash: Uint8Array} {
         assert(this.isV1501)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Publish the hash of a proxy-call that will be made in the future.
+     * 
+     * This must be called some number of blocks before the corresponding `proxy` is attempted
+     * if the delay associated with the proxy relationship is greater than zero.
+     * 
+     * No more than `MaxPending` announcements may be made at any one time.
+     * 
+     * This will take a deposit of `AnnouncementDepositFactor` as well as
+     * `AnnouncementDepositBase` if there are no other pending announcements.
+     * 
+     * The dispatch origin for this call must be _Signed_ and a proxy of `real`.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `call_hash`: The hash of the call to be made by the `real` account.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.announce') === '1e2ba1b130bab29ab148202fefa1b526f6d362ed3f3d2aaf35cc706821c5cd49'
+    }
+
+    /**
+     * Publish the hash of a proxy-call that will be made in the future.
+     * 
+     * This must be called some number of blocks before the corresponding `proxy` is attempted
+     * if the delay associated with the proxy relationship is greater than zero.
+     * 
+     * No more than `MaxPending` announcements may be made at any one time.
+     * 
+     * This will take a deposit of `AnnouncementDepositFactor` as well as
+     * `AnnouncementDepositBase` if there are no other pending announcements.
+     * 
+     * The dispatch origin for this call must be _Signed_ and a proxy of `real`.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `call_hash`: The hash of the call to be made by the `real` account.
+     */
+    get asV1902(): {real: v1902.MultiAddress, callHash: Uint8Array} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2006,6 +2420,128 @@ export class ProxyAnonymousCall {
         assert(this.isV1800)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
+     * initialize it with a proxy of `proxy_type` for `origin` sender.
+     * 
+     * Requires a `Signed` origin.
+     * 
+     * - `proxy_type`: The type of the proxy that the sender will be registered as over the
+     * new account. This will almost always be the most permissive `ProxyType` possible to
+     * allow for maximum flexibility.
+     * - `index`: A disambiguation index, in case this is called multiple times in the same
+     * transaction (e.g. with `utility::batch`). Unless you're using `batch` you probably just
+     * want to use `0`.
+     * - `delay`: The announcement period required of the initial proxy. Will generally be
+     * zero.
+     * 
+     * Fails with `Duplicate` if this has already been called in this transaction, from the
+     * same sender, with the same parameters.
+     * 
+     * Fails if there are insufficient funds to pay for deposit.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     * TODO: Might be over counting 1 read
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Proxy.anonymous') === '30a767c8adaa34d0ec5b6cb1f54807f9edb23a2229dc1b5cc6bd1e48c9fa76ea'
+    }
+
+    /**
+     * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
+     * initialize it with a proxy of `proxy_type` for `origin` sender.
+     * 
+     * Requires a `Signed` origin.
+     * 
+     * - `proxy_type`: The type of the proxy that the sender will be registered as over the
+     * new account. This will almost always be the most permissive `ProxyType` possible to
+     * allow for maximum flexibility.
+     * - `index`: A disambiguation index, in case this is called multiple times in the same
+     * transaction (e.g. with `utility::batch`). Unless you're using `batch` you probably just
+     * want to use `0`.
+     * - `delay`: The announcement period required of the initial proxy. Will generally be
+     * zero.
+     * 
+     * Fails with `Duplicate` if this has already been called in this transaction, from the
+     * same sender, with the same parameters.
+     * 
+     * Fails if there are insufficient funds to pay for deposit.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     * TODO: Might be over counting 1 read
+     */
+    get asV1901(): {proxyType: v1901.ProxyType, delay: number, index: number} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class ProxyCreatePureCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Proxy.create_pure')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
+     * initialize it with a proxy of `proxy_type` for `origin` sender.
+     * 
+     * Requires a `Signed` origin.
+     * 
+     * - `proxy_type`: The type of the proxy that the sender will be registered as over the
+     * new account. This will almost always be the most permissive `ProxyType` possible to
+     * allow for maximum flexibility.
+     * - `index`: A disambiguation index, in case this is called multiple times in the same
+     * transaction (e.g. with `utility::batch`). Unless you're using `batch` you probably just
+     * want to use `0`.
+     * - `delay`: The announcement period required of the initial proxy. Will generally be
+     * zero.
+     * 
+     * Fails with `Duplicate` if this has already been called in this transaction, from the
+     * same sender, with the same parameters.
+     * 
+     * Fails if there are insufficient funds to pay for deposit.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.create_pure') === '30a767c8adaa34d0ec5b6cb1f54807f9edb23a2229dc1b5cc6bd1e48c9fa76ea'
+    }
+
+    /**
+     * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
+     * initialize it with a proxy of `proxy_type` for `origin` sender.
+     * 
+     * Requires a `Signed` origin.
+     * 
+     * - `proxy_type`: The type of the proxy that the sender will be registered as over the
+     * new account. This will almost always be the most permissive `ProxyType` possible to
+     * allow for maximum flexibility.
+     * - `index`: A disambiguation index, in case this is called multiple times in the same
+     * transaction (e.g. with `utility::batch`). Unless you're using `batch` you probably just
+     * want to use `0`.
+     * - `delay`: The announcement period required of the initial proxy. Will generally be
+     * zero.
+     * 
+     * Fails with `Duplicate` if this has already been called in this transaction, from the
+     * same sender, with the same parameters.
+     * 
+     * Fails if there are insufficient funds to pay for deposit.
+     */
+    get asV1902(): {proxyType: v1902.ProxyType, delay: number, index: number} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ProxyKillAnonymousCall {
@@ -2124,6 +2660,118 @@ export class ProxyKillAnonymousCall {
      */
     get asV1800(): {spawner: Uint8Array, proxyType: v1800.ProxyType, index: number, height: number, extIndex: number} {
         assert(this.isV1800)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Removes a previously spawned anonymous proxy.
+     * 
+     * WARNING: **All access to this account will be lost.** Any funds held in it will be
+     * inaccessible.
+     * 
+     * Requires a `Signed` origin, and the sender account must have been created by a call to
+     * `anonymous` with corresponding parameters.
+     * 
+     * - `spawner`: The account that originally called `anonymous` to create this account.
+     * - `index`: The disambiguation index originally passed to `anonymous`. Probably `0`.
+     * - `proxy_type`: The proxy type originally passed to `anonymous`.
+     * - `height`: The height of the chain when the call to `anonymous` was processed.
+     * - `ext_index`: The extrinsic index in which the call to `anonymous` was processed.
+     * 
+     * Fails with `NoPermission` in case the caller is not a previously created anonymous
+     * account whose `anonymous` call has corresponding parameters.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Proxy.kill_anonymous') === '74f7af559ab6955556e7749535c826b92428af61fec68216b79bb69ec4520eda'
+    }
+
+    /**
+     * Removes a previously spawned anonymous proxy.
+     * 
+     * WARNING: **All access to this account will be lost.** Any funds held in it will be
+     * inaccessible.
+     * 
+     * Requires a `Signed` origin, and the sender account must have been created by a call to
+     * `anonymous` with corresponding parameters.
+     * 
+     * - `spawner`: The account that originally called `anonymous` to create this account.
+     * - `index`: The disambiguation index originally passed to `anonymous`. Probably `0`.
+     * - `proxy_type`: The proxy type originally passed to `anonymous`.
+     * - `height`: The height of the chain when the call to `anonymous` was processed.
+     * - `ext_index`: The extrinsic index in which the call to `anonymous` was processed.
+     * 
+     * Fails with `NoPermission` in case the caller is not a previously created anonymous
+     * account whose `anonymous` call has corresponding parameters.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     */
+    get asV1901(): {spawner: Uint8Array, proxyType: v1901.ProxyType, index: number, height: number, extIndex: number} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class ProxyKillPureCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Proxy.kill_pure')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Removes a previously spawned pure proxy.
+     * 
+     * WARNING: **All access to this account will be lost.** Any funds held in it will be
+     * inaccessible.
+     * 
+     * Requires a `Signed` origin, and the sender account must have been created by a call to
+     * `pure` with corresponding parameters.
+     * 
+     * - `spawner`: The account that originally called `pure` to create this account.
+     * - `index`: The disambiguation index originally passed to `pure`. Probably `0`.
+     * - `proxy_type`: The proxy type originally passed to `pure`.
+     * - `height`: The height of the chain when the call to `pure` was processed.
+     * - `ext_index`: The extrinsic index in which the call to `pure` was processed.
+     * 
+     * Fails with `NoPermission` in case the caller is not a previously created pure
+     * account whose `pure` call has corresponding parameters.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.kill_pure') === '1dc1bacba651926e1249f182206e484d1902aaa86e08143b5b11d85e14f070bd'
+    }
+
+    /**
+     * Removes a previously spawned pure proxy.
+     * 
+     * WARNING: **All access to this account will be lost.** Any funds held in it will be
+     * inaccessible.
+     * 
+     * Requires a `Signed` origin, and the sender account must have been created by a call to
+     * `pure` with corresponding parameters.
+     * 
+     * - `spawner`: The account that originally called `pure` to create this account.
+     * - `index`: The disambiguation index originally passed to `pure`. Probably `0`.
+     * - `proxy_type`: The proxy type originally passed to `pure`.
+     * - `height`: The height of the chain when the call to `pure` was processed.
+     * - `ext_index`: The extrinsic index in which the call to `pure` was processed.
+     * 
+     * Fails with `NoPermission` in case the caller is not a previously created pure
+     * account whose `pure` call has corresponding parameters.
+     */
+    get asV1902(): {spawner: v1902.MultiAddress, proxyType: v1902.ProxyType, index: number, height: number, extIndex: number} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2267,6 +2915,84 @@ export class ProxyProxyCall {
      */
     get asV1801(): {real: Uint8Array, forceProxyType: (v1801.ProxyType | undefined), call: v1801.Call} {
         assert(this.isV1801)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Proxy.proxy') === '79420d8c8af96dcb920fbf6d066b1bcd22729edd6304c1c7ff1910df116608d4'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     */
+    get asV1901(): {real: Uint8Array, forceProxyType: (v1901.ProxyType | undefined), call: v1901.Call} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.proxy') === '23c28eeebe1869831decf6b9cd99a6fb70092311cc96bdc3e92fb6efe38e8df9'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get asV1902(): {real: v1902.MultiAddress, forceProxyType: (v1902.ProxyType | undefined), call: v1902.Call} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2424,6 +3150,88 @@ export class ProxyProxyAnnouncedCall {
         assert(this.isV1801)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     * 
+     * # <weight>
+     * Weight is a function of:
+     * - A: the number of announcements made.
+     * - P: the number of proxies the user has.
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Proxy.proxy_announced') === '8873ea3fadd6bd1d0c0bf0101ae3210e30c52f22a4aeb896f0a82dd3f4e57450'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     * 
+     * # <weight>
+     * Weight is a function of:
+     * - A: the number of announcements made.
+     * - P: the number of proxies the user has.
+     * # </weight>
+     */
+    get asV1901(): {delegate: Uint8Array, real: Uint8Array, forceProxyType: (v1901.ProxyType | undefined), call: v1901.Call} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.proxy_announced') === '5fd3cd1e55574030f45d9943d8b572ca77f25366788a6a2eba3a1fbfd5dddc6c'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get asV1902(): {delegate: v1902.MultiAddress, real: v1902.MultiAddress, forceProxyType: (v1902.ProxyType | undefined), call: v1902.Call} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ProxyRejectAnnouncementCall {
@@ -2483,6 +3291,39 @@ export class ProxyRejectAnnouncementCall {
         assert(this.isV1501)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Remove the given announcement of a delegate.
+     * 
+     * May be called by a target (proxied) account to remove a call that one of their delegates
+     * (`delegate`) has announced they want to execute. The deposit is returned.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `delegate`: The account that previously announced the call.
+     * - `call_hash`: The hash of the call to be made.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.reject_announcement') === 'a1d7c3959dec3e3a68a4ea7b541568e066bd95b7007b052c43ff4736abe9b06b'
+    }
+
+    /**
+     * Remove the given announcement of a delegate.
+     * 
+     * May be called by a target (proxied) account to remove a call that one of their delegates
+     * (`delegate`) has announced they want to execute. The deposit is returned.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `delegate`: The account that previously announced the call.
+     * - `call_hash`: The hash of the call to be made.
+     */
+    get asV1902(): {delegate: v1902.MultiAddress, callHash: Uint8Array} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ProxyRemoveAnnouncementCall {
@@ -2540,6 +3381,39 @@ export class ProxyRemoveAnnouncementCall {
      */
     get asV1501(): {real: Uint8Array, callHash: Uint8Array} {
         assert(this.isV1501)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Remove a given announcement.
+     * 
+     * May be called by a proxy account to remove a call they previously announced and return
+     * the deposit.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `call_hash`: The hash of the call to be made by the `real` account.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.remove_announcement') === '1e2ba1b130bab29ab148202fefa1b526f6d362ed3f3d2aaf35cc706821c5cd49'
+    }
+
+    /**
+     * Remove a given announcement.
+     * 
+     * May be called by a proxy account to remove a call they previously announced and return
+     * the deposit.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `call_hash`: The hash of the call to be made by the `real` account.
+     */
+    get asV1902(): {real: v1902.MultiAddress, callHash: Uint8Array} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2671,6 +3545,68 @@ export class ProxyRemoveProxyCall {
      */
     get asV1800(): {delegate: Uint8Array, proxyType: v1800.ProxyType, delay: number} {
         assert(this.isV1800)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Unregister a proxy account for the sender.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `proxy`: The account that the `caller` would like to remove as a proxy.
+     * - `proxy_type`: The permissions currently enabled for the removed proxy account.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Proxy.remove_proxy') === '5a316e35fc36c69e7e47f46dab0b9366e072df09a7c7fd60226eb3cbe33d455c'
+    }
+
+    /**
+     * Unregister a proxy account for the sender.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `proxy`: The account that the `caller` would like to remove as a proxy.
+     * - `proxy_type`: The permissions currently enabled for the removed proxy account.
+     * 
+     * # <weight>
+     * Weight is a function of the number of proxies the user has (P).
+     * # </weight>
+     */
+    get asV1901(): {delegate: Uint8Array, proxyType: v1901.ProxyType, delay: number} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Unregister a proxy account for the sender.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `proxy`: The account that the `caller` would like to remove as a proxy.
+     * - `proxy_type`: The permissions currently enabled for the removed proxy account.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Proxy.remove_proxy') === '36931ac47efe90589bd72bbdc30667cce430a05eb7a07ed892312f2d111b35d6'
+    }
+
+    /**
+     * Unregister a proxy account for the sender.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `proxy`: The account that the `caller` would like to remove as a proxy.
+     * - `proxy_type`: The permissions currently enabled for the removed proxy account.
+     */
+    get asV1902(): {delegate: v1902.MultiAddress, proxyType: v1902.ProxyType, delay: number} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3666,6 +4602,72 @@ export class SudoSudoCall {
         assert(this.isV1801)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === '64739ead9e3d64fbfe8d46f32ef3fba3b0c3109cc7d5f83473b9999c554a82cf'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV1901(): {call: v1901.Call} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === '32f3d077d4f5a3c0c7a04f6bb90289c0a525cd3af69b8ca5f03984fea3c0beec'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV1902(): {call: v1902.Call} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoAsCall {
@@ -3820,6 +4822,76 @@ export class SudoSudoAsCall {
         assert(this.isV1801)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === '1de214e3b5e2c2fe9158fea5a139b3efed7f10d49eef3ea4bccac39bfe2ea23e'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV1901(): {who: v1901.MultiAddress, call: v1901.Call} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === '5719559577895dd7520cca56afa2010c61f4544372c39b596a23e28d873a03b2'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV1902(): {who: v1902.MultiAddress, call: v1902.Call} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoUncheckedWeightCall {
@@ -3964,6 +5036,72 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV1801(): {call: v1801.Call, weight: bigint} {
         assert(this.isV1801)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '819e07558240fd18e2941bb61ee04b30722a7419a0a187dc483ed1872d63c145'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get asV1901(): {call: v1901.Call, weight: bigint} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '3b67c8c747cb508ee5d7b8b7a67b12438c31cf4f5d482c82b4a5ce45f8989a59'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get asV1902(): {call: v1902.Call, weight: v1902.Weight} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4508,6 +5646,84 @@ export class UtilityAsDerivativeCall {
         assert(this.isV1801)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '23f73e698c25da192e06e5d6cd2b00ffd0be37c316d4e21b357aaa5563279f77'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asV1901(): {index: number, call: v1901.Call} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '3c47e850665ac1b919ddffe5a2d7f5ad1f084f9fe9fb7c776f32e3aafdc151ac'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asV1902(): {index: number, call: v1902.Call} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchCall {
@@ -4726,6 +5942,108 @@ export class UtilityBatchCall {
         assert(this.isV1801)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then call are dispatch without checking origin filter. (This includes
+     * bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Utility.batch') === '967daebad1eaad33fddd3c41d18bc17d0e35e63fdfe9c16bdca6f2628ee3c76b'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then call are dispatch without checking origin filter. (This includes
+     * bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asV1901(): {calls: v1901.Call[]} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Utility.batch') === '94bd76a4f94276b01a7d615ff90689ca223b6953a0e387d3df2cdc0e608c5a78'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asV1902(): {calls: v1902.Call[]} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchAllCall {
@@ -4904,6 +6222,88 @@ export class UtilityBatchAllCall {
         assert(this.isV1801)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then call are dispatch without checking origin filter. (This includes
+     * bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === '967daebad1eaad33fddd3c41d18bc17d0e35e63fdfe9c16bdca6f2628ee3c76b'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then call are dispatch without checking origin filter. (This includes
+     * bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV1901(): {calls: v1901.Call[]} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === '94bd76a4f94276b01a7d615ff90689ca223b6953a0e387d3df2cdc0e608c5a78'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV1902(): {calls: v1902.Call[]} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityDispatchAsCall {
@@ -5048,6 +6448,72 @@ export class UtilityDispatchAsCall {
      */
     get asV1801(): {asOrigin: v1801.OriginCaller, call: v1801.Call} {
         assert(this.isV1801)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === 'f4c7980f470446fe4178f296c66982cbae333b3cfc308dd369816e892e634122'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get asV1901(): {asOrigin: v1901.OriginCaller, call: v1901.Call} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '4e39ecffa3142c1c5c6ec612f3833dbee58ad7d8cc21cab70b47535acba8d847'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get asV1902(): {asOrigin: v1902.OriginCaller, call: v1902.Call} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5226,6 +6692,127 @@ export class UtilityForceBatchCall {
      */
     get asV1801(): {calls: v1801.Call[]} {
         assert(this.isV1801)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then call are dispatch without checking origin filter. (This includes
+     * bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV1901(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === '967daebad1eaad33fddd3c41d18bc17d0e35e63fdfe9c16bdca6f2628ee3c76b'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then call are dispatch without checking origin filter. (This includes
+     * bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV1901(): {calls: v1901.Call[]} {
+        assert(this.isV1901)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === '94bd76a4f94276b01a7d615ff90689ca223b6953a0e387d3df2cdc0e608c5a78'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV1902(): {calls: v1902.Call[]} {
+        assert(this.isV1902)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class UtilityWithWeightCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Utility.with_weight')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get isV1902(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '3b67c8c747cb508ee5d7b8b7a67b12438c31cf4f5d482c82b4a5ce45f8989a59'
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get asV1902(): {call: v1902.Call, weight: v1902.Weight} {
+        assert(this.isV1902)
         return this._chain.decodeCall(this.call)
     }
 }

@@ -1,0 +1,37 @@
+manifestVersion: subsquid.io/v0.1
+name: xsocial
+version: 304
+description: |-
+  Squid for xSocial
+build:
+deploy:
+  secrets:
+    - XSOCIAL_ELASTIC_SEARCH_ENDPOINT
+    - XSOCIAL_ELASTIC_SEARCH_USERNAME
+    - XSOCIAL_ELASTIC_SEARCH_PASSWORD
+  addons:
+    postgres:
+  processor:
+    env:
+      CHAIN: xsocial
+      XSOCIAL_ELASTIC_SEARCH_SYNC_DISABLED: true
+    cmd: ['node', 'lib/processor']
+  api:
+    env:
+      CHAIN: xsocial
+      XSOCIAL_ELASTIC_SEARCH_SYNC_DISABLED: true
+    cmd:
+      [
+        'npx',
+        'squid-graphql-server',
+        '--dumb-cache',
+        'in-memory',
+        '--dumb-cache-ttl',
+        '5000',
+        '--dumb-cache-size',
+        '200',
+        '--dumb-cache-max-age',
+        '5000'
+      ]
+scale:
+  dedicated: true

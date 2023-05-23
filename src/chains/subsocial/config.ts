@@ -9,6 +9,10 @@ export const config: ProcessorConfig = {
     archive: 'https://subsocial.archive.subsquid.io/graphql',
     chain: 'wss://para.f3joule.space'
   },
+  elasticSearchSyncDisabled: !!(
+    process.env.SUBSOCIAL_ELASTIC_SEARCH_SYNC_DISABLED &&
+    process.env.SUBSOCIAL_ELASTIC_SEARCH_SYNC_DISABLED === 'true'
+  ),
   elasticSearchMaxResultLimit:
     process.env.SUBSOCIAL_ELASTIC_SEARCH_MAX_RESULTS_LIMIT || '20',
   elasticSearchEndpoint: process.env.SUBSOCIAL_ELASTIC_SEARCH_ENDPOINT || '',

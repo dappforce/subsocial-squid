@@ -1,0 +1,28 @@
+{
+  "outDir": "../src/chains/xsocial/types",
+  "specVersions": "https://xsocial.archive.subsquid.io/graphql",
+  "events": [
+    "Posts.PostCreated",
+    "Posts.PostUpdated",
+    "Posts.PostMoved",
+
+    "Reactions.PostReactionCreated",
+    "Reactions.PostReactionUpdated",
+    "Reactions.PostReactionDeleted",
+
+    "Spaces.SpaceCreated",
+    "Spaces.SpaceUpdated",
+
+    "Profiles.ProfileUpdated",
+
+    "SpaceFollows.SpaceFollowed",
+    "SpaceFollows.SpaceUnfollowed",
+    "SpaceOwnership.SpaceOwnershipTransferAccepted",
+    "SpaceOwnership.SpaceOwnershipTransferCreated",
+
+    "AccountFollows.AccountFollowed",
+    "AccountFollows.AccountUnfollowed"
+  ],
+  "calls": true,
+  "storage": []
+}
