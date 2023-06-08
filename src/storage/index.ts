@@ -13,7 +13,7 @@ import {
 } from '../common/types';
 import { InnerValue } from '../chains/interfaces/sharedTypes';
 import { addressStringToSs58 } from '../common/utils';
-import { IpfsDataManager } from '../ipfs';
+import { SubsocialIpfsDataManager } from '../ipfs';
 import {
   StorageSection,
   BlochHash,
@@ -48,10 +48,10 @@ export class StorageDataManager {
     ['post', new Map()]
   ]);
 
-  private ipfsDataManager: IpfsDataManager;
+  private ipfsDataManager: SubsocialIpfsDataManager;
 
   private constructor(private context: Ctx) {
-    this.ipfsDataManager = IpfsDataManager.getInstance(context);
+    this.ipfsDataManager = SubsocialIpfsDataManager.getInstance(context);
   }
 
   static getInstance(ctx: Ctx): StorageDataManager {
