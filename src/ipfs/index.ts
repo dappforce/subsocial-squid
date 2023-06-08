@@ -6,6 +6,7 @@ import { CID_KIND, IpfsCid, Headers } from './types';
 import { asIpfsCid } from './utils';
 import { Ctx } from '../processor';
 import { getChain } from '../chains';
+import { SubsocialIpfsApi } from '@subsocial/api';
 const chainConfig = getChain();
 
 export class IpfsDataManager {
@@ -15,11 +16,11 @@ export class IpfsDataManager {
 
   private ipfsReadOnlyNodeUrl: string = chainConfig.config.ipfsReadOnlyNodeUrl;
 
-  constructor(private processorContext: Ctx) {
+  constructor(private processorContext?: Ctx) {
     this.createIpfsClient();
   }
 
-  static getInstance(ctx: Ctx): IpfsDataManager {
+  static getInstance(ctx?: Ctx): IpfsDataManager {
     if (!IpfsDataManager.instance) {
       IpfsDataManager.instance = new IpfsDataManager(ctx);
     }
@@ -41,14 +42,20 @@ export class IpfsDataManager {
 
     try {
       res = await this.fetchContent(ipfsCid, 10000);
-      this.processorContext.log
-        .child('ipfs')
-        .info(`Response by CID - ${ipfsCid.toString()} => SUCCESSFUL`);
+
+      this.processorContext
+        ? this.processorContext.log
+            .child('ipfs')
+            .info(`Response by CID - ${ipfsCid.toString()} => SUCCESSFUL`)
+        : console.log(`Response by CID - ${ipfsCid.toString()} => SUCCESSFUL`);
+
       await new Promise((res) => setTimeout(res, 50));
     } catch (e) {
-      this.processorContext.log
-        .child('ipfs')
-        .info(`Response by CID - ${ipfsCid.toString()} => with ERROR`);
+      this.processorContext
+        ? this.processorContext.log
+            .child('ipfs')
+            .info(`Response by CID - ${ipfsCid.toString()} => with ERROR`)
+        : console.log(`Response by CID - ${ipfsCid.toString()} => with ERROR`);
       console.log(e);
       if (logger) await logger(e ? e.toString() : null);
     }
@@ -74,12 +81,73 @@ export class IpfsDataManager {
           this.ipfsReadOnlyNodeUrl
         }/ipfs/${cidEnsured.toV1()}?timeout=${timeout}`,
         {
-          responseType: 'arraybuffer'
+          // responseType: 'arraybuffer'
         }
       );
 
       const data = new Uint8Array(res.data);
+      console.dir(String.fromCharCode(...data), { depth: null });
       return JSON.parse(String.fromCharCode(...data));
     }
+  }
+}
+
+export class SubsocialIpfsDataManager {
+  private static instance: SubsocialIpfsDataManager;
+
+  private ipfsClient!: SubsocialIpfsApi;
+
+  private ipfsReadOnlyNodeUrl: string = chainConfig.config.ipfsReadOnlyNodeUrl;
+
+  constructor(private processorContext?: Ctx) {
+    this.createIpfsClient();
+  }
+
+  static getInstance(ctx?: Ctx): SubsocialIpfsDataManager {
+    if (!SubsocialIpfsDataManager.instance) {
+      SubsocialIpfsDataManager.instance = new SubsocialIpfsDataManager(ctx);
+    }
+    return SubsocialIpfsDataManager.instance;
+  }
+
+  private createIpfsClient(headers?: Headers) {
+    this.ipfsClient = new SubsocialIpfsApi({
+      ipfsNodeUrl: this.ipfsReadOnlyNodeUrl
+    });
+  }
+
+  async fetchOneByIdHttp(
+    ipfsCid: IpfsCid,
+    logger?: (msg: string | null) => Promise<void>
+  ): Promise<IpfsCommonContent | null> {
+    let res = null;
+
+    try {
+      res = await this.fetchContent(ipfsCid, 10000);
+
+      this.processorContext
+        ? this.processorContext.log
+            .child('ipfs')
+            .info(`Response by CID - ${ipfsCid.toString()} => SUCCESSFUL`)
+        : console.log(`Response by CID - ${ipfsCid.toString()} => SUCCESSFUL`);
+
+      await new Promise((res) => setTimeout(res, 50));
+    } catch (e) {
+      this.processorContext
+        ? this.processorContext.log
+            .child('ipfs')
+            .info(`Response by CID - ${ipfsCid.toString()} => with ERROR`)
+        : console.log(`Response by CID - ${ipfsCid.toString()} => with ERROR`);
+      console.log(e);
+      if (logger) await logger(e ? e.toString() : null);
+    }
+    // @ts-ignore
+    return res;
+  }
+
+  private async fetchContent(cid: IpfsCid, timeout?: number) {
+    // TODO remove debug mode
+    // return null;
+    return (await this.ipfsClient.getContent(cid, timeout)) ?? null;
   }
 }

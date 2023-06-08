@@ -15,12 +15,13 @@
     "query-node:start-with-cache": "squid-graphql-server --dumb-cache in-memory --dumb-cache-max-age 5000 --dumb-cache-ttl 5000 --dumb-cache-size 200",
     "lint": "npm run lint:prod -- --fix",
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0",
-    "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f"
+    "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",
+    "test:unit": "jest --config ./tests/jest-unit.json"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.6.0",
     "@ipld/dag-cbor": "7.0.3",
-    "@subsocial/api": "0.8.1",
+    "@subsocial/api": "^0.8.13",
     "@subsocial/elasticsearch": "^0.8.1",
     "@subsocial/types": "^0.6.11",
     "@subsocial/utils": "^0.6.11",
@@ -61,6 +62,7 @@
     "@subsquid/typeorm-codegen": "^0.3.3",
     "@types/blake2b": "^2.1.0",
     "@types/elasticsearch": "^5.0.40",
+    "@types/jest": "^29.5.2",
     "@types/md5": "^2.3.2",
     "@types/node": "^16.11.56",
     "@types/pg": "^8.6.5",
@@ -73,10 +75,36 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-type-graphql": "^0.3.2",
+    "jest": "^29.5.0",
+    "jest-extended": "^3.2.4",
     "prettier": "^2.6.2",
+    "ts-jest": "^29.1.0",
     "typescript": "~4.8.2"
   },
   "resolutions": {
     "native-fetch": "4.0.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "./",
+    "modulePaths": [
+      "<rootDir>"
+    ],
+    "testRegex": "(.*\\.unit\\.ts$)|(.*\\.e2e\\.ts$)",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "jest-extended/all"
+    ]
   }
 }
