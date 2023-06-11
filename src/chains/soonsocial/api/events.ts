@@ -51,7 +51,7 @@ export function parsePostCreatedEventArgs(
 ): CreatePostEventParsedData {
   const event = new PostsPostCreatedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId } = event.asV1500;
+  const { account: accountId, postId } = event.asV2300;
 
   const response: CreatePostEventParsedData = {
     accountId: addressSs58ToString(accountId),
@@ -66,7 +66,7 @@ export function parsePostUpdatedEventArgs(
 ): UpdatePostEventParsedData {
   const event = new PostsPostUpdatedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId } = event.asV1500;
+  const { account: accountId, postId } = event.asV2300;
 
   const response: UpdatePostEventParsedData = {
     accountId: addressSs58ToString(accountId),
@@ -81,7 +81,7 @@ export function parsePostMovedEventArgs(
 ): MovedPostEventParsedData {
   const event = new PostsPostMovedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId, toSpace, fromSpace } = event.asV1500;
+  const { account: accountId, postId, toSpace, fromSpace } = event.asV2300;
 
   const response: MovedPostEventParsedData = {
     accountId: addressSs58ToString(accountId),
@@ -102,7 +102,7 @@ export function parseSpaceCreatedEventArgs(
 ): CreatedSpaceEventParsedData {
   const event = new SpacesSpaceCreatedEvent(ctx, ctx.event);
 
-  const { account: accountId, spaceId } = event.asV1500;
+  const { account: accountId, spaceId } = event.asV2300;
 
   const response: CreatedSpaceEventParsedData = {
     accountId: addressSs58ToString(accountId),
@@ -118,7 +118,7 @@ export function parseSpaceUpdatedEventArgs(
 ): UpdatedSpaceEventParsedData {
   const event = new SpacesSpaceUpdatedEvent(ctx, ctx.event);
 
-  const { account: accountId, spaceId } = event.asV1500;
+  const { account: accountId, spaceId } = event.asV2300;
 
   const response: UpdatedSpaceEventParsedData = {
     accountId: addressSs58ToString(accountId),
@@ -139,7 +139,7 @@ export function parsePostReactionCreatedEventArgs(
     postId,
     reactionId,
     reactionKind
-  } = event.asV1500;
+  } = event.asV2300;
 
   return {
     accountId: addressSs58ToString(accountId),
@@ -159,7 +159,7 @@ export function parsePostReactionUpdatedEventArgs(
     postId,
     reactionId,
     reactionKind
-  } = event.asV1500;
+  } = event.asV2300;
 
   return {
     accountId: addressSs58ToString(accountId),
@@ -179,7 +179,7 @@ export function parsePostReactionDeletedEventArgs(
     postId,
     reactionId,
     reactionKind
-  } = event.asV1500;
+  } = event.asV2300;
 
   return {
     accountId: addressSs58ToString(accountId),
@@ -194,7 +194,7 @@ export function parseProfileUpdatedEventArgs(
 ): ProfileUpdatedEventParsedData {
   const event = new ProfilesProfileUpdatedEvent(ctx, ctx.event);
 
-  const { account: accountId, spaceId } = event.asV1500;
+  const { account: accountId, spaceId } = event.asV2300;
 
   return {
     accountId: addressSs58ToString(accountId),
@@ -208,7 +208,7 @@ export function parseSpaceFollowedEventArgs(
 ): SpaceFollowedEventParsedData {
   const event = new SpaceFollowsSpaceFollowedEvent(ctx, ctx.event);
 
-  const { follower, spaceId } = event.asV1500;
+  const { follower, spaceId } = event.asV2300;
 
   return {
     followerId: addressSs58ToString(follower),
@@ -221,7 +221,7 @@ export function parseSpaceUnfollowedEventArgs(
 ): SpaceUnfollowedEventParsedData {
   const event = new SpaceFollowsSpaceUnfollowedEvent(ctx, ctx.event);
 
-  const { follower, spaceId } = event.asV1500;
+  const { follower, spaceId } = event.asV2300;
 
   return {
     followerId: addressSs58ToString(follower),
@@ -237,7 +237,7 @@ export function parseSpaceOwnershipTransferCreatedEventArgs(
     ctx.event
   );
 
-  const { currentOwner, newOwner, spaceId } = event.asV1500;
+  const { currentOwner, newOwner, spaceId } = event.asV2300;
 
   return {
     currentOwnerId: addressSs58ToString(currentOwner),
@@ -254,7 +254,7 @@ export function parseSpaceOwnershipTransferAcceptedEventArgs(
     ctx.event
   );
 
-  const { account, spaceId } = event.asV1500;
+  const { account, spaceId } = event.asV2300;
 
   return {
     accountId: addressSs58ToString(account),
@@ -267,7 +267,7 @@ export function parseAccountFollowedEventArgs(
 ): AccountFollowedEventParsedData {
   const event = new AccountFollowsAccountFollowedEvent(ctx, ctx.event);
 
-  const { follower, account } = event.asV1500;
+  const { follower, account } = event.asV2300;
 
   return {
     followerId: addressSs58ToString(follower),
@@ -280,7 +280,7 @@ export function parseAccountUnfollowedEventArgs(
 ): AccountUnfollowedEventParsedData {
   const event = new AccountFollowsAccountUnfollowedEvent(ctx, ctx.event);
 
-  const { follower, account } = event.asV1500;
+  const { follower, account } = event.asV2300;
 
   return {
     followerId: addressSs58ToString(follower),
@@ -293,7 +293,7 @@ export function parseDomainRegisteredEventArgs(
 ): DomainRegisteredEventParsedData {
   const event = new DomainsDomainRegisteredEvent(ctx, ctx.event);
 
-  const { who, domain } = event.asV1500;
+  const { who, domain } = event.asV2300;
 
   return {
     accountId: addressSs58ToString(who),
@@ -306,7 +306,7 @@ export function parseDomainMetaUpdatedEventArgs(
 ): DomainMetaUpdatedEventParsedData {
   const event = new DomainsDomainMetaUpdatedEvent(ctx, ctx.event);
 
-  const { who, domain } = event.asV1500;
+  const { who, domain } = event.asV2300;
 
   return {
     accountId: addressSs58ToString(who),

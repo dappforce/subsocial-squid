@@ -1,6 +1,7 @@
 import { IpfsPostContent, IpfsSpaceContent } from '@subsocial/api/types/ipfs';
 import { SummarizedContent } from '@subsocial/api/types/dto';
 import { TweetAttachmentV2, ReferencedTweetV2 } from 'twitter-api-v2';
+import { ContentExtensionData } from '../../mappings/extension/types';
 
 export type PostTweetDetailsIPFS = {
   id: string;
@@ -29,6 +30,9 @@ type PostContentWithTweet = {
 type PostContentWithAppId = {
   appId?: string;
 };
+type PostContentWithExtensions = {
+  extensions?: ContentExtensionData[];
+};
 
 export type IpfsSpaceContentSummarized = IpfsSpaceContent &
   SummarizedContent &
@@ -37,4 +41,5 @@ export type IpfsSpaceContentSummarized = IpfsSpaceContent &
 export type IpfsPostContentSummarized = IpfsPostContent &
   SummarizedContent &
   PostContentWithTweet &
-  PostContentWithAppId;
+  PostContentWithAppId &
+  PostContentWithExtensions;

@@ -10,7 +10,11 @@ import {
 } from '../../common/utils';
 import { Post, PostKind, Space, IpfsFetchLog } from '../../model';
 import { getOrCreateAccount } from '../account';
-import { PostCreatedData, PostTweetDetailsIPFS } from '../../common/types';
+import {
+  IpfsPostContentSummarized,
+  PostCreatedData,
+  PostTweetDetailsIPFS
+} from '../../common/types';
 import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
@@ -62,29 +66,33 @@ export const updateSpaceForPostChildren = async (
 
 export const ensurePost = async ({
   postId,
+  postContent,
   ctx,
   eventData
 }: {
   postId: string;
+  postContent?: IpfsPostContentSummarized;
   ctx: Ctx;
   eventData: PostCreatedData;
 }): Promise<Post> => {
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
 
-  const postIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
-    'post',
-    eventData.ipfsSrc,
-    async (errorMsg: string | null) => {
-      await ctx.store.save(
-        new IpfsFetchLog({
-          id: postId,
-          cid: eventData.ipfsSrc,
-          blockHeight: eventData.blockNumber,
-          errorMsg: errorMsg
-        })
-      );
-    }
-  );
+  const postIpfsContent =
+    postContent ??
+    (await storageDataManagerInst.fetchIpfsContentByCid(
+      'post',
+      eventData.ipfsSrc,
+      async (errorMsg: string | null) => {
+        await ctx.store.save(
+          new IpfsFetchLog({
+            id: postId,
+            cid: eventData.ipfsSrc,
+            blockHeight: eventData.blockNumber,
+            errorMsg: errorMsg
+          })
+        );
+      }
+    ));
 
   let space = null;
 

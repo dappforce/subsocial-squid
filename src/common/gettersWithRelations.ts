@@ -1,5 +1,5 @@
 import { Ctx } from '../processor';
-import { Account, Post, Space } from '../model';
+import { Account, ContentExtension, EvmAccount, Post, Space } from '../model';
 
 async function getAccountWithRelations(
   accountId: string,
@@ -12,6 +12,21 @@ async function getAccountWithRelations(
       },
       relations: {
         profileSpace: true
+      }
+    })) ?? null
+  );
+}
+async function getEvmAccountWithRelations(
+  accountId: string,
+  ctx: Ctx
+): Promise<EvmAccount | null> {
+  return (
+    (await ctx.store.get(EvmAccount, {
+      where: {
+        id: accountId
+      },
+      relations: {
+        linkedSubstrateAccounts: true
       }
     })) ?? null
   );
@@ -77,8 +92,27 @@ async function getSpaceWithRelations(
   );
 }
 
+async function getContentExtensionWithRelations(
+  extensionId: string | null | undefined,
+  ctx: Ctx
+): Promise<ContentExtension | null> {
+  if (!extensionId) return null;
+  return (
+    (await ctx.store.get(ContentExtension, {
+      where: {
+        id: extensionId
+      },
+      relations: {
+        parentPost: true
+      }
+    })) ?? null
+  );
+}
+
 export const getEntityWithRelations = {
   account: getAccountWithRelations,
+  evmAccount: getEvmAccountWithRelations,
   post: getPostWithRelations,
-  space: getSpaceWithRelations
+  space: getSpaceWithRelations,
+  contentExtension: getContentExtensionWithRelations
 };

@@ -7,6 +7,7 @@ import {PostFollowers} from "./postFollowers.model"
 import {CommentFollowers} from "./commentFollowers.model"
 import {Reaction} from "./reaction.model"
 import {TweetDetails} from "./_tweetDetails"
+import {ContentExtension} from "./contentExtension.model"
 
 /**
  * The Post entity
@@ -280,4 +281,10 @@ export class Post {
      */
     @Column_("jsonb", {nullable: true})
     experimental!: unknown | undefined | null
+
+    /**
+     * The extensions published with this Post.
+     */
+    @OneToMany_(() => ContentExtension, e => e.parentPost)
+    extensions!: ContentExtension[]
 }

@@ -1,122 +1,5 @@
 import type {Result, Option} from './support'
 
-export type Type_38 = Type_38_Ok | Type_38_Err
-
-export interface Type_38_Ok {
-    __kind: 'Ok'
-}
-
-export interface Type_38_Err {
-    __kind: 'Err'
-    value: DispatchError
-}
-
-export type ProxyType = ProxyType_Any | ProxyType_DomainRegistrar | ProxyType_SocialActions | ProxyType_Management | ProxyType_SocialActionsProxy
-
-export interface ProxyType_Any {
-    __kind: 'Any'
-}
-
-export interface ProxyType_DomainRegistrar {
-    __kind: 'DomainRegistrar'
-}
-
-export interface ProxyType_SocialActions {
-    __kind: 'SocialActions'
-}
-
-export interface ProxyType_Management {
-    __kind: 'Management'
-}
-
-export interface ProxyType_SocialActionsProxy {
-    __kind: 'SocialActionsProxy'
-}
-
-export type ReactionKind = ReactionKind_Upvote | ReactionKind_Downvote
-
-export interface ReactionKind_Upvote {
-    __kind: 'Upvote'
-}
-
-export interface ReactionKind_Downvote {
-    __kind: 'Downvote'
-}
-
-export type DispatchError = DispatchError_Other | DispatchError_CannotLookup | DispatchError_BadOrigin | DispatchError_Module | DispatchError_ConsumerRemaining | DispatchError_NoProviders | DispatchError_TooManyConsumers | DispatchError_Token | DispatchError_Arithmetic | DispatchError_Transactional | DispatchError_Exhausted | DispatchError_Corruption | DispatchError_Unavailable
-
-export interface DispatchError_Other {
-    __kind: 'Other'
-}
-
-export interface DispatchError_CannotLookup {
-    __kind: 'CannotLookup'
-}
-
-export interface DispatchError_BadOrigin {
-    __kind: 'BadOrigin'
-}
-
-export interface DispatchError_Module {
-    __kind: 'Module'
-    value: ModuleError
-}
-
-export interface DispatchError_ConsumerRemaining {
-    __kind: 'ConsumerRemaining'
-}
-
-export interface DispatchError_NoProviders {
-    __kind: 'NoProviders'
-}
-
-export interface DispatchError_TooManyConsumers {
-    __kind: 'TooManyConsumers'
-}
-
-export interface DispatchError_Token {
-    __kind: 'Token'
-    value: TokenError
-}
-
-export interface DispatchError_Arithmetic {
-    __kind: 'Arithmetic'
-    value: ArithmeticError
-}
-
-export interface DispatchError_Transactional {
-    __kind: 'Transactional'
-    value: TransactionalError
-}
-
-export interface DispatchError_Exhausted {
-    __kind: 'Exhausted'
-}
-
-export interface DispatchError_Corruption {
-    __kind: 'Corruption'
-}
-
-export interface DispatchError_Unavailable {
-    __kind: 'Unavailable'
-}
-
-export type Content = Content_None | Content_Other | Content_IPFS
-
-export interface Content_None {
-    __kind: 'None'
-}
-
-export interface Content_Other {
-    __kind: 'Other'
-    value: Uint8Array
-}
-
-export interface Content_IPFS {
-    __kind: 'IPFS'
-    value: Uint8Array
-}
-
 export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
 
 export interface MultiAddress_Id {
@@ -144,7 +27,29 @@ export interface MultiAddress_Address20 {
     value: Uint8Array
 }
 
-export type Call = Call_System | Call_Timestamp | Call_Grandpa | Call_Balances | Call_Proxy | Call_Utility | Call_Energy | Call_EvmAccounts | Call_Roles | Call_AccountFollows | Call_Profiles | Call_SpaceFollows | Call_SpaceOwnership | Call_Spaces | Call_Posts | Call_Reactions | Call_Sudo
+export type ProxyType = ProxyType_Any | ProxyType_DomainRegistrar | ProxyType_SocialActions | ProxyType_Management | ProxyType_SocialActionsProxy
+
+export interface ProxyType_Any {
+    __kind: 'Any'
+}
+
+export interface ProxyType_DomainRegistrar {
+    __kind: 'DomainRegistrar'
+}
+
+export interface ProxyType_SocialActions {
+    __kind: 'SocialActions'
+}
+
+export interface ProxyType_Management {
+    __kind: 'Management'
+}
+
+export interface ProxyType_SocialActionsProxy {
+    __kind: 'SocialActionsProxy'
+}
+
+export type Call = Call_System | Call_Timestamp | Call_Grandpa | Call_Balances | Call_Proxy | Call_Utility | Call_Energy | Call_EvmAccounts | Call_ResourceDiscussions | Call_Roles | Call_AccountFollows | Call_Profiles | Call_SpaceFollows | Call_SpaceOwnership | Call_Spaces | Call_PostFollows | Call_Posts | Call_Reactions | Call_Sudo
 
 export interface Call_System {
     __kind: 'System'
@@ -186,6 +91,11 @@ export interface Call_EvmAccounts {
     value: EvmAccountsCall
 }
 
+export interface Call_ResourceDiscussions {
+    __kind: 'ResourceDiscussions'
+    value: ResourceDiscussionsCall
+}
+
 export interface Call_Roles {
     __kind: 'Roles'
     value: RolesCall
@@ -216,6 +126,11 @@ export interface Call_Spaces {
     value: SpacesCall
 }
 
+export interface Call_PostFollows {
+    __kind: 'PostFollows'
+    value: PostFollowsCall
+}
+
 export interface Call_Posts {
     __kind: 'Posts'
     value: PostsCall
@@ -229,12 +144,6 @@ export interface Call_Reactions {
 export interface Call_Sudo {
     __kind: 'Sudo'
     value: SudoCall
-}
-
-export interface WhoAndWhen {
-    account: Uint8Array
-    block: number
-    time: bigint
 }
 
 export interface Weight {
@@ -252,65 +161,6 @@ export interface OriginCaller_system {
 export interface OriginCaller_Void {
     __kind: 'Void'
     value: Void
-}
-
-export interface ModuleError {
-    index: number
-    error: Uint8Array
-}
-
-export type TokenError = TokenError_NoFunds | TokenError_WouldDie | TokenError_BelowMinimum | TokenError_CannotCreate | TokenError_UnknownAsset | TokenError_Frozen | TokenError_Unsupported
-
-export interface TokenError_NoFunds {
-    __kind: 'NoFunds'
-}
-
-export interface TokenError_WouldDie {
-    __kind: 'WouldDie'
-}
-
-export interface TokenError_BelowMinimum {
-    __kind: 'BelowMinimum'
-}
-
-export interface TokenError_CannotCreate {
-    __kind: 'CannotCreate'
-}
-
-export interface TokenError_UnknownAsset {
-    __kind: 'UnknownAsset'
-}
-
-export interface TokenError_Frozen {
-    __kind: 'Frozen'
-}
-
-export interface TokenError_Unsupported {
-    __kind: 'Unsupported'
-}
-
-export type ArithmeticError = ArithmeticError_Underflow | ArithmeticError_Overflow | ArithmeticError_DivisionByZero
-
-export interface ArithmeticError_Underflow {
-    __kind: 'Underflow'
-}
-
-export interface ArithmeticError_Overflow {
-    __kind: 'Overflow'
-}
-
-export interface ArithmeticError_DivisionByZero {
-    __kind: 'DivisionByZero'
-}
-
-export type TransactionalError = TransactionalError_LimitReached | TransactionalError_NoLayer
-
-export interface TransactionalError_LimitReached {
-    __kind: 'LimitReached'
-}
-
-export interface TransactionalError_NoLayer {
-    __kind: 'NoLayer'
 }
 
 /**
@@ -967,15 +817,33 @@ export interface EnergyCall_generate_energy {
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
-export type EvmAccountsCall = EvmAccountsCall_link_eth_address
+export type EvmAccountsCall = EvmAccountsCall_link_evm_address
 
 /**
- * Link substrate address to ethereum address.
+ * Link substrate address to EVM address.
  */
-export interface EvmAccountsCall_link_eth_address {
-    __kind: 'link_eth_address'
-    ethAddress: Uint8Array
-    ethSignature: Uint8Array
+export interface EvmAccountsCall_link_evm_address {
+    __kind: 'link_evm_address'
+    evmAddress: Uint8Array
+    evmSignature: Uint8Array
+}
+
+/**
+ * Contains one variant per dispatchable that can be called by an extrinsic.
+ */
+export type ResourceDiscussionsCall = ResourceDiscussionsCall_link_post_to_resource | ResourceDiscussionsCall_create_resource_discussion
+
+export interface ResourceDiscussionsCall_link_post_to_resource {
+    __kind: 'link_post_to_resource'
+    resourceId: Uint8Array
+    postId: bigint
+}
+
+export interface ResourceDiscussionsCall_create_resource_discussion {
+    __kind: 'create_resource_discussion'
+    resourceId: Uint8Array
+    spaceId: bigint
+    content: Content
 }
 
 /**
@@ -1177,6 +1045,21 @@ export interface SpacesCall_force_set_next_space_id {
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
+export type PostFollowsCall = PostFollowsCall_follow_post | PostFollowsCall_unfollow_post
+
+export interface PostFollowsCall_follow_post {
+    __kind: 'follow_post'
+    postId: bigint
+}
+
+export interface PostFollowsCall_unfollow_post {
+    __kind: 'unfollow_post'
+    postId: bigint
+}
+
+/**
+ * Contains one variant per dispatchable that can be called by an extrinsic.
+ */
 export type PostsCall = PostsCall_create_post | PostsCall_update_post | PostsCall_move_post | PostsCall_force_create_post | PostsCall_force_remove_post | PostsCall_force_set_next_post_id
 
 export interface PostsCall_create_post {
@@ -1364,6 +1247,22 @@ export interface EquivocationProof {
     equivocation: Equivocation
 }
 
+export type Content = Content_None | Content_Other | Content_IPFS
+
+export interface Content_None {
+    __kind: 'None'
+}
+
+export interface Content_Other {
+    __kind: 'Other'
+    value: Uint8Array
+}
+
+export interface Content_IPFS {
+    __kind: 'IPFS'
+    value: Uint8Array
+}
+
 export type SpacePermission = SpacePermission_ManageRoles | SpacePermission_RepresentSpaceInternally | SpacePermission_RepresentSpaceExternally | SpacePermission_UpdateSpace | SpacePermission_CreateSubspaces | SpacePermission_UpdateOwnSubspaces | SpacePermission_DeleteOwnSubspaces | SpacePermission_HideOwnSubspaces | SpacePermission_UpdateAnySubspace | SpacePermission_DeleteAnySubspace | SpacePermission_HideAnySubspace | SpacePermission_CreatePosts | SpacePermission_UpdateOwnPosts | SpacePermission_DeleteOwnPosts | SpacePermission_HideOwnPosts | SpacePermission_UpdateAnyPost | SpacePermission_DeleteAnyPost | SpacePermission_HideAnyPost | SpacePermission_CreateComments | SpacePermission_UpdateOwnComments | SpacePermission_DeleteOwnComments | SpacePermission_HideOwnComments | SpacePermission_HideAnyComment | SpacePermission_Upvote | SpacePermission_Downvote | SpacePermission_Share | SpacePermission_OverrideSubspacePermissions | SpacePermission_OverridePostPermissions | SpacePermission_SuggestEntityStatus | SpacePermission_UpdateEntityStatus | SpacePermission_UpdateSpaceSettings
 
 export interface SpacePermission_ManageRoles {
@@ -1508,6 +1407,12 @@ export interface User_Space {
     value: bigint
 }
 
+export interface WhoAndWhen {
+    account: Uint8Array
+    block: number
+    time: bigint
+}
+
 export interface SpacePermissions {
     none: (SpacePermission[] | undefined)
     everyone: (SpacePermission[] | undefined)
@@ -1543,16 +1448,26 @@ export interface PostUpdate {
     hidden: (boolean | undefined)
 }
 
+export type ReactionKind = ReactionKind_Upvote | ReactionKind_Downvote
+
+export interface ReactionKind_Upvote {
+    __kind: 'Upvote'
+}
+
+export interface ReactionKind_Downvote {
+    __kind: 'Downvote'
+}
+
 export type Equivocation = Equivocation_Prevote | Equivocation_Precommit
 
 export interface Equivocation_Prevote {
     __kind: 'Prevote'
-    value: Type_102
+    value: Type_105
 }
 
 export interface Equivocation_Precommit {
     __kind: 'Precommit'
-    value: Type_108
+    value: Type_111
 }
 
 export interface Comment {
@@ -1560,14 +1475,14 @@ export interface Comment {
     parentId: (bigint | undefined)
 }
 
-export interface Type_102 {
+export interface Type_105 {
     roundNumber: bigint
     identity: Uint8Array
     first: [Prevote, Uint8Array]
     second: [Prevote, Uint8Array]
 }
 
-export interface Type_108 {
+export interface Type_111 {
     roundNumber: bigint
     identity: Uint8Array
     first: [Precommit, Uint8Array]

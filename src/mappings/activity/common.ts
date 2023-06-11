@@ -4,14 +4,14 @@ import {
   Post,
   Activity,
   Reaction,
-  EventName
+  EventName,
+  ContentExtension
 } from '../../model';
 import { getActivityEntityId, decorateEventName } from '../../common/utils';
 import { getOrCreateAccount } from '../account';
 import * as insertActivityData from './activityUtils';
 import { Ctx } from '../../processor';
 import { EventData } from '../../common/types';
-import { insertActivityForSpaceOwnershipTransferCreated } from './activityUtils/insertActivityForSpaceOwnershipTransferCreated';
 
 export const setActivity = async ({
   account,
@@ -21,11 +21,13 @@ export const setActivity = async ({
   oldOwner,
   newOwner,
   post,
+  extension,
   spacePrev,
   reaction,
   followingAccount,
   syntheticEventName,
-  username
+  username,
+  contentExtensionIndex
 }: {
   account: Account | string;
   ctx: Ctx;
@@ -35,10 +37,12 @@ export const setActivity = async ({
   oldOwner?: Account;
   newOwner?: Account;
   post?: Post;
+  extension?: ContentExtension;
   reaction?: Reaction;
   followingAccount?: Account;
   syntheticEventName?: EventName;
   username?: string;
+  contentExtensionIndex?: number;
 }): Promise<Activity | null> => {
   const { indexInBlock, name: eventName, blockNumber, timestamp } = eventData;
 
@@ -57,7 +61,8 @@ export const setActivity = async ({
     id: getActivityEntityId(
       blockNumber.toString(),
       indexInBlock.toString(),
-      eventNameDecorated
+      eventNameDecorated,
+      contentExtensionIndex
     ),
     account: accountInst,
     blockNumber: BigInt(blockNumber.toString()),
@@ -272,6 +277,23 @@ export const setActivity = async ({
         space,
         spacePrev,
         username,
+        activity
+      });
+  }
+
+  /**
+   * ExtensionDonationCreated
+   */
+  if (
+    (eventNameDecorated === EventName.ExtensionDonationCreated ||
+      eventNameDecorated === EventName.ExtensionEvmNftShared) &&
+    extension &&
+    post
+  ) {
+    activity =
+      await insertActivityData.insertActivityForContentExtensionCreated({
+        post,
+        extension,
         activity
       });
   }

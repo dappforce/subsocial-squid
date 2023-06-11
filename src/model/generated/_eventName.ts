@@ -18,6 +18,8 @@ export enum EventName {
     AccountFollowed = "AccountFollowed",
     AccountUnfollowed = "AccountUnfollowed",
     ProfileUpdated = "ProfileUpdated",
+    ExtensionDonationCreated = "ExtensionDonationCreated",
+    ExtensionEvmNftShared = "ExtensionEvmNftShared",
     CommentCreated = "CommentCreated",
     CommentDeleted = "CommentDeleted",
     CommentUpdated = "CommentUpdated",
@@ -34,4 +36,6 @@ export enum EventName {
     CommentReplyReactionDeleted = "CommentReplyReactionDeleted",
     UserNameRegistered = "UserNameRegistered",
     UserNameUpdated = "UserNameUpdated",
+    EvmAddressUnlinkedFromAccount = "EvmAddressUnlinkedFromAccount",
+    EvmAddressLinkedToAccount = "EvmAddressLinkedToAccount",
 }

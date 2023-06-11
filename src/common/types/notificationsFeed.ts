@@ -29,4 +29,6 @@ export type NotificationFeedTarget =
   | 'SharedPostParentPostOwner'
   | 'SharedPostParentPostOwnerFollowers'
   | 'SharedPostParentPostSpaceOwner'
-  | 'SharedPostParentPostSpaceFollowers';
+  | 'SharedPostParentPostSpaceFollowers'
+  | 'ExtensionDonationSourceAccount'
+  | 'ExtensionDonationTargetAccount';

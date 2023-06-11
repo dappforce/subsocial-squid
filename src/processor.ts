@@ -27,6 +27,7 @@ import { splitIntoBatches } from './common/utils';
 import { ElasticSearchManager } from './elasticsearch';
 import { getChain } from './chains';
 import { NotificationsManager } from './mappings/notification/notifiactionsManager';
+import { handleEvmSubstrateAccountLinks } from './mappings/evmSubstrateAccountLink';
 
 const chainConfig = getChain();
 
@@ -90,6 +91,12 @@ export const processor = new SubstrateBatchProcessor()
   } as const)
   .addEvent('Domains.DomainMetaUpdated', {
     data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
+  .addEvent('EvmAccounts.EvmAddressLinkedToAccount', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
+  .addEvent('EvmAccounts.EvmAddressUnlinkedFromAccount', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
   } as const);
 
 if (!envConfig.chainNode) {
@@ -126,7 +133,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
     currentBlocksListFull,
     ctx.blocks[ctx.blocks.length - 1].header.height > 11000000
       ? ctx.blocks.length + 1
-      : 3
+      : 5
   )) {
     const partialCtx = ctx;
     partialCtx.blocks = blocksBatch;
@@ -155,6 +162,8 @@ async function blocksBatchHandler(ctx: Ctx) {
   await storageDataManager.fetchStorageDataByEventsData(parsedEvents);
 
   await handleSpaces(ctx, parsedEvents);
+
+  await handleEvmSubstrateAccountLinks(ctx, parsedEvents);
 
   await handleProfiles(ctx, parsedEvents);
 

@@ -21,7 +21,10 @@
     "SpaceOwnership.SpaceOwnershipTransferCreated",
 
     "AccountFollows.AccountFollowed",
-    "AccountFollows.AccountUnfollowed"
+    "AccountFollows.AccountUnfollowed",
+
+    "EvmAccounts.EvmAddressLinkedToAccount",
+    "EvmAccounts.EvmAddressUnlinkedFromAccount"
   ],
   "calls": true,
   "storage": []

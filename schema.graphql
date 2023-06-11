@@ -18,6 +18,8 @@ The squid tracks these on-chain events:
   * AccountFollows.AccountUnfollowed
   * Domains.DomainRegistered
   * Domains.DomainMetaUpdated
+  * EvmAddressUnlinkedFromAccount
+  * EvmAddressLinkedToAccount
 
 ***
 
@@ -63,6 +65,10 @@ As a result, the squid uses synthetic events in addition to native on-chain even
 * CommentReplyReactionDeleted - *synthetic*
 * UserNameRegistered - *synthetic*
 * UserNameUpdated - *synthetic*
+* ExtensionDonationCreated - *synthetic*
+* ExtensionEvmNftShared - *synthetic*
+* EvmAddressLinkedToAccount
+* EvmAddressUnlinkedFromAccount
 """
 enum EventName {
   PostCreated
@@ -87,6 +93,8 @@ enum EventName {
   AccountUnfollowed
   ProfileUpdated
 
+  ExtensionDonationCreated # synthetic
+  ExtensionEvmNftShared # synthetic
   CommentCreated # synthetic
   CommentDeleted # synthetic
   CommentUpdated # synthetic
@@ -103,6 +111,8 @@ enum EventName {
   CommentReplyReactionDeleted # synthetic
   UserNameRegistered # synthetic
   UserNameUpdated # synthetic
+  EvmAddressUnlinkedFromAccount
+  EvmAddressLinkedToAccount
 }
 
 """
@@ -124,6 +134,11 @@ enum ReactionKind {
 enum Status {
   Active
   Deleted
+}
+
+enum ContentExtensionSchemaId {
+  subsocial_donations
+  subsocial_evm_nft
 }
 
 """
@@ -235,6 +250,30 @@ type Account @entity {
   A list of the usernames that an Account owns.
   """
   usernames: [String]
+
+  """
+  A list of linked Evm Accounts
+  """
+  linkedEvmAccounts: [EvmSubstrateAccountLink]!
+    @derivedFrom(field: "substrateAccount")
+
+  extensions: [ContentExtension]! @derivedFrom(field: "createdBy")
+}
+
+"""
+The Account entity
+"""
+type EvmAccount @entity {
+  """
+  The account's public key
+  """
+  id: ID!
+
+  """
+  A list of linked Substrate Accounts
+  """
+  linkedSubstrateAccounts: [EvmSubstrateAccountLink]!
+    @derivedFrom(field: "evmAccount")
 }
 
 """
@@ -432,6 +471,10 @@ type Post @entity {
   The properties of a Post from its IPFS content which are not supported by the current squid's DB schema.
   """
   experimental: JSON
+  """
+  The extensions published with this Post.
+  """
+  extensions: [ContentExtension]! @derivedFrom(field: "parentPost")
 
   #  """
   #  The ID of the application that the current Post was created with.
@@ -754,6 +797,11 @@ type Activity @entity {
   The username of Space or Account which was registered or updated in this particular Activity.
   """
   username: String
+
+  """
+  The ContentExtension which was created in this particular Activity.
+  """
+  extension: ContentExtension
 }
 
 """
@@ -802,6 +850,23 @@ The junction table for Many-to-Many relationship between Account and Notificatio
 type Notification @entity {
   account: Account!
   activity: Activity!
+}
+
+"""
+The junction table for Many-to-Many relationship between Substrate Account and Ethereum Account
+"""
+type EvmSubstrateAccountLink @entity {
+  evmAccount: EvmAccount!
+  substrateAccount: Account!
+  active: Boolean!
+  """
+  The block height when a Space was created.
+  """
+  createdAtBlock: BigInt
+  """
+  The DateTime when a Space was created.
+  """
+  createdAtTime: DateTime @index
 }
 
 """
@@ -871,4 +936,23 @@ type IpfsFetchLog @entity {
   cid: String
   blockHeight: Int!
   errorMsg: String
+}
+
+type ContentExtension @entity {
+  id: ID!
+  extensionSchemaId: ContentExtensionSchemaId!
+  parentPost: Post!
+  createdBy: Account!
+  chain: String
+  fromSubstrate: Account
+  fromEvm: EvmAccount
+  toSubstrate: Account
+  toEvm: EvmAccount
+  token: String
+  amount: BigInt
+  decimals: Int
+  txHash: String
+  collectionId: String
+  nftId: String
+  url: String
 }

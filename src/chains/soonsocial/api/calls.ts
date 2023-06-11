@@ -32,7 +32,7 @@ import {
   getSpacePermissionsDecorated
 } from './decorators';
 import { getContentSrcDecorated } from '../../utils';
-import * as v1500 from '../types/v1500';
+import * as v2300 from '../types/v2300';
 import { addressSs58ToString } from '../../../common/utils';
 
 function ensureSpaceId(srcVal: bigint | undefined) {
@@ -43,7 +43,7 @@ export function parsePostCreatedCallArgs(
   ctx: EventContext
 ): CreatePostCallParsedData {
   let callInst: PostsCreatePostCall | PostsForceCreatePostCall | null = null;
-  let extensionData: v1500.PostExtension | null = null;
+  let extensionData: v2300.PostExtension | null = null;
   let response: CreatePostCallParsedData = {
     ipfsSrc: null,
     otherSrc: null,
@@ -63,7 +63,7 @@ export function parsePostCreatedCallArgs(
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
 
       const { extension, content, spaceIdOpt, created, hidden, owner } =
-        callInst.asV1500;
+        callInst.asV2300;
       extensionData = extension;
 
       response = {
@@ -85,7 +85,7 @@ export function parsePostCreatedCallArgs(
       callInst = new PostsCreatePostCall(ctx, ctx.event.call!);
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
 
-      const { extension, content, spaceIdOpt } = callInst.asV1500;
+      const { extension, content, spaceIdOpt } = callInst.asV2300;
 
       extensionData = extension;
       response = {
@@ -126,7 +126,7 @@ export function parsePostUpdatedCallArgs(
   );
   const {
     update: { spaceId, content, hidden }
-  } = callInst.asV1500;
+  } = callInst.asV2300;
 
   return {
     ...getContentSrcDecorated(content),
@@ -143,7 +143,7 @@ export function parsePostMoveCallArgs(
     ctx,
     ctx.event.call!
   );
-  const { postId, newSpaceId } = callInst.asV1500;
+  const { postId, newSpaceId } = callInst.asV2300;
 
   return {
     toSpace:
@@ -176,7 +176,7 @@ export function parseSpaceCreateCallArgs(
       callInst = new SpacesForceCreateSpaceCall(ctx, ctx.event.call!);
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
       const { spaceId, created, owner, hidden, content, permissionsOpt } =
-        callInst.asV1500;
+        callInst.asV2300;
       response = {
         ...response,
         ...getContentSrcDecorated(content),
@@ -195,7 +195,7 @@ export function parseSpaceCreateCallArgs(
     case 'Profiles.create_space_as_profile': {
       callInst = new ProfilesCreateSpaceAsProfileCall(ctx, ctx.event.call!);
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
-      const { content } = callInst.asV1801;
+      const { content } = callInst.asV2300;
       response = {
         ...response,
         ...getContentSrcDecorated(content)
@@ -205,7 +205,7 @@ export function parseSpaceCreateCallArgs(
     default: {
       callInst = new SpacesCreateSpaceCall(ctx, ctx.event.call!);
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
-      const { content, permissionsOpt } = callInst.asV1500;
+      const { content, permissionsOpt } = callInst.asV2300;
       response = {
         ...response,
         ...getContentSrcDecorated(content),
@@ -225,7 +225,7 @@ export function parseSpaceUpdateCallArgs(
   );
   const {
     update: { content, permissions, hidden }
-  } = callInst.asV1500;
+  } = callInst.asV2300;
 
   return {
     ...getContentSrcDecorated(content),
@@ -257,7 +257,7 @@ export function parsePostReactionCreateCallArgs(
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
 
       const { who, postId, reactionId, reactionKind, created } =
-        callInst.asV1500;
+        callInst.asV2300;
       response = {
         ...response,
         forced: true,
@@ -274,7 +274,7 @@ export function parsePostReactionCreateCallArgs(
     default: {
       callInst = new ReactionsCreatePostReactionCall(ctx, ctx.event.call!);
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
-      const { postId, kind } = callInst.asV1500;
+      const { postId, kind } = callInst.asV2300;
       response = {
         ...response,
         reactionKind: getReactionKindDecorated(kind),
@@ -292,7 +292,7 @@ export function parsePostReactionUpdateCallArgs(
   const callInst: ReactionsUpdatePostReactionCall =
     new ReactionsUpdatePostReactionCall(ctx, ctx.event.call!);
 
-  const { postId, reactionId, newKind } = callInst.asV1500;
+  const { postId, reactionId, newKind } = callInst.asV2300;
 
   return {
     newReactionKind: getReactionKindDecorated(newKind),
@@ -321,7 +321,7 @@ export function parsePostReactionDeleteCallArgs(
       callInst = new ReactionsForceDeletePostReactionCall(ctx, ctx.event.call!);
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
 
-      const { who, postId, reactionId } = callInst.asV1500;
+      const { who, postId, reactionId } = callInst.asV2300;
       response = {
         ...response,
         forced: true,
@@ -337,7 +337,7 @@ export function parsePostReactionDeleteCallArgs(
       callInst = new ReactionsDeletePostReactionCall(ctx, ctx.event.call!);
       if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
 
-      const { postId, reactionId } = callInst.asV1500;
+      const { postId, reactionId } = callInst.asV2300;
       response = {
         ...response,
         reactionId: reactionId.toString(),

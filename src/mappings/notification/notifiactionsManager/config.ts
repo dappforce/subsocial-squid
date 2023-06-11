@@ -124,6 +124,15 @@ const onAccountUnfollowed: NotificationsBehaviour = {
   deleteAllNotificationsAboutAccount: ['FollowerAccount']
 };
 
+/**
+ * EXTENSION
+ */
+const onExtensionDonationCreated: NotificationsBehaviour = {
+  addNotificationForAccount: ['ExtensionDonationTargetAccount'],
+};
+
+
+
 export const EVENT_NOTIFICATION_RELATIONS: Partial<
   Record<EventName, NotificationsBehaviour>
 > = {
@@ -153,6 +162,10 @@ export const EVENT_NOTIFICATION_RELATIONS: Partial<
 
   AccountFollowed: onAccountFollowed,
   AccountUnfollowed: onAccountUnfollowed,
+
+
+  ExtensionDonationCreated: onExtensionDonationCreated,
+  ExtensionEvmNftShared: {},
 
   SpaceUpdated: {},
   UserNameRegistered: {},
