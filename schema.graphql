@@ -136,6 +136,9 @@ enum Status {
   Deleted
 }
 
+"""
+The schema ID of the content extensions.
+"""
 enum ContentExtensionSchemaId {
   subsocial_donations
   subsocial_evm_nft
@@ -257,15 +260,18 @@ type Account @entity {
   linkedEvmAccounts: [EvmSubstrateAccountLink]!
     @derivedFrom(field: "substrateAccount")
 
+  """
+  A list of extensions created by the account.
+  """
   extensions: [ContentExtension]! @derivedFrom(field: "createdBy")
 }
 
 """
-The Account entity
+The Evm Account entity
 """
 type EvmAccount @entity {
   """
-  The account's public key
+  The account's Evm address
   """
   id: ID!
 
@@ -856,15 +862,24 @@ type Notification @entity {
 The junction table for Many-to-Many relationship between Substrate Account and Ethereum Account
 """
 type EvmSubstrateAccountLink @entity {
+  """
+  Evm account
+  """
   evmAccount: EvmAccount!
+  """
+  Substrate account
+  """
   substrateAccount: Account!
+  """
+  Is the link of this particular account active? (This is necessary for the soft deletion of the link.)
+  """
   active: Boolean!
   """
-  The block height when a Space was created.
+  The block height when a EvmSubstrateAccountLink was created.
   """
   createdAtBlock: BigInt
   """
-  The DateTime when a Space was created.
+  The DateTime when a EvmSubstrateAccountLink was created.
   """
   createdAtTime: DateTime @index
 }
@@ -938,21 +953,74 @@ type IpfsFetchLog @entity {
   errorMsg: String
 }
 
+"""
+Detailed information about the Tweet attached to a Post
+"""
 type ContentExtension @entity {
+  """
+  The ContentExtension ID.
+  Consists of parent post ID + index in extensions list, which are attached to the Post.
+  (e.g. "4940-0")
+  """
   id: ID!
+  """
+  The ContentExtension properties schema ID.
+  """
   extensionSchemaId: ContentExtensionSchemaId!
+  """
+  The Post where extensions was published.
+  """
   parentPost: Post!
+  """
+  A One-To-One relationship with the Account entity of a ContentExtension's creator.
+  """
   createdBy: Account!
-  chain: String
+  """
+  The sender Substrate Account of the Donation transaction (actual for 'subsocial-donations")
+  """
   fromSubstrate: Account
+  """
+  The sender Evm Account of the Donation transaction (actual for 'subsocial-donations")
+  """
   fromEvm: EvmAccount
+  """
+  The target (recipient) Substrate Account of the Donation transaction (actual for 'subsocial-donations")
+  """
   toSubstrate: Account
+  """
+  The target (recipient) Evm Account of the Donation transaction (actual for 'subsocial-donations")
+  """
   toEvm: EvmAccount
+  """
+  The token name of the Donation transaction (actual for 'subsocial-donations")
+  """
   token: String
+  """
+  The amount of the Donation transaction (actual for 'subsocial-donations")
+  """
   amount: BigInt
+  """
+  The decimals value of transferred token in Donation transaction (actual for 'subsocial-donations")
+  """
   decimals: Int
+  """
+  The transaction hash of the Donation transfer (actual for 'subsocial-donations")
+  """
   txHash: String
+  """
+  The chain name of attached NFT (actual for 'subsocial-evm-nft")
+  """
+  chain: String
+  """
+  The collection ID of attached NFT (actual for 'subsocial-evm-nft")
+  """
   collectionId: String
+  """
+  The ID of attached NFT (actual for 'subsocial-evm-nft")
+  """
   nftId: String
+  """
+  The URL of attached NFT (actual for 'subsocial-evm-nft")
+  """
   url: String
 }
