@@ -2,7 +2,7 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, O
 import {EvmSubstrateAccountLink} from "./evmSubstrateAccountLink.model"
 
 /**
- * The Account entity
+ * The Evm Account entity
  */
 @Entity_()
 export class EvmAccount {
@@ -11,7 +11,7 @@ export class EvmAccount {
     }
 
     /**
-     * The account's public key
+     * The account's Evm address
      */
     @PrimaryColumn_()
     id!: string

@@ -86,10 +86,14 @@ export async function getOrCreateDonationExtension({
     extensionData!;
 
   let amountBn = new BigNumber('0'); // TODO add fallback fetch of token contract decimal
+  let amountBigInt = 0n;
   if (properties.amount && properties.decimals) {
-    amountBn = new BigNumber(
-      `${properties.amount}e+${Number.parseInt(properties.decimals.toString())}`
-    );
+    try {
+      amountBn = new BigNumber(properties.amount);
+      amountBigInt = amountBn.isNaN() ? BigInt(0) : BigInt(amountBn.toString());
+    } catch (e) {
+      ctx.log.info(e as Error, 'Donation amount conversion error - ');
+    }
   }
 
   const newExtensionProps: Partial<ContentExtension> = {
@@ -97,7 +101,7 @@ export async function getOrCreateDonationExtension({
     extensionSchemaId: ContentExtensionSchemaId.subsocial_donations,
     chain: properties.chain,
     token: properties.token,
-    amount: amountBn.isNaN() ? BigInt(0) : BigInt(amountBn.toString()),
+    amount: amountBigInt,
     decimals: properties.decimals,
     txHash: properties.txHash,
     createdBy: parentPost.ownedByAccount,

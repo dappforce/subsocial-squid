@@ -37,7 +37,8 @@ export const supportedIpfsContent = new Map<'post' | 'space', Set<string>>([
       'slug',
       'tags',
       'tweet',
-      'extensions'
+      'extensions',
+      'inReplyTo'
     ])
   ],
   [

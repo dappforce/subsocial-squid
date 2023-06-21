@@ -12,7 +12,7 @@
     "processor:start": "node -r dotenv/config lib/processor.js",
     "processor:docker-run": "bash scripts/docker-run.sh",
     "query-node:start": "squid-graphql-server",
-    "query-node:start-with-cache": "squid-graphql-server --dumb-cache in-memory --dumb-cache-max-age 5000 --dumb-cache-ttl 5000 --dumb-cache-size 200",
+    "query-node:start-with-cache": "squid-graphql-server --dumb-cache in-memory --dumb-cache-max-age 5000 --dumb-cache-ttl 5000 --dumb-cache-size 200 --subscriptions",
     "lint": "npm run lint:prod -- --fix",
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0",
     "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",

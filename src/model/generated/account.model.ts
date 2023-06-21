@@ -154,6 +154,9 @@ export class Account {
     @OneToMany_(() => EvmSubstrateAccountLink, e => e.substrateAccount)
     linkedEvmAccounts!: EvmSubstrateAccountLink[]
 
+    /**
+     * A list of extensions created by the account.
+     */
     @OneToMany_(() => ContentExtension, e => e.createdBy)
     extensions!: ContentExtension[]
 }

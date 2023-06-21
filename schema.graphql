@@ -130,6 +130,9 @@ enum ReactionKind {
   Upvote
   Downvote
 }
+enum InReplyToKind {
+  Post
+}
 
 enum Status {
   Active
@@ -481,6 +484,10 @@ type Post @entity {
   The extensions published with this Post.
   """
   extensions: [ContentExtension]! @derivedFrom(field: "parentPost")
+
+  inReplyToKind: InReplyToKind
+
+  inReplyToPost: Post
 
   #  """
   #  The ID of the application that the current Post was created with.

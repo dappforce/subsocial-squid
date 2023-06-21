@@ -8,7 +8,13 @@ import {
   isTweetDetailsIPFSValid,
   getExperimentalFieldsFromIPFSContent
 } from '../../common/utils';
-import { Post, PostKind, Space, IpfsFetchLog } from '../../model';
+import {
+  Post,
+  PostKind,
+  Space,
+  IpfsFetchLog,
+  InReplyToKind
+} from '../../model';
 import { getOrCreateAccount } from '../account';
 import {
   IpfsPostContentSummarized,
@@ -224,6 +230,20 @@ export const ensurePost = async ({
       post.tweetId = isTweetDetailsIPFSValid(postIpfsContent.tweet)
         ? postIpfsContent.tweet.id
         : null;
+    }
+    if (postIpfsContent.inReplyTo) {
+      post.inReplyToKind = postIpfsContent.inReplyTo.kind;
+
+      switch (postIpfsContent.inReplyTo.kind) {
+        case InReplyToKind.Post:
+          post.inReplyToPost = await getEntityWithRelations.post({
+            postId: postIpfsContent.inReplyTo.id,
+            ctx,
+            rootOrParentPost: true
+          });
+          break;
+        default:
+      }
     }
   } else {
     post.slug = postId;

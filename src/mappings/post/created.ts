@@ -1,5 +1,13 @@
 import { getSyntheticEventName } from '../../common/utils';
-import { Account, Activity, EventName, IpfsFetchLog, Post } from '../../model';
+import {
+  Account,
+  Activity,
+  EventName,
+  InReplyToKind,
+  IpfsFetchLog,
+  Post,
+  PostKind
+} from '../../model';
 import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
@@ -16,6 +24,9 @@ import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 import { processContentExtensions } from '../extension';
 import { StorageDataManager } from '../../storage';
+import { ContentExtensionData } from '../extension/types';
+import { getEntityWithRelations } from '../../common/gettersWithRelations';
+import { PostContentWithInReplyTo } from '../../common/types/post';
 
 export async function postCreated(
   ctx: Ctx,
@@ -39,6 +50,18 @@ export async function postCreated(
     }
   );
 
+  if (
+    postIpfsContent &&
+    postIpfsContent.inReplyTo &&
+    postIpfsContent.inReplyTo.kind === InReplyToKind.Post &&
+    postIpfsContent.inReplyTo.id
+  )
+    await mutateEventDataForSoftReply(
+      postIpfsContent.inReplyTo,
+      eventData,
+      ctx
+    );
+
   const post = await ensurePost({
     postId: eventData.postId,
     postContent: postIpfsContent ?? undefined,
@@ -55,6 +78,9 @@ export async function postCreated(
       eventData,
       ctx
     );
+
+  // if (postIpfsContent && postIpfsContent.inReplyTo)
+  //   await handlePostSoftReply(post, eventData, ctx);
 
   const syntheticEventName = getSyntheticEventName(EventName.PostCreated, post);
 
@@ -155,4 +181,32 @@ async function handlePostShare(
     syntheticEventName,
     { post: newPost, account: newPost.ownedByAccount, activity, ctx }
   );
+}
+
+async function mutateEventDataForSoftReply(
+  inReplyToPost: PostContentWithInReplyTo['inReplyTo'],
+  eventData: PostCreatedData,
+  ctx: Ctx
+) {
+  if (!inReplyToPost) return;
+  const repliedPostEntity = await getEntityWithRelations.post({
+    postId: inReplyToPost.id,
+    ctx,
+    rootOrParentPost: true
+  });
+  if (!repliedPostEntity) return;
+
+  if (eventData.postKind === PostKind.RegularPost) {
+    // Regular Post -> Comment
+    eventData.postKind = PostKind.Comment;
+    eventData.rootPostId = inReplyToPost.id;
+    return;
+  } else if (
+    eventData.postKind === PostKind.Comment &&
+    !eventData.parentPostId
+  ) {
+    // Comment -> Comment Reply
+    eventData.parentPostId = inReplyToPost.id;
+    return;
+  }
 }
