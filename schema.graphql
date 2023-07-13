@@ -67,6 +67,8 @@ As a result, the squid uses synthetic events in addition to native on-chain even
 * UserNameUpdated - *synthetic*
 * ExtensionDonationCreated - *synthetic*
 * ExtensionEvmNftShared - *synthetic*
+* ExtensionImageCreated - *synthetic*
+* ExtensionSecretBoxCreated - *synthetic*
 * EvmAddressLinkedToAccount
 * EvmAddressUnlinkedFromAccount
 """
@@ -812,7 +814,7 @@ type Activity @entity {
   aggCount: BigInt!
 
   """
-  The username of Space or Account which was registered or updated in this particular Activity.
+  The username of a Space or Account which was registered or updated in this particular Activity.
   """
   username: String
 
@@ -871,7 +873,7 @@ type Notification @entity {
 }
 
 """
-The junction table for Many-to-Many relationship between Substrate Account and Ethereum Account
+The junction table for Many-to-Many relationship between Substrate Accounts and Ethereum Accounts
 """
 type EvmSubstrateAccountLink @entity {
   """
@@ -971,7 +973,7 @@ Detailed information about the Tweet attached to a Post
 type ContentExtension @entity {
   """
   The ContentExtension ID.
-  Consists of parent post ID + index in extensions list, which are attached to the Post.
+  Consists of the parent post ID plus the index in the extensions list, which are attached to the Post.
   (e.g. "4940-0")
   """
   id: ID!
@@ -980,7 +982,7 @@ type ContentExtension @entity {
   """
   extensionSchemaId: ContentExtensionSchemaId!
   """
-  The Post where extensions was published.
+  The Post where the extension was published.
   """
   parentPost: Post!
   """
@@ -988,31 +990,31 @@ type ContentExtension @entity {
   """
   createdBy: Account!
   """
-  The sender Substrate Account of the Donation transaction (actual for 'subsocial-donations")
+  The Substrate Account of the sender of the Donation transaction (actual for 'subsocial-donations")
   """
   fromSubstrate: Account
   """
-  The sender Evm Account of the Donation transaction (actual for 'subsocial-donations")
+  The Evm Account of the sender of the Donation transaction (actual for 'subsocial-donations")
   """
   fromEvm: EvmAccount
   """
-  The target (recipient) Substrate Account of the Donation transaction (actual for 'subsocial-donations")
+  The Substrate Account of the target (recipient) of the Donation transaction (actual for 'subsocial-donations")
   """
   toSubstrate: Account
   """
-  The target (recipient) Evm Account of the Donation transaction (actual for 'subsocial-donations")
+  The Evm Account of the target (recipient) of the Donation transaction (actual for 'subsocial-donations")
   """
   toEvm: EvmAccount
   """
-  The token name of the Donation transaction (actual for 'subsocial-donations")
+  The name of the token transferred in the Donation transaction (actual for 'subsocial-donations")
   """
   token: String
   """
-  The amount of the Donation transaction (actual for 'subsocial-donations")
+  The amount of tokens transferred in the Donation transaction (actual for 'subsocial-donations")
   """
   amount: BigInt
   """
-  The decimals value of transferred token in Donation transaction (actual for 'subsocial-donations")
+  The decimals value of token transferred in the Donation transaction (actual for 'subsocial-donations")
   """
   decimals: Int
   """
@@ -1020,19 +1022,19 @@ type ContentExtension @entity {
   """
   txHash: String
   """
-  The chain name of attached NFT (actual for 'subsocial-evm-nft")
+  The name of the blockchain that contains the attached NFT (actual for 'subsocial-evm-nft")
   """
   chain: String
   """
-  The collection ID of attached NFT (actual for 'subsocial-evm-nft")
+  The collection ID of the attached NFT (actual for 'subsocial-evm-nft")
   """
   collectionId: String
   """
-  The ID of attached NFT (actual for 'subsocial-evm-nft")
+  The ID of the attached NFT (actual for 'subsocial-evm-nft")
   """
   nftId: String
   """
-  The URL of attached NFT (actual for 'subsocial-evm-nft")
+  The URL of the attached NFT (actual for 'subsocial-evm-nft")
   """
   url: String
   """
