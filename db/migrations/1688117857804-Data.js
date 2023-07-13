@@ -1,5 +1,5 @@
-module.exports = class Data1686840594716 {
-    name = 'Data1686840594716'
+module.exports = class Data1688117857804 {
+    name = 'Data1688117857804'
 
     async up(db) {
         await db.query(`CREATE TABLE "post_followers" ("id" character varying NOT NULL, "follower_account_id" character varying, "following_post_id" character varying, CONSTRAINT "PK_ced73560f09ff759cf0d7590c8d" PRIMARY KEY ("id"))`)
@@ -18,13 +18,14 @@ module.exports = class Data1686840594716 {
         await db.query(`CREATE INDEX "IDX_b5f64e2ecbf24309a44ba2e488" ON "evm_substrate_account_link" ("substrate_account_id") `)
         await db.query(`CREATE INDEX "IDX_835ba0ce4322ed69ed67ffc695" ON "evm_substrate_account_link" ("created_at_time") `)
         await db.query(`CREATE TABLE "evm_account" ("id" character varying NOT NULL, CONSTRAINT "PK_f6cfb73b5a36d2aea7581fa3883" PRIMARY KEY ("id"))`)
-        await db.query(`CREATE TABLE "content_extension" ("id" character varying NOT NULL, "extension_schema_id" character varying(19) NOT NULL, "token" text, "amount" numeric, "decimals" integer, "tx_hash" text, "chain" text, "collection_id" text, "nft_id" text, "url" text, "parent_post_id" character varying, "created_by_id" character varying, "from_substrate_id" character varying, "from_evm_id" character varying, "to_substrate_id" character varying, "to_evm_id" character varying, CONSTRAINT "PK_99dfae896235e3cbcbbd53d4333" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "content_extension" ("id" character varying NOT NULL, "extension_schema_id" character varying(23) NOT NULL, "token" text, "amount" numeric, "decimals" integer, "tx_hash" text, "chain" text, "collection_id" text, "nft_id" text, "url" text, "image" text, "message" text, "nonce" text, "parent_post_id" character varying, "created_by_id" character varying, "from_substrate_id" character varying, "from_evm_id" character varying, "to_substrate_id" character varying, "to_evm_id" character varying, "recipient_id" character varying, CONSTRAINT "PK_99dfae896235e3cbcbbd53d4333" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_aad6a0b30cf5edd43d8606df7e" ON "content_extension" ("parent_post_id") `)
         await db.query(`CREATE INDEX "IDX_91b383558dedfc31f659e84125" ON "content_extension" ("created_by_id") `)
         await db.query(`CREATE INDEX "IDX_0533ceb0b45154c95b6acf4ca7" ON "content_extension" ("from_substrate_id") `)
         await db.query(`CREATE INDEX "IDX_78eb091f2bc600c414f23ca68d" ON "content_extension" ("from_evm_id") `)
         await db.query(`CREATE INDEX "IDX_772fdb914f8299ca87adbdfac8" ON "content_extension" ("to_substrate_id") `)
         await db.query(`CREATE INDEX "IDX_2ba5a713e0815c7098881f8fe4" ON "content_extension" ("to_evm_id") `)
+        await db.query(`CREATE INDEX "IDX_c6defab9bc26b56963886290ac" ON "content_extension" ("recipient_id") `)
         await db.query(`CREATE TABLE "post" ("id" character varying NOT NULL, "is_comment" boolean NOT NULL, "hidden" boolean NOT NULL, "created_at_block" numeric, "created_at_time" TIMESTAMP WITH TIME ZONE, "created_on_day" TIMESTAMP WITH TIME ZONE, "updated_at_time" TIMESTAMP WITH TIME ZONE, "kind" character varying(11), "followers_count" integer NOT NULL, "replies_count" integer NOT NULL, "public_replies_count" integer NOT NULL, "hidden_replies_count" integer NOT NULL, "shares_count" integer NOT NULL, "upvotes_count" integer NOT NULL, "downvotes_count" integer NOT NULL, "reactions_count" integer NOT NULL, "title" text, "image" text, "link" text, "canonical" text, "content" text, "slug" text, "body" text, "summary" text, "is_show_more" boolean, "meta" text, "tags_original" text, "format" text, "tweet_id" text, "tweet_details" jsonb, "proposal_index" integer, "experimental" jsonb, "in_reply_to_kind" character varying(4), "root_post_id" character varying, "parent_post_id" character varying, "shared_post_id" character varying, "owned_by_account_id" character varying, "created_by_account_id" character varying, "space_id" character varying, "in_reply_to_post_id" character varying, CONSTRAINT "PK_be5fda3aac270b134ff9c21cdee" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_ea813cdf5e4158eb4eb24cd049" ON "post" ("root_post_id") `)
         await db.query(`CREATE INDEX "IDX_0d4e62dcf3e5e150431136f114" ON "post" ("parent_post_id") `)
@@ -94,6 +95,7 @@ module.exports = class Data1686840594716 {
         await db.query(`ALTER TABLE "content_extension" ADD CONSTRAINT "FK_78eb091f2bc600c414f23ca68d9" FOREIGN KEY ("from_evm_id") REFERENCES "evm_account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "content_extension" ADD CONSTRAINT "FK_772fdb914f8299ca87adbdfac8e" FOREIGN KEY ("to_substrate_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "content_extension" ADD CONSTRAINT "FK_2ba5a713e0815c7098881f8fe4d" FOREIGN KEY ("to_evm_id") REFERENCES "evm_account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "content_extension" ADD CONSTRAINT "FK_c6defab9bc26b56963886290ac4" FOREIGN KEY ("recipient_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "post" ADD CONSTRAINT "FK_ea813cdf5e4158eb4eb24cd0495" FOREIGN KEY ("root_post_id") REFERENCES "post"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "post" ADD CONSTRAINT "FK_0d4e62dcf3e5e150431136f1149" FOREIGN KEY ("parent_post_id") REFERENCES "post"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "post" ADD CONSTRAINT "FK_52122bf2cf235b80e8227a9c645" FOREIGN KEY ("shared_post_id") REFERENCES "post"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -148,6 +150,7 @@ module.exports = class Data1686840594716 {
         await db.query(`DROP INDEX "public"."IDX_78eb091f2bc600c414f23ca68d"`)
         await db.query(`DROP INDEX "public"."IDX_772fdb914f8299ca87adbdfac8"`)
         await db.query(`DROP INDEX "public"."IDX_2ba5a713e0815c7098881f8fe4"`)
+        await db.query(`DROP INDEX "public"."IDX_c6defab9bc26b56963886290ac"`)
         await db.query(`DROP TABLE "post"`)
         await db.query(`DROP INDEX "public"."IDX_ea813cdf5e4158eb4eb24cd049"`)
         await db.query(`DROP INDEX "public"."IDX_0d4e62dcf3e5e150431136f114"`)
@@ -217,6 +220,7 @@ module.exports = class Data1686840594716 {
         await db.query(`ALTER TABLE "content_extension" DROP CONSTRAINT "FK_78eb091f2bc600c414f23ca68d9"`)
         await db.query(`ALTER TABLE "content_extension" DROP CONSTRAINT "FK_772fdb914f8299ca87adbdfac8e"`)
         await db.query(`ALTER TABLE "content_extension" DROP CONSTRAINT "FK_2ba5a713e0815c7098881f8fe4d"`)
+        await db.query(`ALTER TABLE "content_extension" DROP CONSTRAINT "FK_c6defab9bc26b56963886290ac4"`)
         await db.query(`ALTER TABLE "post" DROP CONSTRAINT "FK_ea813cdf5e4158eb4eb24cd0495"`)
         await db.query(`ALTER TABLE "post" DROP CONSTRAINT "FK_0d4e62dcf3e5e150431136f1149"`)
         await db.query(`ALTER TABLE "post" DROP CONSTRAINT "FK_52122bf2cf235b80e8227a9c645"`)

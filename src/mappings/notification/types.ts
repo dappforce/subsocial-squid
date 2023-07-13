@@ -29,6 +29,7 @@ export type NotificationHandlerInputParams = {
   followingSpace?: Space;
   extDonationTargetAccount?: Account | string;
   extDonationSourceAccount?: Account | string;
+  extSecretBoxRecipientAccount?: Account | string;
   activity: Activity;
   ctx: Ctx;
 };
@@ -99,6 +100,10 @@ type NotificationsParamsOnUsernameRegistered = NotificationsParamsBase & {
 type NotificationsParamsOnExtensionDonationCreated = NotificationsParamsBase & {
   extDonationTargetAccount: Account;
 };
+type NotificationsParamsOnExtensionSecretBoxCreated =
+  NotificationsParamsBase & {
+    extSecretBoxRecipientAccount: Account;
+  };
 
 export type NotificationsHandlerBinderParams<E extends EventName> =
   E extends EventName.PostCreated
@@ -169,4 +174,6 @@ export type NotificationsHandlerBinderParams<E extends EventName> =
     ? NotificationsParamsOnUsernameRegistered
     : E extends EventName.ExtensionDonationCreated
     ? NotificationsParamsOnExtensionDonationCreated
+    : E extends EventName.ExtensionSecretBoxCreated
+    ? NotificationsParamsOnExtensionSecretBoxCreated
     : never;

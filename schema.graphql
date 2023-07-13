@@ -95,6 +95,8 @@ enum EventName {
 
   ExtensionDonationCreated # synthetic
   ExtensionEvmNftShared # synthetic
+  ExtensionImageCreated # synthetic
+  ExtensionSecretBoxCreated # synthetic
   CommentCreated # synthetic
   CommentDeleted # synthetic
   CommentUpdated # synthetic
@@ -145,6 +147,9 @@ The schema ID of the content extensions.
 enum ContentExtensionSchemaId {
   subsocial_donations
   subsocial_evm_nft
+  subsocial_image
+  subsocial_secret_box
+  subsocial_decoded_promo
 }
 
 """
@@ -1030,4 +1035,20 @@ type ContentExtension @entity {
   The URL of attached NFT (actual for 'subsocial-evm-nft")
   """
   url: String
+  """
+  The URL or CID of attached image (actual for 'subsocial-image")
+  """
+  image: String
+  """
+  The message of secret Secret box (actual for 'subsocial-secret-box")
+  """
+  message: String
+  """
+  The nonce of encrypted Secret box (actual for 'subsocial-secret-box")
+  """
+  nonce: String
+  """
+  The recipient Account of Secret box message (actual for 'subsocial-secret-box")
+  """
+  recipient: Account
 }

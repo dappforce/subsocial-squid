@@ -17,6 +17,7 @@ export function getTargetAccForNotificationForAcc(
     followingSpace,
     extDonationTargetAccount,
     extDonationSourceAccount,
+    extSecretBoxRecipientAccount,
     ctx
   } = params;
 
@@ -162,6 +163,14 @@ export function getTargetAccForNotificationForAcc(
         break;
       }
       targetAccount = extDonationTargetAccount;
+      break;
+    }
+    case 'ExtensionSecretBoxRecipientAccount': {
+      if (!extSecretBoxRecipientAccount) {
+        paramsWarning();
+        break;
+      }
+      targetAccount = extSecretBoxRecipientAccount;
       break;
     }
     default:

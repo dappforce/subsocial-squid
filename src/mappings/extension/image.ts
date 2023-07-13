@@ -2,11 +2,11 @@ import { ContentExtensionData } from './types';
 import { Ctx } from '../../processor';
 import { EventName, Post } from '../../model';
 import { PostCreatedData } from '../../common/types';
-import { getOrCreateEvmNftExtension } from './entity';
+import { getOrCreateImageExtension } from './entity';
 import { setActivity } from '../activity';
 import { getContentExtensionEntityId } from '../../common/utils';
 
-export async function handleEvmNft({
+export async function handleImage({
   extensionData,
   extensionIndex,
   parentPost,
@@ -19,7 +19,7 @@ export async function handleEvmNft({
   eventData: PostCreatedData;
   ctx: Ctx;
 }) {
-  const extension = await getOrCreateEvmNftExtension({
+  const extension = await getOrCreateImageExtension({
     extensionId: getContentExtensionEntityId(parentPost.id, extensionIndex),
     parentPost,
     extensionData,
@@ -27,7 +27,7 @@ export async function handleEvmNft({
   });
 
   await setActivity({
-    syntheticEventName: EventName.ExtensionEvmNftShared,
+    syntheticEventName: EventName.ExtensionImageCreated,
     account: extension.createdBy,
     extension,
     post: parentPost,

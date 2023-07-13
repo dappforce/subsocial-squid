@@ -102,6 +102,13 @@ export const getPostFollowersEntityId = (
   return `${followerId}-${postId}`;
 };
 
+export const getContentExtensionEntityId = (
+  postId: string,
+  extensionIndex: number
+): string => {
+  return `${postId}-${extensionIndex}`;
+};
+
 export const getSubsocialSs58Codec = (): ss58.Codec => {
   if (!subsocialSs58CodecInst) subsocialSs58CodecInst = ss58.codec('subsocial');
   return subsocialSs58CodecInst;

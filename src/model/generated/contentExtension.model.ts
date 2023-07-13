@@ -25,7 +25,7 @@ export class ContentExtension {
     /**
      * The ContentExtension properties schema ID.
      */
-    @Column_("varchar", {length: 19, nullable: false})
+    @Column_("varchar", {length: 23, nullable: false})
     extensionSchemaId!: ContentExtensionSchemaId
 
     /**
@@ -117,4 +117,29 @@ export class ContentExtension {
      */
     @Column_("text", {nullable: true})
     url!: string | undefined | null
+
+    /**
+     * The URL or CID of attached image (actual for 'subsocial-image")
+     */
+    @Column_("text", {nullable: true})
+    image!: string | undefined | null
+
+    /**
+     * The message of secret Secret box (actual for 'subsocial-secret-box")
+     */
+    @Column_("text", {nullable: true})
+    message!: string | undefined | null
+
+    /**
+     * The nonce of encrypted Secret box (actual for 'subsocial-secret-box")
+     */
+    @Column_("text", {nullable: true})
+    nonce!: string | undefined | null
+
+    /**
+     * The recipient Account of Secret box message (actual for 'subsocial-secret-box")
+     */
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    recipient!: Account | undefined | null
 }

@@ -12,6 +12,7 @@ import { setActivity } from '../activity';
 import { EntityProvideFailWarning } from '../../common/errors';
 import { PostCreatedData } from '../../common/types';
 import { NotificationsManager } from '../notification/notifiactionsManager';
+import { getContentExtensionEntityId } from '../../common/utils';
 
 export async function handleDonation({
   extensionData,
@@ -27,7 +28,7 @@ export async function handleDonation({
   ctx: Ctx;
 }): Promise<void> {
   const extension = await getOrCreateDonationExtension({
-    extensionId: `${parentPost.id}-${extensionIndex}`,
+    extensionId: getContentExtensionEntityId(parentPost.id, extensionIndex),
     parentPost,
     extensionData,
     ctx

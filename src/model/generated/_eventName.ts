@@ -20,6 +20,8 @@ export enum EventName {
     ProfileUpdated = "ProfileUpdated",
     ExtensionDonationCreated = "ExtensionDonationCreated",
     ExtensionEvmNftShared = "ExtensionEvmNftShared",
+    ExtensionImageCreated = "ExtensionImageCreated",
+    ExtensionSecretBoxCreated = "ExtensionSecretBoxCreated",
     CommentCreated = "CommentCreated",
     CommentDeleted = "CommentDeleted",
     CommentUpdated = "CommentUpdated",

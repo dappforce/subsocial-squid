@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: xsocial-wss
-version: 314
+version: 321
 description: |-
   Squid for xSocial
 build:
@@ -36,3 +36,7 @@ deploy:
       ]
 scale:
   dedicated: true
+  api:
+    profile: large
+    # load-balance three replicas
+    replicas: 3
