@@ -1,5 +1,5 @@
-module.exports = class Data1688117857804 {
-    name = 'Data1688117857804'
+module.exports = class Data1689322170144 {
+    name = 'Data1689322170144'
 
     async up(db) {
         await db.query(`CREATE TABLE "post_followers" ("id" character varying NOT NULL, "follower_account_id" character varying, "following_post_id" character varying, CONSTRAINT "PK_ced73560f09ff759cf0d7590c8d" PRIMARY KEY ("id"))`)

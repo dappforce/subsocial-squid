@@ -4,7 +4,7 @@ import {EvmAccount} from "./evmAccount.model"
 import {Account} from "./account.model"
 
 /**
- * The junction table for Many-to-Many relationship between Substrate Account and Ethereum Account
+ * The junction table for Many-to-Many relationship between Substrate Accounts and Ethereum Accounts
  */
 @Entity_()
 export class EvmSubstrateAccountLink {

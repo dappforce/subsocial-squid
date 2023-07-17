@@ -117,7 +117,7 @@ export class Activity {
     aggCount!: bigint
 
     /**
-     * The username of Space or Account which was registered or updated in this particular Activity.
+     * The username of a Space or Account which was registered or updated in this particular Activity.
      */
     @Column_("text", {nullable: true})
     username!: string | undefined | null

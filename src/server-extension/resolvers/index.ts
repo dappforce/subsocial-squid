@@ -1,4 +1,6 @@
 import 'reflect-metadata';
 
-import { ElasticSearchQueryResolver } from './elasticSearchQuery';
-export { ElasticSearchQueryResolver };
+export { ElasticSearchQueryResolver } from './elasticSearchQuery';
+export { ActiveUsersCountResolver } from './activeUsersTotalCount';
+export { ActiveUsersTotalCountWithFiltersResolver } from './activeUsersTotalCountWithFilters';
+export { UserRetentionCountResolver } from './userRetentionCount';
