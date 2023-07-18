@@ -209,7 +209,7 @@ query MyQuery(
   $last_range_min_posts_number: Int!,
   $exclude_body: [String!]!,
 ) {
-  userRetentionCountFull(
+  userRetentionCount(
     full_query_range_from: $full_query_range_from,
     full_query_range_to: $full_query_range_to,
     first_range_from: $first_range_from,
