@@ -170,6 +170,28 @@ export const setActivity = async ({
   }
 
   /**
+   * PostFollowed
+   * PostUnfollowed
+   * CommentFollowed
+   * CommentUnfollowed
+   */
+  if (
+    (eventNameDecorated === EventName.PostFollowed ||
+      eventNameDecorated === EventName.PostUnfollowed ||
+      eventNameDecorated === EventName.CommentFollowed ||
+      eventNameDecorated === EventName.CommentUnfollowed) &&
+    post
+  ) {
+    activity = await insertActivityData.insertActivityForPostFollowedUnfollowed(
+      {
+        post,
+        activity,
+        ctx
+      }
+    );
+  }
+
+  /**
    * PostReactionCreated
    * PostReactionUpdated
    * PostReactionDeleted

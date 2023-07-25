@@ -70,6 +70,15 @@ type NotificationsParamsOnPostMoved = NotificationsParamsBase & {
 type NotificationsParamsOnPostFollowed = NotificationsParamsBase & {
   post: Post;
 };
+type NotificationsParamsOnPostUnfollowed = NotificationsParamsBase & {
+  post: Post;
+};
+type NotificationsParamsOnCommentFollowed = NotificationsParamsBase & {
+  post: Post;
+};
+type NotificationsParamsOnCommentUnfollowed = NotificationsParamsBase & {
+  post: Post;
+};
 type NotificationsParamsOnPostReactionCreated = NotificationsParamsBase & {
   reaction: Reaction;
 };
@@ -131,7 +140,11 @@ export type NotificationsHandlerBinderParams<E extends EventName> =
     : E extends EventName.PostFollowed
     ? NotificationsParamsOnPostFollowed
     : E extends EventName.PostUnfollowed
-    ? NotificationsParamsOnPostFollowed
+    ? NotificationsParamsOnPostUnfollowed
+    : E extends EventName.CommentFollowed
+    ? NotificationsParamsOnCommentFollowed
+    : E extends EventName.CommentUnfollowed
+    ? NotificationsParamsOnCommentUnfollowed
     : E extends EventName.PostReactionCreated
     ? NotificationsParamsOnPostReactionCreated
     : E extends EventName.PostReactionUpdated

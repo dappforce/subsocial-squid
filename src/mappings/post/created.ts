@@ -11,7 +11,7 @@ import {
 import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
-import { postFollowed } from '../postCommentFollows';
+// import { postFollowed } from '../postCommentFollows';
 import {
   CommonCriticalError,
   EntityProvideFailWarning
@@ -102,7 +102,7 @@ export async function postCreated(
   /**
    * Currently each post/comment/comment reply has initial follower as its creator.
    */
-  await postFollowed(post, ctx);
+  // await postFollowed(post, ctx);
 
   const activity = await setActivity({
     syntheticEventName,

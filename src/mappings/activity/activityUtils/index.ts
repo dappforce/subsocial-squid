@@ -11,3 +11,4 @@ export { insertActivityForSpaceOwnershipTransferAccepted } from './insertActivit
 export { insertActivityForSpaceOwnershipTransferCreated } from './insertActivityForSpaceOwnershipTransferCreated';
 export { insertActivityForUsernameRegisteredUpdated } from './insertActivityForUsernameRegisteredUpdated';
 export { insertActivityForContentExtensionCreated } from './insertActivityForContentExtensionCreated';
+export { insertActivityForPostFollowedUnfollowed } from './insertActivityForPostFollowedUnfollowed';

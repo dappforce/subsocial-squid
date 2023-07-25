@@ -177,6 +177,31 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
           break;
         }
 
+        case 'PostFollows.PostFollowed': {
+          const xSocialApi = getApiDecorated('xsocial');
+          const eventData =
+            xSocialApi.events.parsePostFollowedEventArgs(eventHandlerContext);
+
+          parsedData.set(EventName.PostFollowed, {
+            ...getEventMetadata(block, item.event as SubstrateEvent),
+            ...eventData
+          });
+          totalEventsNumber++;
+          break;
+        }
+        case 'PostFollows.PostUnfollowed': {
+          const xSocialApi = getApiDecorated('xsocial');
+          const eventData =
+            xSocialApi.events.parsePostUnfollowedEventArgs(eventHandlerContext);
+
+          parsedData.set(EventName.PostUnfollowed, {
+            ...getEventMetadata(block, item.event as SubstrateEvent),
+            ...eventData
+          });
+          totalEventsNumber++;
+          break;
+        }
+
         case 'Spaces.SpaceCreated': {
           const callData =
             api.calls.parseSpaceCreateCallArgs(eventHandlerContext);
