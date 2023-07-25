@@ -7,6 +7,8 @@ import {PostFollowers} from "./postFollowers.model"
 import {CommentFollowers} from "./commentFollowers.model"
 import {Reaction} from "./reaction.model"
 import {TweetDetails} from "./_tweetDetails"
+import {ContentExtension} from "./contentExtension.model"
+import {InReplyToKind} from "./_inReplyToKind"
 
 /**
  * The Post entity
@@ -280,4 +282,17 @@ export class Post {
      */
     @Column_("jsonb", {nullable: true})
     experimental!: unknown | undefined | null
+
+    /**
+     * The extensions published with this Post.
+     */
+    @OneToMany_(() => ContentExtension, e => e.parentPost)
+    extensions!: ContentExtension[]
+
+    @Column_("varchar", {length: 4, nullable: true})
+    inReplyToKind!: InReplyToKind | undefined | null
+
+    @Index_()
+    @ManyToOne_(() => Post, {nullable: true})
+    inReplyToPost!: Post | undefined | null
 }

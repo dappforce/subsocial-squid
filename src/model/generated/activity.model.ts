@@ -5,6 +5,7 @@ import {EventName} from "./_eventName"
 import {Space} from "./space.model"
 import {Post} from "./post.model"
 import {Reaction} from "./reaction.model"
+import {ContentExtension} from "./contentExtension.model"
 
 /**
  * The Activity entity, which represents any activity on the blockchain (within the list of tracked events).
@@ -120,4 +121,11 @@ export class Activity {
      */
     @Column_("text", {nullable: true})
     username!: string | undefined | null
+
+    /**
+     * The ContentExtension which was created in this particular Activity.
+     */
+    @Index_()
+    @ManyToOne_(() => ContentExtension, {nullable: true})
+    extension!: ContentExtension | undefined | null
 }

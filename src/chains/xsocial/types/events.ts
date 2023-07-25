@@ -48,6 +48,64 @@ export class AccountFollowsAccountUnfollowedEvent {
     }
 }
 
+export class EvmAccountsEvmAddressLinkedToAccountEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'EvmAccounts.EvmAddressLinkedToAccount')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Account have been linked to evm address
+     */
+    get isV104(): boolean {
+        return this._chain.getEventHash('EvmAccounts.EvmAddressLinkedToAccount') === '4e91f3af896ea5e5fbce7968b31b0abca921c10c8abb59bde9e837cf3e21e503'
+    }
+
+    /**
+     * Account have been linked to evm address
+     */
+    get asV104(): {ethereum: Uint8Array, substrate: Uint8Array} {
+        assert(this.isV104)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class EvmAccountsEvmAddressUnlinkedFromAccountEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'EvmAccounts.EvmAddressUnlinkedFromAccount')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Account have been unlinked from evm address
+     */
+    get isV108(): boolean {
+        return this._chain.getEventHash('EvmAccounts.EvmAddressUnlinkedFromAccount') === '4e91f3af896ea5e5fbce7968b31b0abca921c10c8abb59bde9e837cf3e21e503'
+    }
+
+    /**
+     * Account have been unlinked from evm address
+     */
+    get asV108(): {ethereum: Uint8Array, substrate: Uint8Array} {
+        assert(this.isV108)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class PostsPostCreatedEvent {
     private readonly _chain: Chain
     private readonly event: Event

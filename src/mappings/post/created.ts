@@ -1,5 +1,13 @@
 import { getSyntheticEventName } from '../../common/utils';
-import { Account, Activity, EventName, Post } from '../../model';
+import {
+  Account,
+  Activity,
+  EventName,
+  InReplyToKind,
+  IpfsFetchLog,
+  Post,
+  PostKind
+} from '../../model';
 import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
@@ -14,6 +22,11 @@ import { Ctx } from '../../processor';
 import { ElasticSearchManager } from '../../elasticsearch';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
+import { processContentExtensions } from '../extension';
+import { StorageDataManager } from '../../storage';
+import { ContentExtensionData } from '../extension/types';
+import { getEntityWithRelations } from '../../common/gettersWithRelations';
+import { PostContentWithInReplyTo } from '../../common/types/post';
 
 export async function postCreated(
   ctx: Ctx,
@@ -21,13 +34,53 @@ export async function postCreated(
 ): Promise<void> {
   const account = await getOrCreateAccount(eventData.accountId, ctx);
 
+  const storageDataManagerInst = StorageDataManager.getInstance(ctx);
+  const postIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
+    'post',
+    eventData.ipfsSrc,
+    async (errorMsg: string | null) => {
+      await ctx.store.save(
+        new IpfsFetchLog({
+          id: eventData.postId,
+          cid: eventData.ipfsSrc,
+          blockHeight: eventData.blockNumber,
+          errorMsg: errorMsg
+        })
+      );
+    }
+  );
+
+  if (
+    postIpfsContent &&
+    postIpfsContent.inReplyTo &&
+    postIpfsContent.inReplyTo.kind === InReplyToKind.Post &&
+    postIpfsContent.inReplyTo.id
+  )
+    await mutateEventDataForSoftReply(
+      postIpfsContent.inReplyTo,
+      eventData,
+      ctx
+    );
+
   const post = await ensurePost({
     postId: eventData.postId,
+    postContent: postIpfsContent ?? undefined,
     ctx,
     eventData
   });
 
   await ctx.store.save(post);
+
+  if (postIpfsContent && postIpfsContent.extensions)
+    await processContentExtensions(
+      postIpfsContent.extensions,
+      post,
+      eventData,
+      ctx
+    );
+
+  // if (postIpfsContent && postIpfsContent.inReplyTo)
+  //   await handlePostSoftReply(post, eventData, ctx);
 
   const syntheticEventName = getSyntheticEventName(EventName.PostCreated, post);
 
@@ -69,7 +122,7 @@ export async function postCreated(
   await FeedPublicationsManager.getInstance().handleFeedPublications(
     syntheticEventName,
     { post, account, activity, ctx }
-    );
+  );
 
   await NotificationsManager.getInstance().handleNotifications(
     syntheticEventName,
@@ -79,7 +132,7 @@ export async function postCreated(
       activity,
       ctx
     }
-    );
+  );
 }
 
 async function handlePostShare(
@@ -122,10 +175,38 @@ async function handlePostShare(
       activity,
       ctx
     }
-    );
+  );
 
   await FeedPublicationsManager.getInstance().handleFeedPublications(
     syntheticEventName,
     { post: newPost, account: newPost.ownedByAccount, activity, ctx }
-    );
+  );
+}
+
+async function mutateEventDataForSoftReply(
+  inReplyToPost: PostContentWithInReplyTo['inReplyTo'],
+  eventData: PostCreatedData,
+  ctx: Ctx
+) {
+  if (!inReplyToPost) return;
+  const repliedPostEntity = await getEntityWithRelations.post({
+    postId: inReplyToPost.id,
+    ctx,
+    rootOrParentPost: true
+  });
+  if (!repliedPostEntity) return;
+
+  if (eventData.postKind === PostKind.RegularPost) {
+    // Regular Post -> Comment
+    eventData.postKind = PostKind.Comment;
+    eventData.rootPostId = inReplyToPost.id;
+    return;
+  } else if (
+    eventData.postKind === PostKind.Comment &&
+    !eventData.parentPostId
+  ) {
+    // Comment -> Comment Reply
+    eventData.parentPostId = inReplyToPost.id;
+    return;
+  }
 }

@@ -8,6 +8,8 @@ import {NewsFeed} from "./newsFeed.model"
 import {Notification} from "./notification.model"
 import {Activity} from "./activity.model"
 import {Reaction} from "./reaction.model"
+import {EvmSubstrateAccountLink} from "./evmSubstrateAccountLink.model"
+import {ContentExtension} from "./contentExtension.model"
 
 /**
  * The Account entity
@@ -145,4 +147,16 @@ export class Account {
      */
     @Column_("text", {array: true, nullable: true})
     usernames!: (string | undefined | null)[] | undefined | null
+
+    /**
+     * A list of linked Evm Accounts
+     */
+    @OneToMany_(() => EvmSubstrateAccountLink, e => e.substrateAccount)
+    linkedEvmAccounts!: EvmSubstrateAccountLink[]
+
+    /**
+     * A list of extensions created by the account.
+     */
+    @OneToMany_(() => ContentExtension, e => e.createdBy)
+    extensions!: ContentExtension[]
 }

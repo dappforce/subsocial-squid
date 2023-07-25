@@ -22,7 +22,9 @@ import {
   PostReactionUpdatedData,
   PostReactionDeletedData,
   DomainRegisteredData,
-  DomainMetaUpdatedData
+  DomainMetaUpdatedData,
+  EvmAddressLinkedToAccountData,
+  EvmAddressUnlinkedFromAccountData
 } from '../common/types';
 import { SubstrateEvent } from '@subsquid/substrate-processor';
 import { getChain } from '../chains';
@@ -61,6 +63,10 @@ type EventDataType<T> = T extends EventName.SpaceCreated
   ? DomainRegisteredData
   : T extends EventName.UserNameUpdated
   ? DomainMetaUpdatedData
+  : T extends EventName.EvmAddressLinkedToAccount
+  ? EvmAddressLinkedToAccountData
+  : T extends EventName.EvmAddressUnlinkedFromAccount
+  ? EvmAddressUnlinkedFromAccountData
   : never;
 
 const { getApiDecorated } = getChain();
@@ -359,6 +365,36 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
             api.events.parseDomainMetaUpdatedEventArgs(eventHandlerContext);
 
           parsedData.set(EventName.UserNameUpdated, {
+            ...getEventMetadata(block, item.event as SubstrateEvent),
+            ...eventData
+          });
+
+          totalEventsNumber++;
+          break;
+        }
+        case 'EvmAccounts.EvmAddressLinkedToAccount': {
+          const xSocialApi = getApiDecorated('xsocial');
+          const eventData =
+            xSocialApi.events.parseEvmAddressLinkedToAccountEventArgs(
+              eventHandlerContext
+            );
+
+          parsedData.set(EventName.EvmAddressLinkedToAccount, {
+            ...getEventMetadata(block, item.event as SubstrateEvent),
+            ...eventData
+          });
+
+          totalEventsNumber++;
+          break;
+        }
+        case 'EvmAccounts.EvmAddressUnlinkedFromAccount': {
+          const xSocialApi = getApiDecorated('xsocial');
+          const eventData =
+            xSocialApi.events.parseEvmAddressUnlinkedFromAccountEventArgs(
+              eventHandlerContext
+            );
+
+          parsedData.set(EventName.EvmAddressUnlinkedFromAccount, {
             ...getEventMetadata(block, item.event as SubstrateEvent),
             ...eventData
           });

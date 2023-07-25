@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(localizedFormat);
+import { isAddress as isEthAddress } from 'ethers';
+import {} from '@subsocial/utils';
 
 import * as ss58 from '@subsquid/ss58';
 import md5 from 'md5';
@@ -28,6 +30,15 @@ export const validateEventHandlerInputs = (ctx: EventHandlerContext) => {
   }
 };
 
+export function isEvmAddress(maybeAddress?: string): boolean {
+  if (!maybeAddress) return false;
+  try {
+    return isEthAddress(maybeAddress);
+  } catch (e) {
+    return false;
+  }
+}
+
 /**
  * Remove pallet name from event name. It's required for using in conditions
  * together with enum values "EventName" as enum value cannot be defined in
@@ -41,9 +52,12 @@ export const decorateEventName = (rawEventName: string): string => {
 export const getActivityEntityId = (
   blockNumber: string,
   indexInBlock: string,
-  eventName: string | EventName
+  eventName: string | EventName,
+  contentExtensionIndex?: number
 ): string => {
-  return `${blockNumber}-${indexInBlock}-${md5(eventName)}`;
+  return `${blockNumber}-${indexInBlock}-${md5(eventName)}${
+    contentExtensionIndex ? `-${contentExtensionIndex}` : ''
+  }`;
 };
 
 export const getNotificationEntityId = (
@@ -58,6 +72,13 @@ export const getAccountFollowersEntityId = (
   followingId: string
 ): string => {
   return `${followerId}-${followingId}`;
+};
+
+export const getEvmSubstrateAccountLinkEntityId = (
+  evmAccountId: string,
+  substrateAccountId: string
+): string => {
+  return `${evmAccountId}-${substrateAccountId}`;
 };
 
 export const getNewsFeedEntityId = (
@@ -79,6 +100,13 @@ export const getPostFollowersEntityId = (
   postId: string
 ): string => {
   return `${followerId}-${postId}`;
+};
+
+export const getContentExtensionEntityId = (
+  postId: string,
+  extensionIndex: number
+): string => {
+  return `${postId}-${extensionIndex}`;
 };
 
 export const getSubsocialSs58Codec = (): ss58.Codec => {

@@ -16,7 +16,9 @@ import {
   parseAccountUnfollowedEventArgs,
   parseDomainRegisteredEventArgs,
   parseDomainMetaUpdatedEventArgs,
-  parseSpaceOwnershipTransferCreatedEventArgs
+  parseSpaceOwnershipTransferCreatedEventArgs,
+  parseEvmAddressLinkedToAccountEventArgs,
+  parseEvmAddressUnlinkedFromAccountEventArgs
 } from './events';
 
 import {
@@ -49,7 +51,9 @@ export const api: ChainApi = {
     parseAccountUnfollowedEventArgs,
     parseDomainRegisteredEventArgs,
     parseDomainMetaUpdatedEventArgs,
-    parseSpaceOwnershipTransferCreatedEventArgs
+    parseSpaceOwnershipTransferCreatedEventArgs,
+    parseEvmAddressLinkedToAccountEventArgs,
+    parseEvmAddressUnlinkedFromAccountEventArgs
   },
   calls: {
     parsePostCreatedCallArgs,

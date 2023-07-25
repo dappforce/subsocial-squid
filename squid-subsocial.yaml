@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: subsocial
-version: 304
+version: 309
 description: |-
   Squid for Subsocial
 build:

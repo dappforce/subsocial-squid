@@ -10,6 +10,8 @@ import {
   DomainRegisteredEventParsedData,
   DomainStorageData,
   EventContext,
+  EvmAddressLinkedToAccountEventParsedData,
+  EvmAddressUnlinkedFromAccountEventParsedData,
   MovedPostEventParsedData,
   MovePostCallParsedData,
   PostReactionCreateCallParsedData,
@@ -32,6 +34,10 @@ import * as v7 from '../subsocial/types/v7';
 import { InnerValue } from './sharedTypes';
 import { getRegisteredDomainMeta } from '../subsocial/api/storage';
 import { parseSpaceOwnershipTransferCreatedEventArgs } from '../subsocial/api/events';
+import {
+  parseEvmAddressLinkedToAccountEventArgs,
+  parseEvmAddressUnlinkedFromAccountEventArgs
+} from '../xsocial/api/events';
 
 export type ChainApi = {
   events: {
@@ -52,6 +58,8 @@ export type ChainApi = {
     parseAccountUnfollowedEventArgs?: EventGetter<AccountUnfollowedEventParsedData>;
     parseDomainRegisteredEventArgs?: EventGetter<DomainRegisteredEventParsedData>;
     parseDomainMetaUpdatedEventArgs?: EventGetter<DomainMetaUpdatedEventParsedData>;
+    parseEvmAddressLinkedToAccountEventArgs?: EventGetter<EvmAddressLinkedToAccountEventParsedData>;
+    parseEvmAddressUnlinkedFromAccountEventArgs?: EventGetter<EvmAddressUnlinkedFromAccountEventParsedData>;
   };
   calls: {
     parsePostCreatedCallArgs?: CallGetter<CreatePostCallParsedData>;
@@ -79,7 +87,7 @@ type StorageGetter<T extends Array<any>, R> = (
   ...args: T
 ) => Promise<R>;
 
-export type ChainName = 'subsocial' | 'soonsocial';
+export type ChainName = 'subsocial' | 'soonsocial' | 'xsocial';
 
 type SubsocialChainEvents =
   | 'parsePostCreatedEventArgs'
@@ -119,6 +127,25 @@ type SoonsocialChainEvents =
   | 'parseDomainRegisteredEventArgs'
   | 'parseDomainMetaUpdatedEventArgs';
 
+type XSocialChainEvents =
+  | 'parsePostCreatedEventArgs'
+  | 'parsePostUpdatedEventArgs'
+  | 'parsePostMovedEventArgs'
+  | 'parseSpaceCreatedEventArgs'
+  | 'parseSpaceUpdatedEventArgs'
+  | 'parsePostReactionCreatedEventArgs'
+  | 'parsePostReactionUpdatedEventArgs'
+  | 'parsePostReactionDeletedEventArgs'
+  | 'parseProfileUpdatedEventArgs'
+  | 'parseSpaceFollowedEventArgs'
+  | 'parseSpaceUnfollowedEventArgs'
+  | 'parseSpaceOwnershipTransferAcceptedEventArgs'
+  | 'parseSpaceOwnershipTransferCreatedEventArgs'
+  | 'parseAccountFollowedEventArgs'
+  | 'parseAccountUnfollowedEventArgs'
+  | 'parseEvmAddressLinkedToAccountEventArgs'
+  | 'parseEvmAddressUnlinkedFromAccountEventArgs';
+
 type SubsocialChainStorageCalls = 'getRegisteredDomainMeta';
 type SoonsocialChainStorageCalls = 'getRegisteredDomainMeta';
 
@@ -147,15 +174,21 @@ export type ChainApiDecorated<C> = {
     ? Required<Pick<ChainApi['events'], SubsocialChainEvents>>
     : C extends 'soonsocial'
     ? Required<Pick<ChainApi['events'], SoonsocialChainEvents>>
+    : C extends 'xsocial'
+    ? Required<Pick<ChainApi['events'], XSocialChainEvents>>
     : any;
   calls: C extends 'subsocial'
     ? Required<Pick<ChainApi['calls'], SubsocialChainCalls>>
     : C extends 'soonsocial'
     ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
+    : C extends 'xsocial'
+    ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
     : any;
   storage: C extends 'subsocial'
     ? Required<Pick<ChainApi['storage'], SubsocialChainStorageCalls>>
     : C extends 'soonsocial'
+    ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
+    : C extends 'xsocial'
     ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
     : any;
 };

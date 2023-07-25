@@ -18,6 +18,8 @@ The squid tracks these on-chain events:
   * AccountFollows.AccountUnfollowed
   * Domains.DomainRegistered
   * Domains.DomainMetaUpdated
+  * EvmAddressUnlinkedFromAccount
+  * EvmAddressLinkedToAccount
 
 ***
 
@@ -63,6 +65,12 @@ As a result, the squid uses synthetic events in addition to native on-chain even
 * CommentReplyReactionDeleted - *synthetic*
 * UserNameRegistered - *synthetic*
 * UserNameUpdated - *synthetic*
+* ExtensionDonationCreated - *synthetic*
+* ExtensionEvmNftShared - *synthetic*
+* ExtensionImageCreated - *synthetic*
+* ExtensionSecretBoxCreated - *synthetic*
+* EvmAddressLinkedToAccount
+* EvmAddressUnlinkedFromAccount
 """
 enum EventName {
   PostCreated
@@ -87,6 +95,10 @@ enum EventName {
   AccountUnfollowed
   ProfileUpdated
 
+  ExtensionDonationCreated # synthetic
+  ExtensionEvmNftShared # synthetic
+  ExtensionImageCreated # synthetic
+  ExtensionSecretBoxCreated # synthetic
   CommentCreated # synthetic
   CommentDeleted # synthetic
   CommentUpdated # synthetic
@@ -103,6 +115,8 @@ enum EventName {
   CommentReplyReactionDeleted # synthetic
   UserNameRegistered # synthetic
   UserNameUpdated # synthetic
+  EvmAddressUnlinkedFromAccount
+  EvmAddressLinkedToAccount
 }
 
 """
@@ -120,10 +134,24 @@ enum ReactionKind {
   Upvote
   Downvote
 }
+enum InReplyToKind {
+  Post
+}
 
 enum Status {
   Active
   Deleted
+}
+
+"""
+The schema ID of the content extensions.
+"""
+enum ContentExtensionSchemaId {
+  subsocial_donations
+  subsocial_evm_nft
+  subsocial_image
+  subsocial_secret_box
+  subsocial_decoded_promo
 }
 
 """
@@ -235,6 +263,33 @@ type Account @entity {
   A list of the usernames that an Account owns.
   """
   usernames: [String]
+
+  """
+  A list of linked Evm Accounts
+  """
+  linkedEvmAccounts: [EvmSubstrateAccountLink]!
+    @derivedFrom(field: "substrateAccount")
+
+  """
+  A list of extensions created by the account.
+  """
+  extensions: [ContentExtension]! @derivedFrom(field: "createdBy")
+}
+
+"""
+The Evm Account entity
+"""
+type EvmAccount @entity {
+  """
+  The account's Evm address
+  """
+  id: ID!
+
+  """
+  A list of linked Substrate Accounts
+  """
+  linkedSubstrateAccounts: [EvmSubstrateAccountLink]!
+    @derivedFrom(field: "evmAccount")
 }
 
 """
@@ -432,6 +487,14 @@ type Post @entity {
   The properties of a Post from its IPFS content which are not supported by the current squid's DB schema.
   """
   experimental: JSON
+  """
+  The extensions published with this Post.
+  """
+  extensions: [ContentExtension]! @derivedFrom(field: "parentPost")
+
+  inReplyToKind: InReplyToKind
+
+  inReplyToPost: Post
 
   #  """
   #  The ID of the application that the current Post was created with.
@@ -751,9 +814,14 @@ type Activity @entity {
   aggCount: BigInt!
 
   """
-  The username of Space or Account which was registered or updated in this particular Activity.
+  The username of a Space or Account which was registered or updated in this particular Activity.
   """
   username: String
+
+  """
+  The ContentExtension which was created in this particular Activity.
+  """
+  extension: ContentExtension
 }
 
 """
@@ -802,6 +870,32 @@ The junction table for Many-to-Many relationship between Account and Notificatio
 type Notification @entity {
   account: Account!
   activity: Activity!
+}
+
+"""
+The junction table for Many-to-Many relationship between Substrate Accounts and Ethereum Accounts
+"""
+type EvmSubstrateAccountLink @entity {
+  """
+  Evm account
+  """
+  evmAccount: EvmAccount!
+  """
+  Substrate account
+  """
+  substrateAccount: Account!
+  """
+  Is the link of this particular account active? (This is necessary for the soft deletion of the link.)
+  """
+  active: Boolean!
+  """
+  The block height when a EvmSubstrateAccountLink was created.
+  """
+  createdAtBlock: BigInt
+  """
+  The DateTime when a EvmSubstrateAccountLink was created.
+  """
+  createdAtTime: DateTime @index
 }
 
 """
@@ -871,4 +965,92 @@ type IpfsFetchLog @entity {
   cid: String
   blockHeight: Int!
   errorMsg: String
+}
+
+"""
+Detailed information about the Tweet attached to a Post
+"""
+type ContentExtension @entity {
+  """
+  The ContentExtension ID.
+  Consists of the parent post ID plus the index in the extensions list, which are attached to the Post.
+  (e.g. "4940-0")
+  """
+  id: ID!
+  """
+  The ContentExtension properties schema ID.
+  """
+  extensionSchemaId: ContentExtensionSchemaId!
+  """
+  The Post where the extension was published.
+  """
+  parentPost: Post!
+  """
+  A One-To-One relationship with the Account entity of a ContentExtension's creator.
+  """
+  createdBy: Account!
+  """
+  The Substrate Account of the sender of the Donation transaction (actual for 'subsocial-donations")
+  """
+  fromSubstrate: Account
+  """
+  The Evm Account of the sender of the Donation transaction (actual for 'subsocial-donations")
+  """
+  fromEvm: EvmAccount
+  """
+  The Substrate Account of the target (recipient) of the Donation transaction (actual for 'subsocial-donations")
+  """
+  toSubstrate: Account
+  """
+  The Evm Account of the target (recipient) of the Donation transaction (actual for 'subsocial-donations")
+  """
+  toEvm: EvmAccount
+  """
+  The name of the token transferred in the Donation transaction (actual for 'subsocial-donations")
+  """
+  token: String
+  """
+  The amount of tokens transferred in the Donation transaction (actual for 'subsocial-donations")
+  """
+  amount: BigInt
+  """
+  The decimals value of token transferred in the Donation transaction (actual for 'subsocial-donations")
+  """
+  decimals: Int
+  """
+  The transaction hash of the Donation transfer (actual for 'subsocial-donations")
+  """
+  txHash: String
+  """
+  The name of the blockchain that contains the attached NFT (actual for 'subsocial-evm-nft")
+  """
+  chain: String
+  """
+  The collection ID of the attached NFT (actual for 'subsocial-evm-nft")
+  """
+  collectionId: String
+  """
+  The ID of the attached NFT (actual for 'subsocial-evm-nft")
+  """
+  nftId: String
+  """
+  The URL of the attached NFT (actual for 'subsocial-evm-nft")
+  """
+  url: String
+  """
+  The URL or CID of attached image (actual for 'subsocial-image")
+  """
+  image: String
+  """
+  The message of secret Secret box (actual for 'subsocial-secret-box")
+  """
+  message: String
+  """
+  The nonce of encrypted Secret box (actual for 'subsocial-secret-box")
+  """
+  nonce: String
+  """
+  The recipient Account of Secret box message (actual for 'subsocial-secret-box")
+  """
+  recipient: Account
 }

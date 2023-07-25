@@ -8,9 +8,19 @@ import {
   isTweetDetailsIPFSValid,
   getExperimentalFieldsFromIPFSContent
 } from '../../common/utils';
-import { Post, PostKind, Space, IpfsFetchLog } from '../../model';
+import {
+  Post,
+  PostKind,
+  Space,
+  IpfsFetchLog,
+  InReplyToKind
+} from '../../model';
 import { getOrCreateAccount } from '../account';
-import { PostCreatedData, PostTweetDetailsIPFS } from '../../common/types';
+import {
+  IpfsPostContentSummarized,
+  PostCreatedData,
+  PostTweetDetailsIPFS
+} from '../../common/types';
 import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
@@ -62,29 +72,33 @@ export const updateSpaceForPostChildren = async (
 
 export const ensurePost = async ({
   postId,
+  postContent,
   ctx,
   eventData
 }: {
   postId: string;
+  postContent?: IpfsPostContentSummarized;
   ctx: Ctx;
   eventData: PostCreatedData;
 }): Promise<Post> => {
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
 
-  const postIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
-    'post',
-    eventData.ipfsSrc,
-    async (errorMsg: string | null) => {
-      await ctx.store.save(
-        new IpfsFetchLog({
-          id: postId,
-          cid: eventData.ipfsSrc,
-          blockHeight: eventData.blockNumber,
-          errorMsg: errorMsg
-        })
-      );
-    }
-  );
+  const postIpfsContent =
+    postContent ??
+    (await storageDataManagerInst.fetchIpfsContentByCid(
+      'post',
+      eventData.ipfsSrc,
+      async (errorMsg: string | null) => {
+        await ctx.store.save(
+          new IpfsFetchLog({
+            id: postId,
+            cid: eventData.ipfsSrc,
+            blockHeight: eventData.blockNumber,
+            errorMsg: errorMsg
+          })
+        );
+      }
+    ));
 
   let space = null;
 
@@ -216,6 +230,20 @@ export const ensurePost = async ({
       post.tweetId = isTweetDetailsIPFSValid(postIpfsContent.tweet)
         ? postIpfsContent.tweet.id
         : null;
+    }
+    if (postIpfsContent.inReplyTo) {
+      post.inReplyToKind = postIpfsContent.inReplyTo.kind;
+
+      switch (postIpfsContent.inReplyTo.kind) {
+        case InReplyToKind.Post:
+          post.inReplyToPost = await getEntityWithRelations.post({
+            postId: postIpfsContent.inReplyTo.id,
+            ctx,
+            rootOrParentPost: true
+          });
+          break;
+        default:
+      }
     }
   } else {
     post.slug = postId;

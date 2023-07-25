@@ -1,6 +1,6 @@
 import { SpacePermissionsScope } from '../../../common/types';
 import { SpacePermissionMap } from '@subsocial/api/types/dto';
-import * as v1500 from '../types/v1500';
+import * as v2300 from '../types/v2300';
 import { ReactionKind } from '../../../model';
 
 function getSpacePermissionsTpl(): Required<SpacePermissionMap> {
@@ -40,7 +40,7 @@ function getSpacePermissionsTpl(): Required<SpacePermissionMap> {
 }
 
 export function getSpacePermissionsDecorated(
-  permissionsSrc: v1500.SpacePermissions | undefined = {
+  permissionsSrc: v2300.SpacePermissions | undefined = {
     none: undefined,
     everyone: undefined,
     follower: undefined,
@@ -57,9 +57,9 @@ export function getSpacePermissionsDecorated(
   if (!permissionsSrc) return res;
 
   for (const permSection in permissionsSrc) {
-    if (!permissionsSrc[permSection as keyof v1500.SpacePermissions]) continue;
+    if (!permissionsSrc[permSection as keyof v2300.SpacePermissions]) continue;
     for (const srcPermItem of permissionsSrc[
-      permSection as keyof v1500.SpacePermissions
+      permSection as keyof v2300.SpacePermissions
     ]!) {
       res[permSection as keyof SpacePermissionsScope][srcPermItem.__kind] =
         true;
@@ -70,7 +70,7 @@ export function getSpacePermissionsDecorated(
 }
 
 export function getReactionKindDecorated(
-  kindSrc: v1500.ReactionKind
+  kindSrc: v2300.ReactionKind
 ): ReactionKind {
   return ReactionKind[kindSrc.__kind];
 }

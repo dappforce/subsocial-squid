@@ -10,3 +10,4 @@ export { insertActivityForSpaceFollowedUnfollowed } from './insertActivityForSpa
 export { insertActivityForSpaceOwnershipTransferAccepted } from './insertActivityForSpaceOwnershipTransferAccepted';
 export { insertActivityForSpaceOwnershipTransferCreated } from './insertActivityForSpaceOwnershipTransferCreated';
 export { insertActivityForUsernameRegisteredUpdated } from './insertActivityForUsernameRegisteredUpdated';
+export { insertActivityForContentExtensionCreated } from './insertActivityForContentExtensionCreated';

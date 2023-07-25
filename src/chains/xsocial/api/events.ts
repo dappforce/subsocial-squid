@@ -1,4 +1,5 @@
 import { ChainContext, Event } from '../types/support';
+import { toHex } from '@subsquid/util-internal-hex';
 import {
   AccountFollowsAccountFollowedEvent,
   AccountFollowsAccountUnfollowedEvent,
@@ -14,7 +15,9 @@ import {
   SpaceOwnershipSpaceOwnershipTransferAcceptedEvent,
   SpacesSpaceCreatedEvent,
   SpacesSpaceUpdatedEvent,
-  SpaceOwnershipSpaceOwnershipTransferCreatedEvent
+  SpaceOwnershipSpaceOwnershipTransferCreatedEvent,
+  EvmAccountsEvmAddressLinkedToAccountEvent,
+  EvmAccountsEvmAddressUnlinkedFromAccountEvent
 } from '../types/events';
 
 import {
@@ -36,7 +39,11 @@ import {
   SpaceOwnershipTransferAcceptedEventParsedData,
   DomainRegisteredEventParsedData,
   DomainMetaUpdatedEventParsedData,
-  SpaceOwnershipTransferCreatedEventParsedData
+  SpaceOwnershipTransferCreatedEventParsedData,
+  EvmAddressLinkedToAccountData,
+  EvmAddressUnlinkedFromAccountData,
+  EvmAddressLinkedToAccountEventParsedData,
+  EvmAddressUnlinkedFromAccountEventParsedData
 } from '../../../common/types';
 
 import { UnknownVersionError } from '../../../common/errors';
@@ -287,4 +294,40 @@ export function parseDomainMetaUpdatedEventArgs(
     accountId: '',
     domain: new Uint8Array(8)
   };
+}
+
+export function parseEvmAddressLinkedToAccountEventArgs(
+  ctx: EventContext
+): EvmAddressLinkedToAccountEventParsedData {
+  const event = new EvmAccountsEvmAddressLinkedToAccountEvent(ctx, ctx.event);
+
+  if (event.isV104) {
+    const { substrate, ethereum } = event.asV104;
+
+    return {
+      substrateAccountId: addressSs58ToString(substrate),
+      ethereumAccountId: toHex(ethereum)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
+}
+export function parseEvmAddressUnlinkedFromAccountEventArgs(
+  ctx: EventContext
+): EvmAddressUnlinkedFromAccountEventParsedData {
+  const event = new EvmAccountsEvmAddressUnlinkedFromAccountEvent(
+    ctx,
+    ctx.event
+  );
+
+  if (event.isV108) {
+    const { substrate, ethereum } = event.asV108;
+
+    return {
+      substrateAccountId: addressSs58ToString(substrate),
+      ethereumAccountId: toHex(ethereum)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }

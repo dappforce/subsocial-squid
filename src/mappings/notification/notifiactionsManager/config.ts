@@ -43,10 +43,7 @@ const onPostShared: NotificationsBehaviour = {
   ]
 };
 const onCommentShared: NotificationsBehaviour = {
-  addNotificationForAccount: [
-    'SharedPostOwner',
-    'SharedPostRootPostSpaceOwner'
-  ]
+  addNotificationForAccount: ['SharedPostOwner', 'SharedPostRootPostSpaceOwner']
 };
 
 const onCommentReplyShared: NotificationsBehaviour = {
@@ -124,6 +121,16 @@ const onAccountUnfollowed: NotificationsBehaviour = {
   deleteAllNotificationsAboutAccount: ['FollowerAccount']
 };
 
+/**
+ * EXTENSION
+ */
+const onExtensionDonationCreated: NotificationsBehaviour = {
+  addNotificationForAccount: ['ExtensionDonationTargetAccount']
+};
+const onExtensionSecretBoxCreated: NotificationsBehaviour = {
+  addNotificationForAccount: ['ExtensionSecretBoxRecipientAccount']
+};
+
 export const EVENT_NOTIFICATION_RELATIONS: Partial<
   Record<EventName, NotificationsBehaviour>
 > = {
@@ -153,6 +160,10 @@ export const EVENT_NOTIFICATION_RELATIONS: Partial<
 
   AccountFollowed: onAccountFollowed,
   AccountUnfollowed: onAccountUnfollowed,
+
+  ExtensionDonationCreated: onExtensionDonationCreated,
+  ExtensionSecretBoxCreated: onExtensionSecretBoxCreated,
+  ExtensionEvmNftShared: {},
 
   SpaceUpdated: {},
   UserNameRegistered: {},

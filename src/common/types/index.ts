@@ -301,7 +301,6 @@ export interface SpaceOwnershipTransferCreatedEventParsedData {
 export type SpaceOwnershipTransferCreatedData = EventData &
   SpaceOwnershipTransferCreatedEventParsedData;
 
-
 /**
  * :::::: SPACE OWNERSHIP ACCEPTED ::::::
  */
@@ -357,6 +356,30 @@ export type DomainMetaUpdatedData = EventData &
   DomainMetaUpdatedEventParsedData;
 
 /**
+ * :::::: ETH ACCOUNT LINKED TO ACCOUNT ::::::
+ */
+
+export interface EvmAddressLinkedToAccountEventParsedData {
+  substrateAccountId: string;
+  ethereumAccountId: string;
+}
+
+export type EvmAddressLinkedToAccountData = EventData &
+  EvmAddressLinkedToAccountEventParsedData;
+
+/**
+ * :::::: ETH ACCOUNT UNLINKED FROM ACCOUNT ::::::
+ */
+
+export interface EvmAddressUnlinkedFromAccountEventParsedData {
+  substrateAccountId: string;
+  ethereumAccountId: string;
+}
+
+export type EvmAddressUnlinkedFromAccountData = EventData &
+  EvmAddressUnlinkedFromAccountEventParsedData;
+
+/**
  * MISC
  */
 
@@ -379,7 +402,9 @@ export type ParsedEventsData =
   | AccountFollowedData
   | AccountUnfollowedData
   | DomainRegisteredData
-  | DomainMetaUpdatedData;
+  | DomainMetaUpdatedData
+  | EvmAddressLinkedToAccountData
+  | EvmAddressUnlinkedFromAccountData;
 
 export type ParsedEventsDataMap = Map<
   EventName,
