@@ -6,6 +6,8 @@ export enum EventName {
     PostMoved = "PostMoved",
     PostFollowed = "PostFollowed",
     PostUnfollowed = "PostUnfollowed",
+    CommentFollowed = "CommentFollowed",
+    CommentUnfollowed = "CommentUnfollowed",
     PostReactionCreated = "PostReactionCreated",
     PostReactionUpdated = "PostReactionUpdated",
     PostReactionDeleted = "PostReactionDeleted",

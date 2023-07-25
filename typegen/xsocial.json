@@ -6,6 +6,9 @@
     "Posts.PostUpdated",
     "Posts.PostMoved",
 
+    "PostFollows.PostFollowed",
+    "PostFollows.PostUnfollowed",
+
     "Reactions.PostReactionCreated",
     "Reactions.PostReactionUpdated",
     "Reactions.PostReactionDeleted",

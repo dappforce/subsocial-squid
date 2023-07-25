@@ -146,6 +146,16 @@ export const getSyntheticEventName = (
         return EventName.CommentReplyCreated;
       break;
 
+    case EventName.PostFollowed:
+      if (!post.rootPost) return EventName.PostFollowed;
+      if (post.rootPost) return EventName.CommentFollowed;
+      break;
+
+    case EventName.PostUnfollowed:
+      if (!post.rootPost) return EventName.PostUnfollowed;
+      if (post.rootPost) return EventName.CommentUnfollowed;
+      break;
+
     case EventName.PostShared:
       if (!post.rootPost) return EventName.PostShared;
       if (post.rootPost && !post.parentPost) return EventName.CommentShared;

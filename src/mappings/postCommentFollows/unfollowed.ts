@@ -1,27 +1,119 @@
-import { Account, Post, EventName } from '../../model';
-import { ensurePositiveOrZeroValue } from '../../common/utils';
+import {
+  Account,
+  Post,
+  EventName,
+  CommentFollowers,
+  PostFollowers,
+  Activity
+} from '../../model';
+import {
+  ensurePositiveOrZeroValue,
+  getPostFollowersEntityId,
+  getSyntheticEventName
+} from '../../common/utils';
 import { processPostFollowingUnfollowingRelations } from './common';
 import { Ctx } from '../../processor';
 import { getOrCreateAccount } from '../account';
+import { PostFollowedData, PostUnfollowedData } from '../../common/types';
+import { getEntityWithRelations } from '../../common/gettersWithRelations';
+import {
+  CommonCriticalError,
+  EntityProvideFailWarning
+} from '../../common/errors';
+import { setActivity } from '../activity';
+import { NotificationsManager } from '../notification/notifiactionsManager';
 
-export async function postUnfollowed(post: Post, ctx: Ctx): Promise<void> {
-  const postUpdated = post;
-  const ownerAccount = await getOrCreateAccount(post.ownedByAccount.id, ctx);
-
-  await processPostFollowingUnfollowingRelations(
-    post,
-    ownerAccount,
-    EventName.PostUnfollowed,
+export async function postUnfollowed(
+  ctx: Ctx,
+  eventData: PostUnfollowedData
+): Promise<void> {
+  const followerAccount = await getOrCreateAccount(eventData.followerId, ctx);
+  const post = await getEntityWithRelations.post({
+    postId: eventData.postId,
     ctx
+  });
+
+  if (!post) {
+    new EntityProvideFailWarning(Post, eventData.postId, ctx, eventData);
+    throw new CommonCriticalError();
+  }
+
+  const postFollowersEntityId = getPostFollowersEntityId(
+    eventData.followerId,
+    post.id
   );
 
-  postUpdated.followersCount = ensurePositiveOrZeroValue(
-    postUpdated.followersCount - 1
-  );
-  ownerAccount.followingPostsCount = ensurePositiveOrZeroValue(
-    ownerAccount.followingPostsCount - 1
+  // if (post.isComment) {
+  //   await ctx.store.save(
+  //     new CommentFollowers({
+  //       id: postFollowersEntityId,
+  //       followerAccount: followerAccount,
+  //       followingComment: post
+  //     })
+  //   );
+  // } else {
+  //   await ctx.store.save(
+  //     new PostFollowers({
+  //       id: postFollowersEntityId,
+  //       followerAccount: followerAccount,
+  //       followingPost: post
+  //     })
+  //   );
+  // }
+  // post.followersCount += 1;
+  // followerAccount.followingPostsCount += 1;
+  //
+  // await ctx.store.save(post);
+  // await ctx.store.save(followerAccount);
+
+  let existingRelation = null;
+  if (post.isComment) {
+    existingRelation = await ctx.store.get(
+      CommentFollowers,
+      postFollowersEntityId
+    );
+  } else {
+    existingRelation = await ctx.store.get(
+      PostFollowers,
+      postFollowersEntityId
+    );
+  }
+  if (!existingRelation) return;
+
+  await ctx.store.remove(existingRelation);
+  post.followersCount = ensurePositiveOrZeroValue(post.followersCount - 1);
+  followerAccount.followingPostsCount = ensurePositiveOrZeroValue(
+    followerAccount.followingPostsCount - 1
   );
 
-  await ctx.store.save(postUpdated);
-  await ctx.store.save(ownerAccount);
+  await ctx.store.save(post);
+  await ctx.store.save(followerAccount);
+
+  const syntheticEventName = getSyntheticEventName(
+    EventName.PostUnfollowed,
+    post
+  );
+
+  const activity = await setActivity({
+    syntheticEventName,
+    account: followerAccount,
+    post,
+    ctx,
+    eventData
+  });
+
+  if (!activity) {
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    return;
+  }
+
+  await NotificationsManager.getInstance().handleNotifications(
+    syntheticEventName,
+    {
+      account: followerAccount,
+      post,
+      activity,
+      ctx
+    }
+  );
 }

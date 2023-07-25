@@ -141,6 +141,24 @@ export type PostMovedData = EventData &
   MovedPostEventParsedData;
 
 /**
+ * :::::: POST FOLLOW ::::::
+ */
+export interface FollowPostEventParsedData {
+  followerId: string;
+  postId: string;
+}
+export type PostFollowedData = EventData & FollowPostEventParsedData;
+
+/**
+ * :::::: POST UNFOLLOW ::::::
+ */
+export interface UnfollowPostEventParsedData {
+  followerId: string;
+  postId: string;
+}
+export type PostUnfollowedData = EventData & UnfollowPostEventParsedData;
+
+/**
  * :::::: CREATE SPACE ::::::
  */
 export interface SpacePermissionsScope {
@@ -389,6 +407,8 @@ export type ParsedEventsData =
   | PostCreatedData
   | PostUpdatedData
   | PostMovedData
+  | PostFollowedData
+  | PostUnfollowedData
   | SpaceCreatedData
   | SpaceUpdatedData
   | SpaceOwnershipTransferAcceptedData

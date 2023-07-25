@@ -6,6 +6,8 @@ import {
   PostsPostCreatedEvent,
   PostsPostMovedEvent,
   PostsPostUpdatedEvent,
+  PostFollowsPostFollowedEvent,
+  PostFollowsPostUnfollowedEvent,
   ProfilesProfileUpdatedEvent,
   ReactionsPostReactionCreatedEvent,
   ReactionsPostReactionDeletedEvent,
@@ -24,6 +26,8 @@ import {
   CreatePostEventParsedData,
   UpdatePostEventParsedData,
   MovedPostEventParsedData,
+  FollowPostEventParsedData,
+  UnfollowPostEventParsedData,
   EventContext,
   SpaceCreatedData,
   CreatedSpaceEventParsedData,
@@ -97,6 +101,34 @@ export function parsePostMovedEventArgs(
       fromSpace !== null && fromSpace !== undefined
         ? fromSpace.toString()
         : fromSpace
+  };
+
+  return response;
+}
+
+export function parsePostFollowedEventArgs(
+  ctx: EventContext
+): FollowPostEventParsedData {
+  const event = new PostFollowsPostFollowedEvent(ctx, ctx.event);
+  const { follower: followerId, postId } = event.asV107;
+
+  const response: FollowPostEventParsedData = {
+    followerId: addressSs58ToString(followerId),
+    postId: postId.toString()
+  };
+
+  return response;
+}
+
+export function parsePostUnfollowedEventArgs(
+  ctx: EventContext
+): UnfollowPostEventParsedData {
+  const event = new PostFollowsPostUnfollowedEvent(ctx, ctx.event);
+  const { follower: followerId, postId } = event.asV107;
+
+  const response: FollowPostEventParsedData = {
+    followerId: addressSs58ToString(followerId),
+    postId: postId.toString()
   };
 
   return response;
