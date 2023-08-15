@@ -13,7 +13,7 @@ import {
 } from './entity';
 import { setActivity } from '../activity';
 import { EntityProvideFailWarning } from '../../common/errors';
-import { PostCreatedData } from '../../common/types';
+import { PostCreatedData, PostUpdatedData } from '../../common/types';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 import { getContentExtensionEntityId } from '../../common/utils';
 
@@ -27,9 +27,11 @@ export async function handleSecretBox({
   extensionData: ContentExtensionData;
   parentPost: Post;
   extensionIndex: number;
-  eventData: PostCreatedData;
+  eventData: PostCreatedData | PostUpdatedData;
   ctx: Ctx;
 }): Promise<void> {
+  const postCreatedEventData = eventData as PostCreatedData;
+
   const extension = await getOrCreateSecretBoxExtension({
     extensionId: getContentExtensionEntityId(parentPost.id, extensionIndex),
     parentPost,
@@ -53,11 +55,11 @@ export async function handleSecretBox({
     extension,
     post: parentPost,
     ctx,
-    eventData
+    eventData: postCreatedEventData
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, postCreatedEventData);
     return;
   }
 

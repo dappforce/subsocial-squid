@@ -310,6 +310,7 @@ export const setActivity = async ({
     (eventNameDecorated === EventName.ExtensionDonationCreated ||
       eventNameDecorated === EventName.ExtensionEvmNftShared ||
       eventNameDecorated === EventName.ExtensionImageCreated ||
+      eventNameDecorated === EventName.ExtensionPinnedPostsCreated ||
       eventNameDecorated === EventName.ExtensionSecretBoxCreated) &&
     extension &&
     post

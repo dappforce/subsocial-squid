@@ -4,6 +4,7 @@ import {Account} from "./account.model"
 import {Post} from "./post.model"
 import {SpacePermissions} from "./_spacePermissions"
 import {SpaceFollowers} from "./spaceFollowers.model"
+import {ExtensionPinnedResource} from "./extensionPinnedResource.model"
 
 /**
  * The Space entity
@@ -238,4 +239,7 @@ export class Space {
     @Index_()
     @Column_("text", {nullable: true})
     username!: string | undefined | null
+
+    @OneToMany_(() => ExtensionPinnedResource, e => e.space)
+    pinnedByExtensions!: ExtensionPinnedResource[]
 }

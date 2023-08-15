@@ -103,7 +103,13 @@ async function getContentExtensionWithRelations(
         id: extensionId
       },
       relations: {
-        parentPost: true
+        createdBy: true,
+        parentPost: true,
+        pinnedResources: {
+          contentExtension: true,
+          post: true,
+          space: true
+        }
       }
     })) ?? null
   );

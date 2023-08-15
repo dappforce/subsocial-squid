@@ -3,7 +3,8 @@ export const ContentExtensionId = {
   'subsocial-evm-nft': 'subsocial-evm-nft',
   'subsocial-image': 'subsocial-image',
   'subsocial-secret-box': 'subsocial-secret-box',
-  'subsocial-decoded-promo': 'subsocial-decoded-promo'
+  'subsocial-decoded-promo': 'subsocial-decoded-promo',
+  'subsocial-pinned-posts': 'subsocial-pinned-posts'
 } as const;
 
 type DonationsProperties = {
@@ -28,6 +29,9 @@ type SecretBoxProperties = {
   message: string;
   nonce: string;
   recipient: string;
+};
+type PinnedPostsProperties = {
+  ids: string[];
 };
 
 export type ContentExtensionData =
@@ -55,8 +59,17 @@ export type ContentExtensionData =
       id: (typeof ContentExtensionId)['subsocial-decoded-promo'];
     } & {
       properties: SecretBoxProperties;
+    })
+  | ({
+      id: (typeof ContentExtensionId)['subsocial-pinned-posts'];
+    } & {
+      properties: PinnedPostsProperties;
     });
 
 export type ExtensionPropertiesAll = Partial<
-  DonationsProperties & EvmNftProperties & ImageProperties & SecretBoxProperties
+  DonationsProperties &
+    EvmNftProperties &
+    ImageProperties &
+    SecretBoxProperties &
+    PinnedPostsProperties
 >;

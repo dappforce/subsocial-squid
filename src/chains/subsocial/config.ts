@@ -18,8 +18,11 @@ export const config: ProcessorConfig = {
   elasticSearchEndpoint: process.env.SUBSOCIAL_ELASTIC_SEARCH_ENDPOINT || '',
   elasticSearchUsername: process.env.SUBSOCIAL_ELASTIC_SEARCH_USERNAME || '',
   elasticSearchPassword: process.env.SUBSOCIAL_ELASTIC_SEARCH_PASSWORD || '',
-  ipfsReadOnlyNodeUrl:
+  ipfsSubsocialNodeUrl:
     process.env.SUBSOCIAL_IPFS_READ_ONLY_NODE_URL ||
     'https://ipfs.subsocial.network',
-  ipfsNodeRequestTimeout: 10000
+  ipfsNodeRequestTimeout: 10000,
+  ipfsCrustNodeAuthToken: process.env.IPFS_CRUST_NODE_TEST_AUTH_TOKEN || '',
+  ipfsCrustNodeUrl:
+    process.env.IPFS_CRUST_NODE_URL || 'https://gw-seattle.crustcloud.io'
 };

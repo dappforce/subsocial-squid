@@ -1,9 +1,10 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {ContentExtensionSchemaId} from "./_contentExtensionSchemaId"
 import {Post} from "./post.model"
 import {Account} from "./account.model"
 import {EvmAccount} from "./evmAccount.model"
+import {ExtensionPinnedResource} from "./extensionPinnedResource.model"
 
 /**
  * Detailed information about the Tweet attached to a Post
@@ -142,4 +143,10 @@ export class ContentExtension {
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
     recipient!: Account | undefined | null
+
+    /**
+     * The pinned posts list (actual for 'subsocial-pinned-posts")
+     */
+    @OneToMany_(() => ExtensionPinnedResource, e => e.contentExtension)
+    pinnedResources!: ExtensionPinnedResource[]
 }

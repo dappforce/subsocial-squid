@@ -8,6 +8,7 @@ import {CommentFollowers} from "./commentFollowers.model"
 import {Reaction} from "./reaction.model"
 import {TweetDetails} from "./_tweetDetails"
 import {ContentExtension} from "./contentExtension.model"
+import {ExtensionPinnedResource} from "./extensionPinnedResource.model"
 import {InReplyToKind} from "./_inReplyToKind"
 
 /**
@@ -288,6 +289,9 @@ export class Post {
      */
     @OneToMany_(() => ContentExtension, e => e.parentPost)
     extensions!: ContentExtension[]
+
+    @OneToMany_(() => ExtensionPinnedResource, e => e.post)
+    pinnedByExtensions!: ExtensionPinnedResource[]
 
     @Column_("varchar", {length: 4, nullable: true})
     inReplyToKind!: InReplyToKind | undefined | null

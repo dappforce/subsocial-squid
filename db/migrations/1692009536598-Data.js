@@ -1,5 +1,5 @@
-module.exports = class Data1689751827397 {
-    name = 'Data1689751827397'
+module.exports = class Data1692009536598 {
+    name = 'Data1692009536598'
 
     async up(db) {
         await db.query(`CREATE TABLE "post_followers" ("id" character varying NOT NULL, "follower_account_id" character varying, "following_post_id" character varying, CONSTRAINT "PK_ced73560f09ff759cf0d7590c8d" PRIMARY KEY ("id"))`)
@@ -18,6 +18,10 @@ module.exports = class Data1689751827397 {
         await db.query(`CREATE INDEX "IDX_b5f64e2ecbf24309a44ba2e488" ON "evm_substrate_account_link" ("substrate_account_id") `)
         await db.query(`CREATE INDEX "IDX_835ba0ce4322ed69ed67ffc695" ON "evm_substrate_account_link" ("created_at_time") `)
         await db.query(`CREATE TABLE "evm_account" ("id" character varying NOT NULL, CONSTRAINT "PK_f6cfb73b5a36d2aea7581fa3883" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "extension_pinned_resource" ("id" character varying NOT NULL, "resource_type" character varying(5) NOT NULL, "content_extension_id" character varying, "post_id" character varying, "space_id" character varying, CONSTRAINT "PK_a186a8af1f6a784ef088eedd893" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE INDEX "IDX_faa041628a10c05292b01e0eea" ON "extension_pinned_resource" ("content_extension_id") `)
+        await db.query(`CREATE INDEX "IDX_d08f66bb30260ddf783ac2680a" ON "extension_pinned_resource" ("post_id") `)
+        await db.query(`CREATE INDEX "IDX_729e5ebd699f22b62ca2397210" ON "extension_pinned_resource" ("space_id") `)
         await db.query(`CREATE TABLE "content_extension" ("id" character varying NOT NULL, "extension_schema_id" character varying(23) NOT NULL, "token" text, "amount" numeric, "decimals" integer, "tx_hash" text, "chain" text, "collection_id" text, "nft_id" text, "url" text, "image" text, "message" text, "nonce" text, "parent_post_id" character varying, "created_by_id" character varying, "from_substrate_id" character varying, "from_evm_id" character varying, "to_substrate_id" character varying, "to_evm_id" character varying, "recipient_id" character varying, CONSTRAINT "PK_99dfae896235e3cbcbbd53d4333" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_aad6a0b30cf5edd43d8606df7e" ON "content_extension" ("parent_post_id") `)
         await db.query(`CREATE INDEX "IDX_91b383558dedfc31f659e84125" ON "content_extension" ("created_by_id") `)
@@ -89,6 +93,9 @@ module.exports = class Data1689751827397 {
         await db.query(`ALTER TABLE "reaction" ADD CONSTRAINT "FK_1fa27851b2897fc8a71a0072834" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "evm_substrate_account_link" ADD CONSTRAINT "FK_10d44a622e54f54357ad6bc4e2a" FOREIGN KEY ("evm_account_id") REFERENCES "evm_account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "evm_substrate_account_link" ADD CONSTRAINT "FK_b5f64e2ecbf24309a44ba2e488f" FOREIGN KEY ("substrate_account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "extension_pinned_resource" ADD CONSTRAINT "FK_faa041628a10c05292b01e0eea8" FOREIGN KEY ("content_extension_id") REFERENCES "content_extension"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "extension_pinned_resource" ADD CONSTRAINT "FK_d08f66bb30260ddf783ac2680a6" FOREIGN KEY ("post_id") REFERENCES "post"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "extension_pinned_resource" ADD CONSTRAINT "FK_729e5ebd699f22b62ca23972102" FOREIGN KEY ("space_id") REFERENCES "space"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "content_extension" ADD CONSTRAINT "FK_aad6a0b30cf5edd43d8606df7ef" FOREIGN KEY ("parent_post_id") REFERENCES "post"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "content_extension" ADD CONSTRAINT "FK_91b383558dedfc31f659e84125e" FOREIGN KEY ("created_by_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "content_extension" ADD CONSTRAINT "FK_0533ceb0b45154c95b6acf4ca70" FOREIGN KEY ("from_substrate_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -143,6 +150,10 @@ module.exports = class Data1689751827397 {
         await db.query(`DROP INDEX "public"."IDX_b5f64e2ecbf24309a44ba2e488"`)
         await db.query(`DROP INDEX "public"."IDX_835ba0ce4322ed69ed67ffc695"`)
         await db.query(`DROP TABLE "evm_account"`)
+        await db.query(`DROP TABLE "extension_pinned_resource"`)
+        await db.query(`DROP INDEX "public"."IDX_faa041628a10c05292b01e0eea"`)
+        await db.query(`DROP INDEX "public"."IDX_d08f66bb30260ddf783ac2680a"`)
+        await db.query(`DROP INDEX "public"."IDX_729e5ebd699f22b62ca2397210"`)
         await db.query(`DROP TABLE "content_extension"`)
         await db.query(`DROP INDEX "public"."IDX_aad6a0b30cf5edd43d8606df7e"`)
         await db.query(`DROP INDEX "public"."IDX_91b383558dedfc31f659e84125"`)
@@ -214,6 +225,9 @@ module.exports = class Data1689751827397 {
         await db.query(`ALTER TABLE "reaction" DROP CONSTRAINT "FK_1fa27851b2897fc8a71a0072834"`)
         await db.query(`ALTER TABLE "evm_substrate_account_link" DROP CONSTRAINT "FK_10d44a622e54f54357ad6bc4e2a"`)
         await db.query(`ALTER TABLE "evm_substrate_account_link" DROP CONSTRAINT "FK_b5f64e2ecbf24309a44ba2e488f"`)
+        await db.query(`ALTER TABLE "extension_pinned_resource" DROP CONSTRAINT "FK_faa041628a10c05292b01e0eea8"`)
+        await db.query(`ALTER TABLE "extension_pinned_resource" DROP CONSTRAINT "FK_d08f66bb30260ddf783ac2680a6"`)
+        await db.query(`ALTER TABLE "extension_pinned_resource" DROP CONSTRAINT "FK_729e5ebd699f22b62ca23972102"`)
         await db.query(`ALTER TABLE "content_extension" DROP CONSTRAINT "FK_aad6a0b30cf5edd43d8606df7ef"`)
         await db.query(`ALTER TABLE "content_extension" DROP CONSTRAINT "FK_91b383558dedfc31f659e84125e"`)
         await db.query(`ALTER TABLE "content_extension" DROP CONSTRAINT "FK_0533ceb0b45154c95b6acf4ca70"`)

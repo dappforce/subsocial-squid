@@ -2,8 +2,8 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: `${__dirname}/../.local.env` });
 
 export default {
-  ipfsReadOnlyNodeUrl:
-    process.env.IPFS_READ_ONLY_NODE_URL || 'https://ipfs.subsocial.network',
+  ipfsSubsocialNodeUrl:
+    process.env.IPFS_READ_ONLY_NODE_URL || 'https://gw-seattle.crustcloud.io',
   chainNode: process.env.CHAIN_NODE || 'wss://para.f3joule.space',
   indexerEndpointUrl:
     process.env.INDEXER_ENDPOINT_URL ||

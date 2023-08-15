@@ -1,12 +1,12 @@
 import { SubsocialApi } from '@subsocial/api';
 import config from '../config';
 
-const { ipfsReadOnlyNodeUrl, offchainUrl, chainNode } = config;
+const { ipfsSubsocialNodeUrl, offchainUrl, chainNode } = config;
 
 let subsocial: SubsocialApi;
 
 const ipfsConfig = {
-  ipfsNodeUrl: ipfsReadOnlyNodeUrl,
+  ipfsNodeUrl: ipfsSubsocialNodeUrl,
   offchainUrl
 };
 

@@ -13,7 +13,8 @@ import {
   Post,
   TweetDetails,
   ReferencedTweetDetails,
-  TweetAttachmentsDetails
+  TweetAttachmentsDetails,
+  PinnedResourceType
 } from '../model';
 import { EventData, PostTweetDetailsIPFS } from './types';
 import { summarizeMd } from '@subsocial/utils';
@@ -107,6 +108,18 @@ export const getContentExtensionEntityId = (
   extensionIndex: number
 ): string => {
   return `${postId}-${extensionIndex}`;
+};
+
+export const getExtensionPinnedResourceEntityId = ({
+  extensionId,
+  resourceType,
+  resourceId
+}: {
+  extensionId: string;
+  resourceType: PinnedResourceType;
+  resourceId: string;
+}): string => {
+  return `${extensionId}-${resourceType}-${resourceId}`;
 };
 
 export const getSubsocialSs58Codec = (): ss58.Codec => {

@@ -22,6 +22,7 @@ import { ElasticSearchManager } from '../../elasticsearch';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 import { createPostSlug } from '@subsocial/utils';
+import { processContentExtensions } from '../extension';
 
 export async function postUpdated(
   ctx: Ctx,
@@ -109,6 +110,14 @@ export async function postUpdated(
   }
 
   await ctx.store.save(post);
+
+  if (postIpfsContent && postIpfsContent.extensions)
+    await processContentExtensions(
+      postIpfsContent.extensions,
+      post,
+      eventData,
+      ctx
+    );
 
   ElasticSearchManager.index(ctx).addToQueue(post);
 
