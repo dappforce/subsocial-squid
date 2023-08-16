@@ -1,4 +1,3 @@
-import { createPostSlug } from '@subsocial/utils';
 
 import {
   getDateWithoutTime,
@@ -6,7 +5,7 @@ import {
   getJoinedList,
   getTweetDetailsEntity,
   isTweetDetailsIPFSValid,
-  getExperimentalFieldsFromIPFSContent
+  getExperimentalFieldsFromIPFSContent, createPostSlug
 } from '../../common/utils';
 import {
   Post,
@@ -202,7 +201,13 @@ export const ensurePost = async ({
     const bodySummary = getBodySummary(postIpfsContent.body);
     post.title = postIpfsContent.title ?? null;
     post.image = postIpfsContent.image ?? null;
-    post.link = postIpfsContent.link ?? null;
+    post.link = null;
+    if (postIpfsContent.link) {
+      post.link = postIpfsContent.link;
+    } else if (!postIpfsContent.link && postIpfsContent.body) {
+      post.link = getUrlFromText(postIpfsContent.body);
+    }
+
     // post.format = postIpfsContent.format ?? null; // TODO check is it actual property
     post.format = null;
     post.canonical = postIpfsContent.canonical ?? null;
@@ -251,3 +256,9 @@ export const ensurePost = async ({
 
   return post;
 };
+
+export function getUrlFromText(str: string) {
+  const urlRegex =
+    /((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]))/;
+  return urlRegex.exec(str)?.[0];
+}

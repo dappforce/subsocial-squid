@@ -2,6 +2,7 @@ import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as v7 from './v7'
 import * as v13 from './v13'
+import * as v27 from './v27'
 
 export class DomainsDomainByInnerValueStorage extends StorageBase {
     protected getPrefix() {
@@ -81,6 +82,21 @@ export class DomainsRegisteredDomainsStorage extends StorageBase {
         assert(this.isV13)
         return this as any
     }
+
+    /**
+     *  Metadata associated per domain.
+     */
+    get isV27(): boolean {
+        return this.getTypeHash() === '75df0877b9b25fdc62b9c03ca7890295e0a46ad67c32c1687d7989e154d41fcb'
+    }
+
+    /**
+     *  Metadata associated per domain.
+     */
+    get asV27(): DomainsRegisteredDomainsStorageV27 {
+        assert(this.isV27)
+        return this as any
+    }
 }
 
 export interface DomainsRegisteredDomainsStorageV7 {
@@ -112,4 +128,21 @@ export interface DomainsRegisteredDomainsStorageV13 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v13.DomainMeta][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v13.DomainMeta][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v13.DomainMeta][]>
+}
+
+/**
+ *  Metadata associated per domain.
+ */
+export interface DomainsRegisteredDomainsStorageV27 {
+    get(key: Uint8Array): Promise<(v27.DomainMeta | undefined)>
+    getAll(): Promise<v27.DomainMeta[]>
+    getMany(keys: Uint8Array[]): Promise<(v27.DomainMeta | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v27.DomainMeta][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v27.DomainMeta][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v27.DomainMeta][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v27.DomainMeta][]>
 }

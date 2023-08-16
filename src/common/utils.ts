@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(localizedFormat);
 import { isAddress as isEthAddress } from 'ethers';
-import {} from '@subsocial/utils';
 
 import * as ss58 from '@subsquid/ss58';
 import md5 from 'md5';
@@ -16,12 +15,14 @@ import {
   TweetAttachmentsDetails,
   PinnedResourceType
 } from '../model';
-import { EventData, PostTweetDetailsIPFS } from './types';
-import { summarizeMd } from '@subsocial/utils';
+import { EventData, HasTitleOrBody, PostTweetDetailsIPFS } from './types';
+import { summarizeMd, nonEmptyStr, summarize } from '@subsocial/utils';
 import { NamedLink } from '@subsocial/api/types/ipfs';
 import { IpfsContent, supportedIpfsContent } from '../storage/types';
 import { Ctx } from '../processor';
 import { Entity } from '@subsquid/typeorm-store/lib/store';
+// import slugify from '@sindresorhus/slugify';
+import slugify from 'slugify';
 
 let subsocialSs58CodecInst: ss58.Codec | null = null;
 
@@ -364,4 +365,30 @@ export function getEntityIdFromEntityOrString(
   return typeof entityOrString === 'string'
     ? entityOrString
     : entityOrString.id;
+}
+
+const MAX_SLUG_LENGTH = 60;
+const SLUG_SEPARATOR = '-';
+
+export function createPostSlug(postId: string, content?: HasTitleOrBody) {
+  let slug: string = '' + postId;
+
+  if (content) {
+    const { title, body } = content;
+    const titleOrBody = nonEmptyStr(title) ? title : body;
+    const summary = summarize(titleOrBody, {
+      limit: MAX_SLUG_LENGTH,
+      omission: ''
+    });
+    // const slugifiedSummary = slugify(summary, {
+    //   separator: SLUG_SEPARATOR
+    // });
+    const slugifiedSummary = slugify(summary, SLUG_SEPARATOR);
+
+    if (nonEmptyStr(slugifiedSummary)) {
+      slug = slugifiedSummary + '-' + slug;
+    }
+  }
+
+  return slug;
 }

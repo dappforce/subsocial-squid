@@ -84,6 +84,13 @@ export class Activity {
     oldOwner!: Account | undefined | null
 
     /**
+     * A One-to-One relationship with the domain recipient Account
+     */
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    domainRecipient!: Account | undefined | null
+
+    /**
      * A One-to-One relationship with the Post that is involved in the current Activity
      */
     @Index_()

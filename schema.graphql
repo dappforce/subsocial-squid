@@ -801,6 +801,10 @@ type Activity @entity {
   A One-to-One relationship with the new owner's Account if the event is "SpaceOwnershipTransferAccepted"
   """
   oldOwner: Account
+  """
+  A One-to-One relationship with the domain recipient Account
+  """
+  domainRecipient: Account
 
   """
   A One-to-One relationship with the Post that is involved in the current Activity

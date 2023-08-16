@@ -1,5 +1,5 @@
-module.exports = class Data1692009536598 {
-    name = 'Data1692009536598'
+module.exports = class Data1692117686354 {
+    name = 'Data1692117686354'
 
     async up(db) {
         await db.query(`CREATE TABLE "post_followers" ("id" character varying NOT NULL, "follower_account_id" character varying, "following_post_id" character varying, CONSTRAINT "PK_ced73560f09ff759cf0d7590c8d" PRIMARY KEY ("id"))`)
@@ -64,7 +64,7 @@ module.exports = class Data1692009536598 {
         await db.query(`CREATE TABLE "account_followers" ("id" character varying NOT NULL, "follower_account_id" character varying, "following_account_id" character varying, CONSTRAINT "PK_dade5b6e74b543ca2ea018b5a5a" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_7bb4dcd7984d41c97348ceb69a" ON "account_followers" ("follower_account_id") `)
         await db.query(`CREATE INDEX "IDX_9130c3e03dd8405027b2855e18" ON "account_followers" ("following_account_id") `)
-        await db.query(`CREATE TABLE "activity" ("id" character varying NOT NULL, "block_number" numeric NOT NULL, "event_index" integer NOT NULL, "event" character varying(30) NOT NULL, "date" TIMESTAMP WITH TIME ZONE NOT NULL, "aggregated" boolean, "agg_count" numeric NOT NULL, "username" text, "account_id" character varying, "following_account_id" character varying, "space_id" character varying, "space_prev_id" character varying, "new_owner_id" character varying, "old_owner_id" character varying, "post_id" character varying, "reaction_id" character varying, "extension_id" character varying, CONSTRAINT "PK_24625a1d6b1b089c8ae206fe467" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "activity" ("id" character varying NOT NULL, "block_number" numeric NOT NULL, "event_index" integer NOT NULL, "event" character varying(30) NOT NULL, "date" TIMESTAMP WITH TIME ZONE NOT NULL, "aggregated" boolean, "agg_count" numeric NOT NULL, "username" text, "account_id" character varying, "following_account_id" character varying, "space_id" character varying, "space_prev_id" character varying, "new_owner_id" character varying, "old_owner_id" character varying, "domain_recipient_id" character varying, "post_id" character varying, "reaction_id" character varying, "extension_id" character varying, CONSTRAINT "PK_24625a1d6b1b089c8ae206fe467" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_96c7c848eec1feba0bc66b4519" ON "activity" ("account_id") `)
         await db.query(`CREATE INDEX "IDX_ac07bea02c85cc9e8a79cc3c2a" ON "activity" ("event") `)
         await db.query(`CREATE INDEX "IDX_2309bdad81af5f2780c902b358" ON "activity" ("following_account_id") `)
@@ -72,6 +72,7 @@ module.exports = class Data1692009536598 {
         await db.query(`CREATE INDEX "IDX_aa427db0caf033cca82901385b" ON "activity" ("space_prev_id") `)
         await db.query(`CREATE INDEX "IDX_56c479a191b096a17000b24bb1" ON "activity" ("new_owner_id") `)
         await db.query(`CREATE INDEX "IDX_89b047dd04bbd680c016fd777b" ON "activity" ("old_owner_id") `)
+        await db.query(`CREATE INDEX "IDX_466403446cf787ecdc98bcae4d" ON "activity" ("domain_recipient_id") `)
         await db.query(`CREATE INDEX "IDX_624114671c34d2515ec04c2c88" ON "activity" ("post_id") `)
         await db.query(`CREATE INDEX "IDX_b89929a58c06720ca096316ba9" ON "activity" ("reaction_id") `)
         await db.query(`CREATE INDEX "IDX_5217422b6180f345452ccf1d90" ON "activity" ("aggregated") `)
@@ -123,6 +124,7 @@ module.exports = class Data1692009536598 {
         await db.query(`ALTER TABLE "activity" ADD CONSTRAINT "FK_aa427db0caf033cca82901385b1" FOREIGN KEY ("space_prev_id") REFERENCES "space"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "activity" ADD CONSTRAINT "FK_56c479a191b096a17000b24bb15" FOREIGN KEY ("new_owner_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "activity" ADD CONSTRAINT "FK_89b047dd04bbd680c016fd777bf" FOREIGN KEY ("old_owner_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "activity" ADD CONSTRAINT "FK_466403446cf787ecdc98bcae4d3" FOREIGN KEY ("domain_recipient_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "activity" ADD CONSTRAINT "FK_624114671c34d2515ec04c2c88c" FOREIGN KEY ("post_id") REFERENCES "post"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "activity" ADD CONSTRAINT "FK_b89929a58c06720ca096316ba96" FOREIGN KEY ("reaction_id") REFERENCES "reaction"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "activity" ADD CONSTRAINT "FK_881d5e72a5f5455223334d2a7e0" FOREIGN KEY ("extension_id") REFERENCES "content_extension"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -204,6 +206,7 @@ module.exports = class Data1692009536598 {
         await db.query(`DROP INDEX "public"."IDX_aa427db0caf033cca82901385b"`)
         await db.query(`DROP INDEX "public"."IDX_56c479a191b096a17000b24bb1"`)
         await db.query(`DROP INDEX "public"."IDX_89b047dd04bbd680c016fd777b"`)
+        await db.query(`DROP INDEX "public"."IDX_466403446cf787ecdc98bcae4d"`)
         await db.query(`DROP INDEX "public"."IDX_624114671c34d2515ec04c2c88"`)
         await db.query(`DROP INDEX "public"."IDX_b89929a58c06720ca096316ba9"`)
         await db.query(`DROP INDEX "public"."IDX_5217422b6180f345452ccf1d90"`)
@@ -255,6 +258,7 @@ module.exports = class Data1692009536598 {
         await db.query(`ALTER TABLE "activity" DROP CONSTRAINT "FK_aa427db0caf033cca82901385b1"`)
         await db.query(`ALTER TABLE "activity" DROP CONSTRAINT "FK_56c479a191b096a17000b24bb15"`)
         await db.query(`ALTER TABLE "activity" DROP CONSTRAINT "FK_89b047dd04bbd680c016fd777bf"`)
+        await db.query(`ALTER TABLE "activity" DROP CONSTRAINT "FK_466403446cf787ecdc98bcae4d3"`)
         await db.query(`ALTER TABLE "activity" DROP CONSTRAINT "FK_624114671c34d2515ec04c2c88c"`)
         await db.query(`ALTER TABLE "activity" DROP CONSTRAINT "FK_b89929a58c06720ca096316ba96"`)
         await db.query(`ALTER TABLE "activity" DROP CONSTRAINT "FK_881d5e72a5f5455223334d2a7e0"`)

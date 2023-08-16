@@ -1,6 +1,7 @@
 import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as v2300 from './v2300'
+import * as v2601 from './v2601'
 
 export class DomainsDomainByInnerValueStorage extends StorageBase {
     protected getPrefix() {
@@ -71,6 +72,21 @@ export class DomainsRegisteredDomainsStorage extends StorageBase {
         assert(this.isV2300)
         return this as any
     }
+
+    /**
+     *  Metadata associated per domain.
+     */
+    get isV2601(): boolean {
+        return this.getTypeHash() === '75df0877b9b25fdc62b9c03ca7890295e0a46ad67c32c1687d7989e154d41fcb'
+    }
+
+    /**
+     *  Metadata associated per domain.
+     */
+    get asV2601(): DomainsRegisteredDomainsStorageV2601 {
+        assert(this.isV2601)
+        return this as any
+    }
 }
 
 /**
@@ -88,4 +104,21 @@ export interface DomainsRegisteredDomainsStorageV2300 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v2300.DomainMeta][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v2300.DomainMeta][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v2300.DomainMeta][]>
+}
+
+/**
+ *  Metadata associated per domain.
+ */
+export interface DomainsRegisteredDomainsStorageV2601 {
+    get(key: Uint8Array): Promise<(v2601.DomainMeta | undefined)>
+    getAll(): Promise<v2601.DomainMeta[]>
+    getMany(keys: Uint8Array[]): Promise<(v2601.DomainMeta | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v2601.DomainMeta][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v2601.DomainMeta][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v2601.DomainMeta][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v2601.DomainMeta][]>
 }

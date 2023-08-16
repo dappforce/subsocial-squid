@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: soonsocial
-version: 335
+version: 342
 description: |-
   Squid for Soonsocial
 build:

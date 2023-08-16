@@ -27,7 +27,8 @@ export const setActivity = async ({
   followingAccount,
   syntheticEventName,
   username,
-  contentExtensionIndex
+  contentExtensionIndex,
+  domainRecipient
 }: {
   account: Account | string;
   ctx: Ctx;
@@ -43,6 +44,7 @@ export const setActivity = async ({
   syntheticEventName?: EventName;
   username?: string;
   contentExtensionIndex?: number;
+  domainRecipient?: Account;
 }): Promise<Activity | null> => {
   const { indexInBlock, name: eventName, blockNumber, timestamp } = eventData;
 
@@ -299,7 +301,8 @@ export const setActivity = async ({
         space,
         spacePrev,
         username,
-        activity
+        activity,
+        domainRecipient
       });
   }
 

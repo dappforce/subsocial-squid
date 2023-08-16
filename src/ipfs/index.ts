@@ -174,15 +174,17 @@ export class SubsocialIpfsDataManager {
     try {
       console.log(`ipfsClientSubsocial - ${cid}`);
       return (
-        (await this.fetchWithRetry(() =>
-          this.ipfsClientSubsocial.getContent(cid, timeout)
+        (await this.fetchWithRetry(
+          () => this.ipfsClientSubsocial.getContent(cid, timeout),
+          cid
         )) ?? null
       );
     } catch (e) {
       console.log('ipfsClientCrust - ', cid);
       return (
-        (await this.fetchWithRetry(() =>
-          this.ipfsClientCrust.getContent(cid, timeout)
+        (await this.fetchWithRetry(
+          () => this.ipfsClientCrust.getContent(cid, timeout),
+          cid
         )) ?? null
       );
     }
@@ -190,15 +192,43 @@ export class SubsocialIpfsDataManager {
 
   private async fetchWithRetry(
     fetchFn: () => Promise<IpfsCommonContent | undefined>,
+    cid: IpfsCid,
     timeout?: 1000
   ) {
-    try {
-      const resp = await fetchFn();
-      if (!resp) throw new Error();
-      return resp;
-    } catch (e) {
-      await new Promise((res, rej) => setTimeout(() => res, timeout));
-      return fetchFn();
-    }
+    return new Promise(async (res, rej) => {
+      let count = 0;
+      const interval = setInterval(() => {
+        count++;
+        if (count >= 60) {
+          clearInterval(interval);
+          this.processorContext
+            ? this.processorContext.log
+                .child('ipfs')
+                .info(
+                  `fetchWithRetry has been interrupted by too long execution - ${cid.toString()}`
+                )
+            : console.log(
+                `fetchWithRetry has been interrupted by too long execution - ${cid.toString()}`
+              );
+          rej(
+            new Error(
+              `fetchWithRetry has been interrupted by too long execution - ${cid.toString()}`
+            )
+          );
+        }
+      }, 1000);
+
+      try {
+        const resp = await fetchFn();
+        if (!resp) throw new Error();
+        res(resp);
+      } catch (e) {
+        await new Promise((timeoutRes) =>
+          setTimeout(() => timeoutRes, timeout)
+        );
+        const resp = await fetchFn();
+        res(resp);
+      }
+    });
   }
 }

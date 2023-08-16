@@ -177,3 +177,8 @@ export class StorageDataManager {
     this.idsForFetchStorage.clear();
   }
 }
+
+//bafyreifqh4aypitnfmtitmo42z2s7332rteiahifb4kx5giutt747kcbgi
+//bafyreicioe3rt5zwth5fjbnihvsmgvyxcrzxxttiflwccb3fcy34nrdfqa
+//bafyreiax5h44a5t6sfcx4haijhabj7kc4qya7inal4ltqc3mhkdjtlnlkm
+//bafyreifu3o6iea7qt64e24mdcx65f3ogqf25jpuf6guioq4ko5dbenxvjy

@@ -357,6 +357,7 @@ export type AccountUnfollowedData = AccountFollowedData;
 export interface DomainRegisteredEventParsedData {
   accountId: string;
   domain: Uint8Array;
+  recipientId?: string;
 }
 
 export type DomainRegisteredData = EventData & DomainRegisteredEventParsedData;
@@ -444,3 +445,8 @@ export type EventContext = EventHandlerContext<
   Store,
   { event: { args: true; call: true; indexInBlock: true } }
 >;
+
+export type HasTitleOrBody = {
+  title?: string
+  body: string
+}
