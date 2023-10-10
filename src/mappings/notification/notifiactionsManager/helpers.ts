@@ -17,7 +17,7 @@ export const addNotificationForAccount = async (
   account: Account | string,
   activity: Activity,
   ctx: Ctx
-): Promise<Notification | null> => {
+): Promise<string[]> => {
   const accountInst =
     account instanceof Account
       ? account
@@ -30,14 +30,14 @@ export const addNotificationForAccount = async (
   });
 
   await ctx.store.save(notification);
-  return notification;
+  return [notification.id];
 };
 
 export const addNotificationForAccountFollowers = async (
   accountId: string,
   activity: Activity,
   ctx: Ctx
-): Promise<void> => {
+): Promise<string[]> => {
   const accountFollowersRelations = await ctx.store.find(AccountFollowers, {
     where: { followingAccount: { id: accountId } },
     relations: { followerAccount: true }
@@ -58,9 +58,10 @@ export const addNotificationForAccountFollowers = async (
     }
   );
 
-  if (!notificationsDraftList || notificationsDraftList.length === 0) return;
+  if (!notificationsDraftList || notificationsDraftList.length === 0) return [];
 
   await ctx.store.save(notificationsDraftList);
+  return notificationsDraftList.map((n) => n.id);
 };
 
 /**
@@ -73,7 +74,7 @@ export const deleteAllNotificationsAboutSpace = async (
   accountId: string,
   followingSpaceId: string,
   ctx: Ctx
-): Promise<void> => {
+): Promise<null> => {
   const relatedNotifications = await ctx.store.find(Notification, {
     where: [
       {
@@ -86,6 +87,7 @@ export const deleteAllNotificationsAboutSpace = async (
   });
 
   await ctx.store.remove(relatedNotifications);
+  return null;
 };
 
 export const deleteAllNotificationsAboutAccount = async (
@@ -93,7 +95,7 @@ export const deleteAllNotificationsAboutAccount = async (
   followingAccountId: string,
   ctx: Ctx,
   customQuery?: FindManyOptions<Notification>
-): Promise<void> => {
+): Promise<null> => {
   const findQuery: FindManyOptions<Notification> = customQuery || {
     where: {
       account: { id: accountId },
@@ -105,13 +107,14 @@ export const deleteAllNotificationsAboutAccount = async (
   const relatedNotifications = await ctx.store.find(Notification, findQuery);
 
   await ctx.store.remove(relatedNotifications);
+  return null;
 };
 
 export const deleteAllNotificationsAboutReaction = async (
   account: Account | string,
   reaction: Reaction,
   ctx: Ctx
-): Promise<void> => {
+): Promise<null> => {
   const accountInst =
     account instanceof Account
       ? account
@@ -129,6 +132,7 @@ export const deleteAllNotificationsAboutReaction = async (
   });
 
   await ctx.store.remove(relatedNotifications);
+  return null;
 };
 
 export const notificationsHelpers = {

@@ -141,7 +141,7 @@ export class SubsocialIpfsDataManager {
     let res = null;
 
     try {
-      res = await this.fetchContent(ipfsCid, 10000);
+      res = await this.fetchContent(ipfsCid, 5000);
 
       this.processorContext
         ? this.processorContext.log
@@ -167,27 +167,75 @@ export class SubsocialIpfsDataManager {
     return res;
   }
 
-  private async fetchContent(cid: IpfsCid, timeout?: number) {
+  private async fetchContent(cid: IpfsCid, timeout: number = 1000) {
     // TODO remove debug mode
     // return null;
 
-    try {
-      console.log(`ipfsClientSubsocial - ${cid}`);
-      return (
-        (await this.fetchWithRetry(
-          () => this.ipfsClientSubsocial.getContent(cid, timeout),
-          cid
-        )) ?? null
-      );
-    } catch (e) {
-      console.log('ipfsClientCrust - ', cid);
-      return (
-        (await this.fetchWithRetry(
-          () => this.ipfsClientCrust.getContent(cid, timeout),
-          cid
-        )) ?? null
-      );
-    }
+    // try {
+    //   console.log(`ipfsClientSubsocial - ${cid}`);
+    //   return (
+    //     (await this.fetchWithRetry(
+    //       () => this.ipfsClientSubsocial.getContent(cid, timeout),
+    //       cid
+    //     )) ?? null
+    //   );
+    // } catch (e) {
+    //   console.log('ipfsClientCrust - ', cid);
+    //   return (
+    //     (await this.fetchWithRetry(
+    //       () => this.ipfsClientCrust.getContent(cid, timeout),
+    //       cid
+    //     )) ?? null
+    //   );
+    // }
+
+    // try {
+    //   const data = await this.ipfsClientSubsocial.getContent(cid, timeout);
+    //   return data ?? null;
+    // } catch (e) {
+    //   return null;
+    // }
+
+    if (!cid) return null;
+
+    return new Promise(async (res, rej) => {
+      let count = 0;
+      let interval: NodeJS.Timer | undefined = setInterval(() => {
+        const cidLog = cid;
+        count++;
+        if (count >= timeout / 1000) {
+          clearInterval(interval);
+          interval = undefined;
+          console.log(
+            `fetchWithRetry has been interrupted by too long execution - ${cidLog.toString()}`
+          );
+          res(null);
+        }
+      }, 1000);
+
+      const resp =
+        (await this.ipfsClientSubsocial.getContent(cid, timeout)) ?? null;
+      if (interval) clearInterval(interval);
+
+      res(resp);
+    });
+
+    // try {
+    //   console.log(`ipfsClientSubsocial - ${cid}`);
+    //   const data = await this.ipfsClientSubsocial.getContent(cid, timeout);
+    //   if (!data)
+    //     throw Error('ipfsClientSubsocial.getContent finished with ERROR');
+    //
+    //   return data;
+    // } catch (e) {
+    //   console.log('ipfsClientCrust - ', cid);
+    //   return (
+    //     (await this.fetchWithRetry(
+    //       () => this.ipfsClientCrust.getContent(cid, timeout),
+    //       cid
+    //     )) ?? null
+    //   );
+    // }
   }
 
   private async fetchWithRetry(

@@ -890,6 +890,13 @@ type Notification @entity {
   activity: Activity!
 }
 
+type InBatchNotifications @entity {
+  id: ID!
+  batchStartBlockNumber: BigInt!
+  batchEndBlockNumber: BigInt!
+  activityIds: [String!]!
+}
+
 """
 The junction table for Many-to-Many relationship between Substrate Accounts and Ethereum Accounts
 """

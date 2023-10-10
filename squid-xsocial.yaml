@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: xsocial
-version: 342
+version: 346
 description: |-
   Squid for xSocial
 build:
@@ -31,7 +31,10 @@ deploy:
         '--dumb-cache-size',
         '200',
         '--dumb-cache-max-age',
-        '5000'
+        '5000',
+        '--subscriptions',
+        '--subscription-poll-interval',
+        '2000'
       ]
 scale:
   dedicated: true

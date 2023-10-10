@@ -186,5 +186,7 @@ async function blocksBatchHandler(ctx: Ctx) {
 
   await handlePostReactions(ctx, parsedEvents);
 
+  await NotificationsManager.getInstance().commitInBatchNotifications(ctx);
+
   storageDataManager.purgeStorage();
 }

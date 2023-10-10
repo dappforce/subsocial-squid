@@ -1,5 +1,10 @@
 import { Ctx } from '../../../processor';
-import { Account, EventName, Notification } from '../../../model';
+import {
+  Account,
+  EventName,
+  Notification,
+  InBatchNotifications
+} from '../../../model';
 import { EVENT_NOTIFICATION_RELATIONS } from './config';
 import {
   NotificationAction,
@@ -19,21 +24,21 @@ import { getTargetAccForNotificationForAcc } from './utils';
 export abstract class NotificationsHandlersManager {
   abstract addNotificationForAccount(
     paramsWithTarget: NotificationHandlerParamsWithTarget
-  ): Promise<void>;
+  ): Promise<string[]>;
   abstract addNotificationForAccountFollowers(
     paramsWithTarget: NotificationHandlerParamsWithTarget
-  ): Promise<void>;
+  ): Promise<string[]>;
 
   abstract deleteAllNotificationsAboutReaction(
     paramsWithTarget: NotificationHandlerParamsWithTarget
-  ): Promise<void>;
+  ): Promise<null>;
 
   abstract deleteAllNotificationsAboutSpace(
     paramsWithTarget: NotificationHandlerParamsWithTarget
-  ): Promise<void>;
+  ): Promise<null>;
   abstract deleteAllNotificationsAboutAccount(
     paramsWithTarget: NotificationHandlerParamsWithTarget
-  ): Promise<void>;
+  ): Promise<null>;
 }
 
 export class NotificationsManager extends NotificationsHandlersManager {
@@ -41,9 +46,11 @@ export class NotificationsManager extends NotificationsHandlersManager {
 
   private processorContext: Ctx | null = null;
 
+  private activeInBatchNotificationsEntity: InBatchNotifications | null = null;
+
   private handlersMatrix: Map<
     EventName,
-    Array<(params: NotificationHandlerInputParams) => Promise<void>>
+    Array<(params: NotificationHandlerInputParams) => Promise<string[] | null>>
   > = new Map();
 
   static getInstance(): NotificationsManager {
@@ -74,7 +81,9 @@ export class NotificationsManager extends NotificationsHandlersManager {
 
         for (const target of targets) {
           handlersList.push(
-            (params: NotificationHandlerInputParams): Promise<void> =>
+            (
+              params: NotificationHandlerInputParams
+            ): Promise<string[] | null> =>
               this[handlerFuncName as NotificationAction]({ target, ...params })
           );
         }
@@ -91,19 +100,22 @@ export class NotificationsManager extends NotificationsHandlersManager {
     if (!this.handlersMatrix.has(eventName)) return;
     for (const handler of this.handlersMatrix.get(eventName)!) {
       // TODO remove type casting
-      await handler(params as unknown as NotificationHandlerInputParams);
+      const ids = await handler(
+        params as unknown as NotificationHandlerInputParams
+      );
+      if (ids) this.addNotificationIdToInBatchList(ids, params.ctx);
     }
   }
 
   async addNotificationForAccount(
     params: NotificationHandlerParamsWithTarget
-  ): Promise<void> {
+  ): Promise<string[]> {
     let targetAccount: Account | string | null =
       getTargetAccForNotificationForAcc(params);
 
-    if (!targetAccount) return;
+    if (!targetAccount) return [];
 
-    await notificationsHelpers.add.one.forAccount(
+    return notificationsHelpers.add.one.forAccount(
       targetAccount,
       params.activity,
       params.ctx
@@ -112,7 +124,7 @@ export class NotificationsManager extends NotificationsHandlersManager {
 
   async addNotificationForAccountFollowers(
     params: NotificationHandlerParamsWithTarget
-  ): Promise<void> {
+  ): Promise<string[]> {
     const { target, space, activity, ctx } = params;
 
     let targetAccount: Account | string | null = null;
@@ -137,9 +149,9 @@ export class NotificationsManager extends NotificationsHandlersManager {
       default:
     }
 
-    if (!targetAccount) return;
+    if (!targetAccount) return [];
 
-    await notificationsHelpers.add.one.forAccountFollowers(
+    return notificationsHelpers.add.one.forAccountFollowers(
       getEntityIdFromEntityOrString(targetAccount),
       activity,
       ctx
@@ -148,7 +160,7 @@ export class NotificationsManager extends NotificationsHandlersManager {
 
   async deleteAllNotificationsAboutReaction(
     params: NotificationHandlerParamsWithTarget
-  ): Promise<void> {
+  ): Promise<null> {
     const { target, post, activity, reaction, ctx } = params;
 
     let targetAccount: Account | string | null = null;
@@ -173,9 +185,9 @@ export class NotificationsManager extends NotificationsHandlersManager {
       default:
     }
 
-    if (!targetAccount || !reaction) return;
+    if (!targetAccount || !reaction) return null;
 
-    await notificationsHelpers.remove.all.aboutReaction(
+    return notificationsHelpers.remove.all.aboutReaction(
       targetAccount,
       reaction,
       ctx
@@ -184,7 +196,7 @@ export class NotificationsManager extends NotificationsHandlersManager {
 
   async deleteAllNotificationsAboutSpace(
     params: NotificationHandlerParamsWithTarget
-  ): Promise<void> {
+  ): Promise<null> {
     const { target, activity, account, space, ctx } = params;
 
     let targetAccount: Account | string | null = null;
@@ -209,9 +221,9 @@ export class NotificationsManager extends NotificationsHandlersManager {
       default:
     }
 
-    if (!targetAccount || !space) return;
+    if (!targetAccount || !space) return null;
 
-    await notificationsHelpers.remove.all.aboutSpace(
+    return notificationsHelpers.remove.all.aboutSpace(
       getEntityIdFromEntityOrString(targetAccount),
       space.id,
       ctx
@@ -220,7 +232,7 @@ export class NotificationsManager extends NotificationsHandlersManager {
 
   async deleteAllNotificationsAboutAccount(
     params: NotificationHandlerParamsWithTarget
-  ): Promise<void> {
+  ): Promise<null> {
     const { target, activity, account, followingAccount, ctx } = params;
 
     let targetAccount: Account | string | null = null;
@@ -315,13 +327,40 @@ export class NotificationsManager extends NotificationsHandlersManager {
       default:
     }
 
-    if (!targetAccount) return;
+    if (!targetAccount) return null;
 
-    await notificationsHelpers.remove.all.aboutAccount(
+    return notificationsHelpers.remove.all.aboutAccount(
       getEntityIdFromEntityOrString(account),
       getEntityIdFromEntityOrString(targetAccount),
       ctx,
       customQueryParams
     );
+  }
+
+  private addNotificationIdToInBatchList(notificationIds: string[], ctx: Ctx) {
+    const batchBlocks = ctx.blocks;
+    const inBatchNotificationsEntityId = `${batchBlocks[0].header.id}-${
+      batchBlocks[batchBlocks.length - 1].header.id
+    }`;
+
+    if (!this.activeInBatchNotificationsEntity) {
+      this.activeInBatchNotificationsEntity = new InBatchNotifications({
+        id: inBatchNotificationsEntityId,
+        batchStartBlockNumber: BigInt(batchBlocks[0].header.height),
+        batchEndBlockNumber: BigInt(
+          batchBlocks[batchBlocks.length - 1].header.height
+        ),
+        activityIds: []
+      });
+    }
+
+    this.activeInBatchNotificationsEntity.activityIds.push(...notificationIds);
+  }
+
+  async commitInBatchNotifications(ctx: Ctx) {
+    if (!this.activeInBatchNotificationsEntity) return;
+
+    await ctx.store.save(this.activeInBatchNotificationsEntity);
+    this.activeInBatchNotificationsEntity = null;
   }
 }
