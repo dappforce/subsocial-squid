@@ -1,17 +1,18 @@
 import { lookupArchive, KnownArchives } from '@subsquid/archive-registry';
 
 import {
-  BatchContext,
-  BatchProcessorItem,
+  BlockHeader,
+  DataHandlerContext,
+  // BatchContext,
+  // BatchProcessorItem,
   SubstrateBatchProcessor,
-  SubstrateBlock
+  SubstrateBatchProcessorFields,
+  Event as _Event,
+  Call as _Call,
+  Extrinsic as _Extrinsic,
+  Block as _Block
 } from '@subsquid/substrate-processor';
-import {
-  BatchBlock,
-  BatchProcessorEventItem
-} from '@subsquid/substrate-processor/src/processor/batchProcessor';
 import { Store, TypeormDatabase } from '@subsquid/typeorm-store';
-import envConfig from './config';
 import { getParsedEventsData } from './eventsCallsData';
 import { StorageDataManager } from './storage';
 
@@ -33,87 +34,123 @@ import { handlePostFollowUnfollow } from './mappings/postCommentFollows';
 const chainConfig = getChain();
 
 export const processor = new SubstrateBatchProcessor()
-  .setDataSource({
-    archive: chainConfig.config.dataSource.archive,
-    chain: chainConfig.config.dataSource.chain
+  .setRpcEndpoint({
+    url: chainConfig.config.dataSource.chain.toString(),
+    rateLimit: chainConfig.config.dataSource.chainRateLimit
   })
+  .setGateway({ url: chainConfig.config.dataSource.archive })
+
   // .setBlockRange({ from: 1093431 }) // PostCreated
   // .setBlockRange({ from: 1093209 }) // SpaceCreated
   // .setBlockRange({ from: 1368300 }) // SpaceOwnershipTransferAccepted
   // .setBlockRange({ from: 2071296 }) // Tweet post
-  .setTypesBundle('subsocial')
-  .addEvent('Posts.PostCreated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Posts.PostUpdated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Posts.PostMoved', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('PostFollows.PostFollowed', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('PostFollows.PostUnfollowed', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Spaces.SpaceCreated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Spaces.SpaceUpdated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Reactions.PostReactionCreated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Reactions.PostReactionUpdated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Reactions.PostReactionDeleted', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Profiles.ProfileUpdated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('SpaceFollows.SpaceFollowed', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('SpaceFollows.SpaceUnfollowed', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('SpaceOwnership.SpaceOwnershipTransferAccepted', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('SpaceOwnership.SpaceOwnershipTransferCreated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('AccountFollows.AccountFollowed', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('AccountFollows.AccountUnfollowed', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Domains.DomainRegistered', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('Domains.DomainMetaUpdated', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('EvmAccounts.EvmAddressLinkedToAccount', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const)
-  .addEvent('EvmAccounts.EvmAddressUnlinkedFromAccount', {
-    data: { event: { args: true, call: true, indexInBlock: true } }
-  } as const);
+  // .setBlockRange({ from: 4545490 }) // Tweet post
+  .addEvent({ name: ['Posts.PostCreated'], call: true, extrinsic: true })
+  .addEvent({ name: ['Posts.PostUpdated'], call: true, extrinsic: true })
+  .addEvent({ name: ['Posts.PostMoved'], call: true, extrinsic: true })
+  .addEvent({ name: ['PostFollows.PostFollowed'], call: true, extrinsic: true })
+  .addEvent({
+    name: ['PostFollows.PostUnfollowed'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({ name: ['Spaces.SpaceCreated'], call: true, extrinsic: true })
+  .addEvent({ name: ['Spaces.SpaceUpdated'], call: true, extrinsic: true })
+  .addEvent({
+    name: ['Reactions.PostReactionCreated'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['Reactions.PostReactionUpdated'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['Reactions.PostReactionDeleted'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({ name: ['Profiles.ProfileUpdated'], call: true, extrinsic: true })
+  .addEvent({
+    name: ['SpaceFollows.SpaceFollowed'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['SpaceFollows.SpaceUnfollowed'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['SpaceOwnership.SpaceOwnershipTransferAccepted'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['SpaceOwnership.SpaceOwnershipTransferCreated'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['AccountFollows.AccountFollowed'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['AccountFollows.AccountUnfollowed'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({ name: ['Domains.DomainRegistered'], call: true, extrinsic: true })
+  .addEvent({
+    name: ['Domains.DomainMetaUpdated'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['EvmAccounts.EvmAddressLinkedToAccount'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['EvmAccounts.EvmAddressUnlinkedFromAccount'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({ name: ['Proxy.ProxyAdded'], call: true, extrinsic: true })
+  .addEvent({ name: ['Proxy.ProxyRemoved'], call: true, extrinsic: true })
+  .setFields({
+    block: {
+      timestamp: true
+    },
+    event: {
+      name: true,
+      args: true
+    },
+    call: {
+      name: true,
+      args: true,
+      origin: true,
+      success: true,
+      error: true
+    },
+    extrinsic: {
+      signature: true,
+      hash: true
+    }
+  });
 
-if (!envConfig.chainNode) {
-  throw new Error('no CHAIN_NODE in env');
-}
-
-export type Item = BatchProcessorItem<typeof processor>;
-export type EventItem = BatchProcessorEventItem<typeof processor>;
-export type Ctx = BatchContext<Store, Item>;
-export type Block = BatchBlock<Item>;
+export type Fields = SubstrateBatchProcessorFields<typeof processor>;
+export type Block = _Block<Fields>;
+export type Event = _Event<Fields>;
+export type Call = _Call<Fields>;
+export type Extrinsic = _Extrinsic<Fields>;
+export type Ctx = DataHandlerContext<Store, Fields>;
+export type BlockItem__DEPRECATED = {
+  kind: 'call' | 'event';
+  value: Event | Call;
+};
 
 NotificationsManager.getInstance().initHandlersMatrix();
 

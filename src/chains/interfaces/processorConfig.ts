@@ -1,10 +1,10 @@
-import { SubstrateProcessor } from '@subsquid/substrate-processor';
+import { SubstrateBatchProcessor } from '@subsquid/substrate-processor';
 
 export interface ProcessorConfig {
   chainName: string;
   prefix?: number | string;
-  dataSource: Parameters<SubstrateProcessor<any>['setDataSource']>[0];
-  blockRange?: Parameters<SubstrateProcessor<any>['setBlockRange']>[0];
+  dataSource: { archive: string; chain: string; chainRateLimit: number };
+  blockRange?: Parameters<SubstrateBatchProcessor<any>['setBlockRange']>[0];
   elasticSearchSyncDisabled: boolean;
   elasticSearchMaxResultLimit: string;
   elasticSearchEndpoint: string;

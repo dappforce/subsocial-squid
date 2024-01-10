@@ -1,55 +1,36 @@
-import {
-  PostsCreatePostCall,
-  PostsForceCreatePostCall,
-  PostsMovePostCall,
-  PostsUpdatePostCall,
-  ProfilesCreateSpaceAsProfileCall,
-  ProfilesSetProfileCall,
-  ReactionsCreatePostReactionCall,
-  ReactionsDeletePostReactionCall,
-  ReactionsForceCreatePostReactionCall,
-  ReactionsForceDeletePostReactionCall,
-  ReactionsUpdatePostReactionCall,
-  ResourceDiscussionsCreateResourceDiscussionCall,
-  SpacesCreateSpaceCall,
-  SpacesForceCreateSpaceCall,
-  SpacesUpdateSpaceCall
-} from '../types/calls';
 import { PostKind, ReactionKind } from '../../../model';
 
+import { CallForDecode, EventContext } from '../../../common/types';
+
 import {
-  CreatePostCallParsedData,
-  UpdatePostCallParsedData,
-  EventContext,
-  MovePostCallParsedData,
-  CreateSpaceCallParsedData,
-  UpdateSpaceCallParsedData,
-  PostReactionCreateCallParsedData,
-  PostReactionUpdateCallParsedData,
-  PostReactionDeleteCallParsedData
-} from '../../../common/types';
+  CreatePostCallParsedArgs,
+  UpdatePostCallParsedArgs,
+  MovePostCallParsedArgs,
+  CreateSpaceCallParsedArgs,
+  UpdateSpaceCallParsedArgs,
+  PostReactionCreateCallParsedArgs,
+  PostReactionUpdateCallParsedArgs,
+  PostReactionDeleteCallParsedArgs
+} from '@subsocial/data-hub-sdk';
 import {
   getReactionKindDecorated,
   getSpacePermissionsDecorated
 } from './decorators';
-import { getContentSrcDecorated } from '../../utils';
+import { getCallSigner, getContentSrcDecorated } from '../../utils';
 import * as v102 from '../types/v102';
-import { addressSs58ToString } from '../../../common/utils';
+import { calls } from '../types';
+import { toSubsocialAddress } from '@subsocial/utils';
 
 function ensureSpaceId(srcVal: bigint | undefined) {
   return srcVal !== null && srcVal !== undefined ? srcVal.toString() : srcVal;
 }
 
-export function parsePostCreatedCallArgs(
+export function parseCreatPostCallArgs(
   ctx: EventContext
-): CreatePostCallParsedData {
-  let callInst:
-    | PostsCreatePostCall
-    | PostsForceCreatePostCall
-    | ResourceDiscussionsCreateResourceDiscussionCall
-    | null = null;
+): CreatePostCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
   let extensionData: v102.PostExtension | null = null;
-  let response: CreatePostCallParsedData = {
+  let response: CreatePostCallParsedArgs = {
     ipfsSrc: null,
     otherSrc: null,
     none: false,
@@ -60,15 +41,17 @@ export function parsePostCreatedCallArgs(
     originalPost: null,
     parentPostId: null,
     rootPostId: null
+    // callName: ctx.event.call!.name.split('.')[1],
+    // signer: getCallSigner(ctx) ?? ''
   };
 
-  switch (ctx.event.call!.name) {
+  switch (ctx.call!.name) {
     case 'Posts.force_create_post': {
-      callInst = new PostsForceCreatePostCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      if (!calls.posts.forceCreatePost.v100.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
 
       const { extension, content, spaceIdOpt, created, hidden, owner } =
-        callInst.asV100;
+        calls.posts.forceCreatePost.v100.decode(callForDecode);
       extensionData = extension;
 
       response = {
@@ -77,23 +60,28 @@ export function parsePostCreatedCallArgs(
         forced: true,
         spaceId: ensureSpaceId(spaceIdOpt),
         forcedData: {
-          account: addressSs58ToString(created.account),
+          account: toSubsocialAddress(created.account)!,
           block: created.block,
-          time: new Date(Number.parseInt(created.time.toString())),
-          owner: addressSs58ToString(owner),
+          // time: new Date(Number.parseInt(created.time.toString())),
+          time: created.time.toString(),
+          owner: toSubsocialAddress(owner)!,
           hidden
         }
       };
       break;
     }
     case 'ResourceDiscussions.create_resource_discussion': {
-      callInst = new ResourceDiscussionsCreateResourceDiscussionCall(
-        ctx,
-        ctx.event.call!
-      );
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      if (
+        !calls.resourceDiscussions.createResourceDiscussion.v103.is(
+          callForDecode
+        )
+      )
+        throw Error(`Unexpected call ${ctx.call!.name}`);
 
-      const { spaceId, content } = callInst.asV103;
+      const { spaceId, content } =
+        calls.resourceDiscussions.createResourceDiscussion.v103.decode(
+          callForDecode
+        );
 
       extensionData = { __kind: 'RegularPost' };
       response = {
@@ -104,10 +92,11 @@ export function parsePostCreatedCallArgs(
       break;
     }
     default: {
-      callInst = new PostsCreatePostCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      if (!calls.posts.createPost.v100.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
 
-      const { extension, content, spaceIdOpt } = callInst.asV100;
+      const { extension, content, spaceIdOpt } =
+        calls.posts.createPost.v100.decode(callForDecode);
 
       extensionData = extension;
       response = {
@@ -141,31 +130,35 @@ export function parsePostCreatedCallArgs(
 
 export function parsePostUpdatedCallArgs(
   ctx: EventContext
-): UpdatePostCallParsedData {
-  const callInst: PostsUpdatePostCall = new PostsUpdatePostCall(
-    ctx,
-    ctx.event.call!
-  );
+): UpdatePostCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
+
+  if (!calls.posts.updatePost.v100.is(callForDecode))
+    throw Error(`Unexpected call ${ctx.call!.name}`);
+
   const {
-    update: { spaceId, content, hidden }
-  } = callInst.asV100;
+    update: { spaceId, content, hidden },
+    postId
+  } = calls.posts.updatePost.v100.decode(callForDecode);
 
   return {
     ...getContentSrcDecorated(content),
     spaceId:
       spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId,
+    postId: postId.toString(),
     hidden
   };
 }
 
 export function parsePostMoveCallArgs(
   ctx: EventContext
-): MovePostCallParsedData {
-  const callInst: PostsMovePostCall = new PostsMovePostCall(
-    ctx,
-    ctx.event.call!
-  );
-  const { postId, newSpaceId } = callInst.asV100;
+): MovePostCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
+  if (!calls.posts.movePost.v100.is(callForDecode))
+    throw Error(`Unexpected call ${ctx.call!.name}`);
+
+  const { postId, newSpaceId } =
+    calls.posts.movePost.v100.decode(callForDecode);
 
   return {
     toSpace:
@@ -178,13 +171,10 @@ export function parsePostMoveCallArgs(
 
 export function parseSpaceCreateCallArgs(
   ctx: EventContext
-): CreateSpaceCallParsedData {
-  let callInst:
-    | SpacesCreateSpaceCall
-    | SpacesForceCreateSpaceCall
-    | ProfilesCreateSpaceAsProfileCall
-    | null = null;
-  let response: CreateSpaceCallParsedData = {
+): CreateSpaceCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
+
+  let response: CreateSpaceCallParsedArgs = {
     ipfsSrc: null,
     otherSrc: null,
     none: false,
@@ -193,21 +183,23 @@ export function parseSpaceCreateCallArgs(
     permissions: getSpacePermissionsDecorated()
   };
 
-  switch (ctx.event.call!.name) {
+  switch (ctx.call!.name) {
     case 'Spaces.force_create_space': {
-      callInst = new SpacesForceCreateSpaceCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      if (!calls.spaces.forceCreateSpace.v100.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
+
       const { spaceId, created, owner, hidden, content, permissionsOpt } =
-        callInst.asV100;
+        calls.spaces.forceCreateSpace.v100.decode(callForDecode);
       response = {
         ...response,
         ...getContentSrcDecorated(content),
         forced: true,
         forcedData: {
-          account: addressSs58ToString(created.account),
+          account: toSubsocialAddress(created.account)!,
           block: created.block,
-          time: new Date(Number.parseInt(created.time.toString())),
-          owner: addressSs58ToString(owner),
+          // time: new Date(Number.parseInt(created.time.toString())),
+          time: created.time.toString(),
+          owner: toSubsocialAddress(owner)!,
           hidden
         },
         permissions: getSpacePermissionsDecorated(permissionsOpt)
@@ -215,9 +207,11 @@ export function parseSpaceCreateCallArgs(
       break;
     }
     case 'Profiles.create_space_as_profile': {
-      callInst = new ProfilesCreateSpaceAsProfileCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
-      const { content } = callInst.asV102;
+      if (!calls.profiles.createSpaceAsProfile.v102.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
+
+      const { content } =
+        calls.profiles.createSpaceAsProfile.v102.decode(callForDecode);
       response = {
         ...response,
         ...getContentSrcDecorated(content)
@@ -225,9 +219,10 @@ export function parseSpaceCreateCallArgs(
       break;
     }
     default: {
-      callInst = new SpacesCreateSpaceCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
-      const { content, permissionsOpt } = callInst.asV100;
+      if (!calls.spaces.createSpace.v100.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
+      const { content, permissionsOpt } =
+        calls.spaces.createSpace.v100.decode(callForDecode);
       response = {
         ...response,
         ...getContentSrcDecorated(content),
@@ -240,14 +235,15 @@ export function parseSpaceCreateCallArgs(
 
 export function parseSpaceUpdateCallArgs(
   ctx: EventContext
-): UpdateSpaceCallParsedData {
-  let callInst: SpacesUpdateSpaceCall = new SpacesUpdateSpaceCall(
-    ctx,
-    ctx.event.call!
-  );
+): UpdateSpaceCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
+
+  if (!calls.spaces.updateSpace.v100.is(callForDecode))
+    throw Error(`Unexpected call ${ctx.call!.name}`);
+
   const {
     update: { content, permissions, hidden }
-  } = callInst.asV100;
+  } = calls.spaces.updateSpace.v100.decode(callForDecode);
 
   return {
     ...getContentSrcDecorated(content),
@@ -260,31 +256,28 @@ export function parseSpaceUpdateCallArgs(
 
 export function parsePostReactionCreateCallArgs(
   ctx: EventContext
-): PostReactionCreateCallParsedData {
-  let callInst:
-    | ReactionsCreatePostReactionCall
-    | ReactionsForceCreatePostReactionCall
-    | null = null;
+): PostReactionCreateCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
 
-  let response: PostReactionCreateCallParsedData = {
+  let response: PostReactionCreateCallParsedArgs = {
     forced: false,
     forcedData: null,
     reactionKind: ReactionKind.Upvote,
     postId: ''
   };
 
-  switch (ctx.event.call!.name) {
+  switch (ctx.call!.name) {
     case 'Reactions.force_create_post_reaction': {
-      callInst = new ReactionsForceCreatePostReactionCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      if (!calls.reactions.forceCreatePostReaction.v102.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
 
       const { who, postId, reactionId, reactionKind, created } =
-        callInst.asV102;
+        calls.reactions.forceCreatePostReaction.v102.decode(callForDecode);
       response = {
         ...response,
         forced: true,
         forcedData: {
-          account: addressSs58ToString(created.account),
+          account: toSubsocialAddress(created.account)!,
           block: created.block,
           time: new Date(Number.parseInt(created.time.toString()))
         },
@@ -294,9 +287,10 @@ export function parsePostReactionCreateCallArgs(
       break;
     }
     default: {
-      callInst = new ReactionsCreatePostReactionCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
-      const { postId, kind } = callInst.asV102;
+      if (!calls.reactions.createPostReaction.v102.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
+      const { postId, kind } =
+        calls.reactions.createPostReaction.v102.decode(callForDecode);
       response = {
         ...response,
         reactionKind: getReactionKindDecorated(kind),
@@ -310,11 +304,14 @@ export function parsePostReactionCreateCallArgs(
 
 export function parsePostReactionUpdateCallArgs(
   ctx: EventContext
-): PostReactionUpdateCallParsedData {
-  const callInst: ReactionsUpdatePostReactionCall =
-    new ReactionsUpdatePostReactionCall(ctx, ctx.event.call!);
+): PostReactionUpdateCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
 
-  const { postId, reactionId, newKind } = callInst.asV102;
+  if (!calls.reactions.updatePostReaction.v102.is(callForDecode))
+    throw Error(`Unexpected call ${ctx.call!.name}`);
+
+  const { postId, reactionId, newKind } =
+    calls.reactions.updatePostReaction.v102.decode(callForDecode);
 
   return {
     newReactionKind: getReactionKindDecorated(newKind),
@@ -325,30 +322,28 @@ export function parsePostReactionUpdateCallArgs(
 
 export function parsePostReactionDeleteCallArgs(
   ctx: EventContext
-): PostReactionDeleteCallParsedData {
-  let callInst:
-    | ReactionsDeletePostReactionCall
-    | ReactionsForceDeletePostReactionCall
-    | null = null;
+): PostReactionDeleteCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
 
-  let response: PostReactionDeleteCallParsedData = {
+  let response: PostReactionDeleteCallParsedArgs = {
     forced: false,
     forcedData: null,
     reactionId: '',
     postId: ''
   };
 
-  switch (ctx.event.call!.name) {
+  switch (ctx.call!.name) {
     case 'Reactions.force_delete_post_reaction': {
-      callInst = new ReactionsForceDeletePostReactionCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      if (!calls.reactions.forceDeletePostReaction.v102.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
 
-      const { who, postId, reactionId } = callInst.asV102;
+      const { who, postId, reactionId } =
+        calls.reactions.forceDeletePostReaction.v102.decode(callForDecode);
       response = {
         ...response,
         forced: true,
         forcedData: {
-          account: addressSs58ToString(who)
+          account: toSubsocialAddress(who)!
         },
         reactionId: reactionId.toString(),
         postId: postId.toString()
@@ -356,10 +351,11 @@ export function parsePostReactionDeleteCallArgs(
       break;
     }
     default: {
-      callInst = new ReactionsDeletePostReactionCall(ctx, ctx.event.call!);
-      if (!callInst) throw Error(`Unexpected call ${ctx.event.call!.name}`);
+      if (!calls.reactions.deletePostReaction.v102.is(callForDecode))
+        throw Error(`Unexpected call ${ctx.call!.name}`);
 
-      const { postId, reactionId } = callInst.asV102;
+      const { postId, reactionId } =
+        calls.reactions.deletePostReaction.v102.decode(callForDecode);
       response = {
         ...response,
         reactionId: reactionId.toString(),

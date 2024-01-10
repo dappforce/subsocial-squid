@@ -1,10 +1,10 @@
-import { Block, Chain, ChainContext } from '../types/support';
-import { DomainStorageData } from '../../../common/types';
+import { DomainStorageData, StorageForDecode } from '../../../common/types';
+import { Block } from '../../../processor';
 
 export async function getRegisteredDomainMeta(
-  ctx: ChainContext,
+  ctx: StorageForDecode,
   block: Block,
-  domainOrList: Uint8Array | Uint8Array[]
+  domainOrList: string | string[]
 ): Promise<(DomainStorageData | undefined)[] | DomainStorageData | undefined> {
   return undefined;
 }

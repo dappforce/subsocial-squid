@@ -6,8 +6,9 @@ export const config: ProcessorConfig = {
   chainName: 'subsocial',
   prefix: 'subsocial',
   dataSource: {
-    archive: 'https://subsocial.archive.subsquid.io/graphql',
-    chain: 'wss://para.f3joule.space'
+    archive: 'https://v2.archive.subsquid.io/network/subsocial-parachain',
+    chain: 'wss://para.f3joule.space',
+    chainRateLimit: 10
   },
   elasticSearchSyncDisabled: !!(
     process.env.SUBSOCIAL_ELASTIC_SEARCH_SYNC_DISABLED &&
