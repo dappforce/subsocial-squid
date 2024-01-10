@@ -106,6 +106,52 @@ export class EvmAccountsEvmAddressUnlinkedFromAccountEvent {
     }
 }
 
+export class PostFollowsPostFollowedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PostFollows.PostFollowed')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    get isV107(): boolean {
+        return this._chain.getEventHash('PostFollows.PostFollowed') === 'bb7f7df752d5d18e55dbb327ddaa38c7f4a3bc11e49425dc7193c24184d8e643'
+    }
+
+    get asV107(): {follower: Uint8Array, postId: bigint} {
+        assert(this.isV107)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class PostFollowsPostUnfollowedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PostFollows.PostUnfollowed')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    get isV107(): boolean {
+        return this._chain.getEventHash('PostFollows.PostUnfollowed') === 'bb7f7df752d5d18e55dbb327ddaa38c7f4a3bc11e49425dc7193c24184d8e643'
+    }
+
+    get asV107(): {follower: Uint8Array, postId: bigint} {
+        assert(this.isV107)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class PostsPostCreatedEvent {
     private readonly _chain: Chain
     private readonly event: Event

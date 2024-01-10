@@ -12,6 +12,7 @@ import {
   EventContext,
   EvmAddressLinkedToAccountEventParsedData,
   EvmAddressUnlinkedFromAccountEventParsedData,
+  FollowPostEventParsedData,
   MovedPostEventParsedData,
   MovePostCallParsedData,
   PostReactionCreateCallParsedData,
@@ -25,6 +26,7 @@ import {
   SpaceOwnershipTransferAcceptedEventParsedData,
   SpaceOwnershipTransferCreatedEventParsedData,
   SpaceUnfollowedEventParsedData,
+  UnfollowPostEventParsedData,
   UpdatedSpaceEventParsedData,
   UpdatePostCallParsedData,
   UpdatePostEventParsedData,
@@ -36,7 +38,9 @@ import { getRegisteredDomainMeta } from '../subsocial/api/storage';
 import { parseSpaceOwnershipTransferCreatedEventArgs } from '../subsocial/api/events';
 import {
   parseEvmAddressLinkedToAccountEventArgs,
-  parseEvmAddressUnlinkedFromAccountEventArgs
+  parseEvmAddressUnlinkedFromAccountEventArgs,
+  parsePostFollowedEventArgs,
+  parsePostUnfollowedEventArgs
 } from '../xsocial/api/events';
 
 export type ChainApi = {
@@ -60,6 +64,8 @@ export type ChainApi = {
     parseDomainMetaUpdatedEventArgs?: EventGetter<DomainMetaUpdatedEventParsedData>;
     parseEvmAddressLinkedToAccountEventArgs?: EventGetter<EvmAddressLinkedToAccountEventParsedData>;
     parseEvmAddressUnlinkedFromAccountEventArgs?: EventGetter<EvmAddressUnlinkedFromAccountEventParsedData>;
+    parsePostFollowedEventArgs?: EventGetter<FollowPostEventParsedData>;
+    parsePostUnfollowedEventArgs?: EventGetter<UnfollowPostEventParsedData>;
   };
   calls: {
     parsePostCreatedCallArgs?: CallGetter<CreatePostCallParsedData>;
@@ -144,7 +150,9 @@ type XSocialChainEvents =
   | 'parseAccountFollowedEventArgs'
   | 'parseAccountUnfollowedEventArgs'
   | 'parseEvmAddressLinkedToAccountEventArgs'
-  | 'parseEvmAddressUnlinkedFromAccountEventArgs';
+  | 'parseEvmAddressUnlinkedFromAccountEventArgs'
+  | 'parsePostFollowedEventArgs'
+  | 'parsePostUnfollowedEventArgs';
 
 type SubsocialChainStorageCalls = 'getRegisteredDomainMeta';
 type SoonsocialChainStorageCalls = 'getRegisteredDomainMeta';

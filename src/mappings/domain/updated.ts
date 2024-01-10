@@ -12,7 +12,8 @@ export async function domainUpdated(
 
   await setActivity({
     syntheticEventName: EventName.UserNameUpdated,
-    account: handlerResult.account,
+    account: handlerResult.registrarAccount,
+    domainRecipient: handlerResult.recipientAccount,
     username: handlerResult.usernameStr,
     space: handlerResult.space,
     spacePrev: handlerResult.spacePrev,

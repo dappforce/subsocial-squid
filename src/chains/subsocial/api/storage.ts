@@ -7,6 +7,7 @@ import { UnknownVersionError } from '../../../common/errors';
 
 import * as v7 from '../types/v7';
 import * as v13 from '../types/v13';
+import * as v27 from '../types/v27';
 import { DomainStorageData } from '../../../common/types';
 
 export async function getRegisteredDomainMeta(
@@ -17,7 +18,9 @@ export async function getRegisteredDomainMeta(
   const storage = new DomainsRegisteredDomainsStorage(ctx, block);
   if (!storage.isExists) return undefined;
 
-  const decorateMeta = <T extends v7.DomainMeta | v13.DomainMeta | undefined>(
+  const decorateMeta = <
+    T extends v7.DomainMeta | v13.DomainMeta | v27.DomainMeta | undefined
+  >(
     meta: T
   ): DomainStorageData | undefined => {
     if (!meta) return undefined;
@@ -42,6 +45,12 @@ export async function getRegisteredDomainMeta(
       return (await storage.asV13.getMany(domainOrList)).map(decorateMeta);
     } else {
       return decorateMeta(await storage.asV13.get(domainOrList));
+    }
+  } else if (storage.isV27) {
+    if (Array.isArray(domainOrList)) {
+      return (await storage.asV27.getMany(domainOrList)).map(decorateMeta);
+    } else {
+      return decorateMeta(await storage.asV27.get(domainOrList));
     }
   }
 

@@ -22,7 +22,8 @@
     "@elastic/elasticsearch": "^8.6.0",
     "@ipld/dag-cbor": "7.0.3",
     "@polkadot/util-crypto": "^12.2.2",
-    "@subsocial/api": "^0.8.13",
+    "@sindresorhus/slugify": "^2.2.1",
+    "@subsocial/api": "^0.8.14",
     "@subsocial/elasticsearch": "^0.8.1",
     "@subsocial/types": "^0.6.11",
     "@subsocial/utils": "^0.6.11",
@@ -52,6 +53,7 @@
     "node-fetch": "^2.6.7",
     "p-throttle": "^5.0.0",
     "pg": "^8.7.3",
+    "slugify": "^1.6.6",
     "tslib": "^2.4.0",
     "twitter-api-v2": "^1.14.0",
     "type-graphql": "^1.2.0-rc.1",
@@ -82,7 +84,7 @@
     "jest-extended": "^3.2.4",
     "prettier": "^2.6.2",
     "ts-jest": "^29.1.0",
-    "typescript": "~4.8.2"
+    "typescript": "^4.9.5"
   },
   "resolutions": {
     "native-fetch": "4.0.2"

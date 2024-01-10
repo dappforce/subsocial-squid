@@ -141,6 +141,24 @@ export type PostMovedData = EventData &
   MovedPostEventParsedData;
 
 /**
+ * :::::: POST FOLLOW ::::::
+ */
+export interface FollowPostEventParsedData {
+  followerId: string;
+  postId: string;
+}
+export type PostFollowedData = EventData & FollowPostEventParsedData;
+
+/**
+ * :::::: POST UNFOLLOW ::::::
+ */
+export interface UnfollowPostEventParsedData {
+  followerId: string;
+  postId: string;
+}
+export type PostUnfollowedData = EventData & UnfollowPostEventParsedData;
+
+/**
  * :::::: CREATE SPACE ::::::
  */
 export interface SpacePermissionsScope {
@@ -339,6 +357,7 @@ export type AccountUnfollowedData = AccountFollowedData;
 export interface DomainRegisteredEventParsedData {
   accountId: string;
   domain: Uint8Array;
+  recipientId?: string;
 }
 
 export type DomainRegisteredData = EventData & DomainRegisteredEventParsedData;
@@ -389,6 +408,8 @@ export type ParsedEventsData =
   | PostCreatedData
   | PostUpdatedData
   | PostMovedData
+  | PostFollowedData
+  | PostUnfollowedData
   | SpaceCreatedData
   | SpaceUpdatedData
   | SpaceOwnershipTransferAcceptedData
@@ -424,3 +445,8 @@ export type EventContext = EventHandlerContext<
   Store,
   { event: { args: true; call: true; indexInBlock: true } }
 >;
+
+export type HasTitleOrBody = {
+  title?: string
+  body: string
+}

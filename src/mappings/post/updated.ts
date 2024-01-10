@@ -1,4 +1,5 @@
 import {
+  createPostSlug,
   getBodySummary,
   getExperimentalFieldsFromIPFSContent,
   getJoinedList,
@@ -21,7 +22,8 @@ import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchManager } from '../../elasticsearch';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
-import { createPostSlug } from '@subsocial/utils';
+import { processContentExtensions } from '../extension';
+import { getUrlFromText } from './common';
 
 export async function postUpdated(
   ctx: Ctx,
@@ -69,8 +71,14 @@ export async function postUpdated(
     const bodySummary = getBodySummary(postIpfsContent.body);
     post.title = postIpfsContent.title ?? null;
     post.image = postIpfsContent.image ?? null;
-    post.link = postIpfsContent.link ?? null;
-    // post.format = postIpfsContent.format ?? null; // TODO check is it actual property
+
+    post.link = null;
+    if (postIpfsContent.link) {
+      post.link = postIpfsContent.link;
+    } else if (!postIpfsContent.link && postIpfsContent.body) {
+      post.link = getUrlFromText(postIpfsContent.body);
+    }
+
     post.format = null;
     post.canonical = postIpfsContent.canonical ?? null;
     post.body = postIpfsContent.body ?? null;
@@ -109,6 +117,14 @@ export async function postUpdated(
   }
 
   await ctx.store.save(post);
+
+  if (postIpfsContent && postIpfsContent.extensions)
+    await processContentExtensions(
+      postIpfsContent.extensions,
+      post,
+      eventData,
+      ctx
+    );
 
   ElasticSearchManager.index(ctx).addToQueue(post);
 

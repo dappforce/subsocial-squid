@@ -1,6 +1,6 @@
 # Subsocial squid
 
-#### Indexer for work with both Subsocial and Soonsocial chains.
+#### Indexer for work with Subsocial, Soonsocial and xSocial chains.
 
 ## Quick running
 
@@ -74,6 +74,7 @@ make serve
 1. Chain configs/endpoints can be configured in `config.ts` file in appropriate folder of necessary chain:
    - Subsocial - `src/chains/subsocial/config.ts`
    - Soonsocial - `src/chains/soonsocial/config.ts`
+   - xSocial - `src/chains/xSocial/config.ts`
 2. Necessary events/calls/storage calls can be configured for each chain in appropriate file in `/typegen` folder.
 3. Command `make typegen` uses custom [shel script](./scripts/typegen.sh) which generates types for each chain defined in `/typegen` folder.
 4. Chain sensitive logic is implemented in sub-folder with appropriate name in `/src/chains` folder.
@@ -85,6 +86,7 @@ make serve
 5. Indexer can be deployed to Aquarium to 2 different squids with 2 separate deployment manifests:
    - Subsocial - [./squid-subsocial.yaml](./squid-subsocial.yaml)
    - Soonsocial - [./squid-soonsocial.yaml](./squid-soonsocial.yaml)
+   - xSocial - [./squid-xsocial.yaml](./squid-xsocial.yaml)
 
 ## Search API
 
@@ -127,3 +129,114 @@ All arguments listed above can be used together in any combination, except for `
   - `totalResults: <string>` - _the total number of results matched to this particular search request._
 
 More detailed information about the search API's schema structure can be found in the appropriate [model file](./src/server-extension/models/elasticSearchQuery.model.ts).
+
+## Analytics API
+
+The Indexer GraphQL API has a analytics queries with various parameters.
+
+### Active users total number :: `activeUsersTotalCount`
+[Query](./src/server-extension/query/userRetentionCountFull.ts)
+
+The API query returns the count of users who have created at least one post within a specified period.
+
+```graphql
+query MyQuery($from: String!, $to: String!) {
+    activeUsersTotalCount(from: $from, to: $to){
+        account_count
+    }
+}
+
+# Variables:
+{
+    from: "2023-04-13T09:38:00.027Z",
+    to: "2023-07-13T09:38:00.027Z",
+}
+```
+
+### Active users total number with filters :: `activeUsersTotalCountWithFilters`
+
+[Query](./src/server-extension/query/activeUsersTotalCountWithFilters.ts)
+
+The API query returns the count of users who have created specified number of posts within a specified period.
+
+```graphql
+query MyQuery(
+    $from: String!,
+    $to: String!,
+    $total_min_posts_number: Int!,
+    $exclude_body: [String]
+) {
+    activeUsersTotalCountWithFilters(
+        from: $from,
+        to: $to,
+        total_min_posts_number: $total_min_posts_number,
+        exclude_body: $exclude_body
+    ){
+        account_count
+    }
+}
+
+# Variables:
+{
+    from: "2023-04-13T09:38:00.027Z",
+    to: "2023-07-13T09:38:00.027Z",
+    total_min_posts_number: 3,
+    exclude_body: ["Hi", "Hello there"]
+}
+```
+
+### User retention count :: `userRetentionCount`
+[Query](./src/server-extension/query/userRetentionCountFull.ts)
+
+The API query returns the count of Accounts based on the following rules:
+
+1. The first post created by an account must fall within a specific timeframe (`full_query_range_from` and `full_query_range_to`), which represents the query timeframe.
+2. The total count of posts created by an account within the query timeframe must exceed a specified number (`total_min_posts_number`).
+3. The account must create at least a specified number of messages (`first_range_min_posts_number`) within the first time range (`first_range_from` and `first_range_to`).
+4. The account must create at least a specified number of messages (`last_range_min_posts_number`) within the second time range (`last_range_from` and `last_range_to`).
+5. Posts that have the field `body` equal to any of the restricted words or sentences (`exclude_body`) must be excluded from the calculation."
+
+```graphql
+query MyQuery(
+  $full_query_range_from: String!,
+  $full_query_range_to: String!,
+  $first_range_from: String!,
+  $first_range_to: String!,
+  $last_range_from: String!,
+  $last_range_to: String!,
+  $total_min_posts_number: Int!,
+  $first_range_min_posts_number: Int!,
+  $last_range_min_posts_number: Int!,
+  $exclude_body: [String!]!,
+) {
+  userRetentionCount(
+    full_query_range_from: $full_query_range_from,
+    full_query_range_to: $full_query_range_to,
+    first_range_from: $first_range_from,
+    first_range_to: $first_range_to,
+    last_range_from: $last_range_from,
+    last_range_to: $last_range_to,
+    total_min_posts_number: $total_min_posts_number,
+    first_range_min_posts_number: $first_range_min_posts_number,
+    last_range_min_posts_number: $last_range_min_posts_number,
+    exclude_body: $exclude_body
+) {
+    retention_count
+  }
+}
+
+# Variables:
+
+{
+    "full_query_range_from": "2023-07-13T09:38:00.027Z",
+    "full_query_range_to": "2023-07-17T15:31:16.677Z",
+    "first_range_from": "2023-07-13T09:38:00.027Z",
+    "first_range_to": "2023-07-15T09:38:00.027Z",
+    "last_range_from": "2023-07-16T09:38:00.027Z",
+    "last_range_to": "2023-07-17T15:31:16.677Z",
+    "total_min_posts_number": 5,
+    "first_range_min_posts_number": 3,
+    "last_range_min_posts_number": 2,
+    "exclude_body": ["Hello"]
+}
+```

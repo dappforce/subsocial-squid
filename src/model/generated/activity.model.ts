@@ -84,6 +84,13 @@ export class Activity {
     oldOwner!: Account | undefined | null
 
     /**
+     * A One-to-One relationship with the domain recipient Account
+     */
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    domainRecipient!: Account | undefined | null
+
+    /**
      * A One-to-One relationship with the Post that is involved in the current Activity
      */
     @Index_()
@@ -117,7 +124,7 @@ export class Activity {
     aggCount!: bigint
 
     /**
-     * The username of Space or Account which was registered or updated in this particular Activity.
+     * The username of a Space or Account which was registered or updated in this particular Activity.
      */
     @Column_("text", {nullable: true})
     username!: string | undefined | null

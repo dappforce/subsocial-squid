@@ -8,7 +8,8 @@ import { EventName, Space, Account } from '../../model';
 type UsernameHandlerResult = {
   space?: Space;
   spacePrev?: Space;
-  account: Account;
+  registrarAccount: Account;
+  recipientAccount: Account;
   usernameStr: string;
 };
 
@@ -16,10 +17,14 @@ export async function handleUsername(
   ctx: Ctx,
   eventData: DomainRegisteredData
 ): Promise<UsernameHandlerResult> {
-  const account = await getOrCreateAccount(eventData.accountId, ctx);
-  const usernameStr = eventData.domain.toString();
+  const registrarAccount = await getOrCreateAccount(eventData.accountId, ctx);
+  const recipientAccount = eventData.recipientId
+    ? await getOrCreateAccount(eventData.recipientId, ctx)
+    : registrarAccount;
+  const usernameStr = eventData.domain.toString().toLowerCase();
   const result: UsernameHandlerResult = {
-    account: account,
+    registrarAccount,
+    recipientAccount,
     usernameStr
   };
 
@@ -62,13 +67,13 @@ export async function handleUsername(
     }
   }
 
-  if (!account.usernames) {
-    account.usernames = [usernameStr];
+  if (!recipientAccount.usernames) {
+    recipientAccount.usernames = [usernameStr];
   } else {
-    account.usernames = [
-      ...new Set([...account.usernames, usernameStr]).values()
+    recipientAccount.usernames = [
+      ...new Set([...recipientAccount.usernames, usernameStr]).values()
     ];
   }
-  await ctx.store.save(account);
+  await ctx.store.save(recipientAccount);
   return result;
 }

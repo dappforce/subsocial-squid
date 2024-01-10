@@ -28,6 +28,7 @@ import { ElasticSearchManager } from './elasticsearch';
 import { getChain } from './chains';
 import { NotificationsManager } from './mappings/notification/notifiactionsManager';
 import { handleEvmSubstrateAccountLinks } from './mappings/evmSubstrateAccountLink';
+import { handlePostFollowUnfollow } from './mappings/postCommentFollows';
 
 const chainConfig = getChain();
 
@@ -48,6 +49,12 @@ export const processor = new SubstrateBatchProcessor()
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
   .addEvent('Posts.PostMoved', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
+  .addEvent('PostFollows.PostFollowed', {
+    data: { event: { args: true, call: true, indexInBlock: true } }
+  } as const)
+  .addEvent('PostFollows.PostUnfollowed', {
     data: { event: { args: true, call: true, indexInBlock: true } }
   } as const)
   .addEvent('Spaces.SpaceCreated', {
@@ -173,9 +180,13 @@ async function blocksBatchHandler(ctx: Ctx) {
 
   await handlePosts(ctx, parsedEvents);
 
+  await handlePostFollowUnfollow(ctx, parsedEvents);
+
   await handleDomains(ctx, parsedEvents);
 
   await handlePostReactions(ctx, parsedEvents);
+
+  await NotificationsManager.getInstance().commitInBatchNotifications(ctx);
 
   storageDataManager.purgeStorage();
 }

@@ -104,6 +104,21 @@ export class DomainsDomainRegisteredEvent {
         assert(this.isV7)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * The domain name was successfully registered.
+     */
+    get isV27(): boolean {
+        return this._chain.getEventHash('Domains.DomainRegistered') === 'df74cddddb3e7a6f9f20e71fb2004f19952931750dfa27f5908193e483236cc2'
+    }
+
+    /**
+     * The domain name was successfully registered.
+     */
+    get asV27(): {who: Uint8Array, recipient: Uint8Array, domain: Uint8Array} {
+        assert(this.isV27)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class PostsPostCreatedEvent {

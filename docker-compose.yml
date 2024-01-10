@@ -5,7 +5,7 @@ services:
     container_name: subsocial_squid_db
     image: postgres:14
     ports:
-      - "${DB_PORT}:5432"
+      - "${DB_PORT}:5433"
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}

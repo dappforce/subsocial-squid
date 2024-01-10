@@ -7,6 +7,7 @@ import { asIpfsCid } from './utils';
 import { Ctx } from '../processor';
 import { getChain } from '../chains';
 import { SubsocialIpfsApi } from '@subsocial/api';
+import { ProcessorConfig } from '../chains/interfaces/processorConfig';
 const chainConfig = getChain();
 
 export class IpfsDataManager {
@@ -14,7 +15,8 @@ export class IpfsDataManager {
 
   private ipfsClient!: IPFSHTTPClient;
 
-  private ipfsReadOnlyNodeUrl: string = chainConfig.config.ipfsReadOnlyNodeUrl;
+  private ipfsSubsocialNodeUrl: string =
+    chainConfig.config.ipfsSubsocialNodeUrl;
 
   constructor(private processorContext?: Ctx) {
     this.createIpfsClient();
@@ -29,7 +31,7 @@ export class IpfsDataManager {
 
   private createIpfsClient(headers?: Headers) {
     this.ipfsClient = create({
-      url: this.ipfsReadOnlyNodeUrl + '/api/v0',
+      url: this.ipfsSubsocialNodeUrl + '/api/v0',
       headers
     });
   }
@@ -78,7 +80,7 @@ export class IpfsDataManager {
     } else {
       const res = await axios.get(
         `${
-          this.ipfsReadOnlyNodeUrl
+          this.ipfsSubsocialNodeUrl
         }/ipfs/${cidEnsured.toV1()}?timeout=${timeout}`,
         {
           // responseType: 'arraybuffer'
@@ -95,12 +97,13 @@ export class IpfsDataManager {
 export class SubsocialIpfsDataManager {
   private static instance: SubsocialIpfsDataManager;
 
-  private ipfsClient!: SubsocialIpfsApi;
+  private chainConfig: ProcessorConfig = chainConfig.config;
 
-  private ipfsReadOnlyNodeUrl: string = chainConfig.config.ipfsReadOnlyNodeUrl;
+  private ipfsClientSubsocial!: SubsocialIpfsApi;
+  private ipfsClientCrust!: SubsocialIpfsApi;
 
   constructor(private processorContext?: Ctx) {
-    this.createIpfsClient();
+    this.createIpfsClients();
   }
 
   static getInstance(ctx?: Ctx): SubsocialIpfsDataManager {
@@ -110,10 +113,25 @@ export class SubsocialIpfsDataManager {
     return SubsocialIpfsDataManager.instance;
   }
 
-  private createIpfsClient(headers?: Headers) {
-    this.ipfsClient = new SubsocialIpfsApi({
-      ipfsNodeUrl: this.ipfsReadOnlyNodeUrl
+  private createIpfsClients(headers?: Headers) {
+    this.ipfsClientSubsocial = new SubsocialIpfsApi({
+      ipfsNodeUrl: this.chainConfig.ipfsSubsocialNodeUrl
     });
+    this.ipfsClientCrust = new SubsocialIpfsApi({
+      ipfsNodeUrl: this.chainConfig.ipfsCrustNodeUrl
+    });
+
+    if (
+      this.chainConfig.ipfsCrustNodeAuthToken &&
+      this.chainConfig.ipfsCrustNodeAuthToken.length > 0
+    ) {
+      this.ipfsClientCrust.setWriteHeaders({
+        authorization: this.chainConfig.ipfsCrustNodeAuthToken
+      });
+      this.ipfsClientCrust.setPinHeaders({
+        authorization: this.chainConfig.ipfsCrustNodeAuthToken
+      });
+    }
   }
 
   async fetchOneByIdHttp(
@@ -123,13 +141,17 @@ export class SubsocialIpfsDataManager {
     let res = null;
 
     try {
-      res = await this.fetchContent(ipfsCid, 10000);
+      res = await this.fetchContent(ipfsCid, 5000);
 
       this.processorContext
         ? this.processorContext.log
             .child('ipfs')
-            .info(`Response by CID - ${ipfsCid.toString()} => SUCCESSFUL`)
-        : console.log(`Response by CID - ${ipfsCid.toString()} => SUCCESSFUL`);
+            .info(
+              `Response by CID - ${ipfsCid.toString()} => SUCCESSFUL (isNull == ${!res})`
+            )
+        : console.log(
+            `Response by CID - ${ipfsCid.toString()} => SUCCESSFUL (isNull == ${!res})`
+          );
 
       await new Promise((res) => setTimeout(res, 50));
     } catch (e) {
@@ -145,9 +167,116 @@ export class SubsocialIpfsDataManager {
     return res;
   }
 
-  private async fetchContent(cid: IpfsCid, timeout?: number) {
+  private async fetchContent(cid: IpfsCid, timeout: number = 1000) {
     // TODO remove debug mode
     // return null;
-    return (await this.ipfsClient.getContent(cid, timeout)) ?? null;
+
+    // try {
+    //   console.log(`ipfsClientSubsocial - ${cid}`);
+    //   return (
+    //     (await this.fetchWithRetry(
+    //       () => this.ipfsClientSubsocial.getContent(cid, timeout),
+    //       cid
+    //     )) ?? null
+    //   );
+    // } catch (e) {
+    //   console.log('ipfsClientCrust - ', cid);
+    //   return (
+    //     (await this.fetchWithRetry(
+    //       () => this.ipfsClientCrust.getContent(cid, timeout),
+    //       cid
+    //     )) ?? null
+    //   );
+    // }
+
+    // try {
+    //   const data = await this.ipfsClientSubsocial.getContent(cid, timeout);
+    //   return data ?? null;
+    // } catch (e) {
+    //   return null;
+    // }
+
+    if (!cid) return null;
+
+    return new Promise(async (res, rej) => {
+      let count = 0;
+      let interval: NodeJS.Timer | undefined = setInterval(() => {
+        const cidLog = cid;
+        count++;
+        if (count >= timeout / 1000) {
+          clearInterval(interval);
+          interval = undefined;
+          console.log(
+            `fetchWithRetry has been interrupted by too long execution - ${cidLog.toString()}`
+          );
+          res(null);
+        }
+      }, 1000);
+
+      const resp =
+        (await this.ipfsClientSubsocial.getContent(cid, timeout)) ?? null;
+      if (interval) clearInterval(interval);
+
+      res(resp);
+    });
+
+    // try {
+    //   console.log(`ipfsClientSubsocial - ${cid}`);
+    //   const data = await this.ipfsClientSubsocial.getContent(cid, timeout);
+    //   if (!data)
+    //     throw Error('ipfsClientSubsocial.getContent finished with ERROR');
+    //
+    //   return data;
+    // } catch (e) {
+    //   console.log('ipfsClientCrust - ', cid);
+    //   return (
+    //     (await this.fetchWithRetry(
+    //       () => this.ipfsClientCrust.getContent(cid, timeout),
+    //       cid
+    //     )) ?? null
+    //   );
+    // }
+  }
+
+  private async fetchWithRetry(
+    fetchFn: () => Promise<IpfsCommonContent | undefined>,
+    cid: IpfsCid,
+    timeout?: 1000
+  ) {
+    return new Promise(async (res, rej) => {
+      let count = 0;
+      const interval = setInterval(() => {
+        count++;
+        if (count >= 60) {
+          clearInterval(interval);
+          this.processorContext
+            ? this.processorContext.log
+                .child('ipfs')
+                .info(
+                  `fetchWithRetry has been interrupted by too long execution - ${cid.toString()}`
+                )
+            : console.log(
+                `fetchWithRetry has been interrupted by too long execution - ${cid.toString()}`
+              );
+          rej(
+            new Error(
+              `fetchWithRetry has been interrupted by too long execution - ${cid.toString()}`
+            )
+          );
+        }
+      }, 1000);
+
+      try {
+        const resp = await fetchFn();
+        if (!resp) throw new Error();
+        res(resp);
+      } catch (e) {
+        await new Promise((timeoutRes) =>
+          setTimeout(() => timeoutRes, timeout)
+        );
+        const resp = await fetchFn();
+        res(resp);
+      }
+    });
   }
 }

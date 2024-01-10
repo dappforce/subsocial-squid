@@ -55,6 +55,26 @@ const onCommentReplyShared: NotificationsBehaviour = {
 };
 
 /**
+ * POST FOLLOWING
+ */
+
+const onPostFollowed: NotificationsBehaviour = {
+  addNotificationForAccount: ['RootPostOwner']
+};
+
+const onPostUnfollowed: NotificationsBehaviour = {
+  addNotificationForAccount: ['RootPostOwner']
+};
+
+const onCommentFollowed: NotificationsBehaviour = {
+  addNotificationForAccount: ['RootPostOwner', 'ParentPostOwner']
+};
+
+const onCommentUnfollowed: NotificationsBehaviour = {
+  addNotificationForAccount: ['RootPostOwner', 'ParentPostOwner']
+};
+
+/**
  * REACTION
  */
 const onPostReactionCreated: NotificationsBehaviour = {
@@ -137,6 +157,11 @@ export const EVENT_NOTIFICATION_RELATIONS: Partial<
   PostCreated: onPostCreated,
   CommentCreated: onCommentCreated,
   CommentReplyCreated: onCommentReplyCreated,
+
+  PostFollowed: onPostFollowed,
+  PostUnfollowed: onPostUnfollowed,
+  CommentFollowed: onCommentFollowed,
+  CommentUnfollowed: onCommentUnfollowed,
 
   PostShared: onPostShared,
   CommentShared: onCommentShared,

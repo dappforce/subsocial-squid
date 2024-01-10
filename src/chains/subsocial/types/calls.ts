@@ -12,6 +12,8 @@ import * as v18 from './v18'
 import * as v19 from './v19'
 import * as v20 from './v20'
 import * as v23 from './v23'
+import * as v27 from './v27'
+import * as v29 from './v29'
 
 export class AccountFollowsFollowAccountCall {
     private readonly _chain: Chain
@@ -569,6 +571,302 @@ export class CollatorSelectionSetInvulnerablesCall {
     }
 }
 
+export class CreatorStakingClaimBackerRewardCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.claim_backer_reward')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.claim_backer_reward') === '20ee3bdd824886b52b2d4aa14008c70d7c88021c8e2a857b18b47d8f0a2d43db'
+    }
+
+    get asV29(): {creatorId: bigint, restake: boolean} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingClaimCreatorRewardCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.claim_creator_reward')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.claim_creator_reward') === '4bb689a5462457b969dcc2fc8ed2f2eb87206816704f783a0406a591c2512a38'
+    }
+
+    get asV29(): {creatorId: bigint, era: number} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingForceNewEraCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.force_new_era')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.force_new_era') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
+    }
+
+    get asV29(): null {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingForceRegisterCreatorCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.force_register_creator')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.force_register_creator') === '33c9415d6a5c975586b23ea7e0f40695559ce765217fad61b099023f284dae20'
+    }
+
+    get asV29(): {spaceId: bigint} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingForceUnregisterCreatorCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.force_unregister_creator')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.force_unregister_creator') === 'ee629ca3bedc348a1645f4e8dcafb04c9564e462a49383e29bab1c81c9da986d'
+    }
+
+    get asV29(): {creatorId: bigint} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingSetMaintenanceModeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.set_maintenance_mode')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.set_maintenance_mode') === '06e22e50961a88f026db10051ac75d9c97ac15a2b9abb2dd1225eb446b084816'
+    }
+
+    get asV29(): {enableMaintenance: boolean} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingSetRewardDistributionConfigCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.set_reward_distribution_config')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.set_reward_distribution_config') === '74cb59d7c2adf621932b0a7904234dcdd023ad3b13ccfa8b5bb83a2ff2bd1b7f'
+    }
+
+    get asV29(): {newConfig: v29.RewardDistributionConfig} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingStakeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.stake')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.stake') === '07f55e4ec190470df0616f415f36b5443ad72217310b025702c7ebe3383b932d'
+    }
+
+    get asV29(): {creatorId: bigint, desiredAmount: bigint} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingUnregisterCreatorCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.unregister_creator')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.unregister_creator') === 'ee629ca3bedc348a1645f4e8dcafb04c9564e462a49383e29bab1c81c9da986d'
+    }
+
+    get asV29(): {creatorId: bigint} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingUnstakeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.unstake')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Start unbonding process and unstake balance from the creator.
+     * 
+     * The unstaked amount will no longer be eligible for rewards but still won't be unlocked.
+     * User needs to wait for the unbonding period to finish before being able to withdraw
+     * the funds via the `withdraw_unbonded` call.
+     * 
+     * If the remaining balance staked on that creator is below the minimum staking amount,
+     * the entire stake for that creator will be unstaked.
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.unstake') === '412d60f5a00d6851795e96959f6d0335396b60f66fa662f0c26aeb2776facd28'
+    }
+
+    /**
+     * Start unbonding process and unstake balance from the creator.
+     * 
+     * The unstaked amount will no longer be eligible for rewards but still won't be unlocked.
+     * User needs to wait for the unbonding period to finish before being able to withdraw
+     * the funds via the `withdraw_unbonded` call.
+     * 
+     * If the remaining balance staked on that creator is below the minimum staking amount,
+     * the entire stake for that creator will be unstaked.
+     */
+    get asV29(): {creatorId: bigint, amount: bigint} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingWithdrawFromInactiveCreatorCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.withdraw_from_inactive_creator')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.withdraw_from_inactive_creator') === 'ee629ca3bedc348a1645f4e8dcafb04c9564e462a49383e29bab1c81c9da986d'
+    }
+
+    get asV29(): {creatorId: bigint} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CreatorStakingWithdrawUnstakedCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'CreatorStaking.withdraw_unstaked')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV29(): boolean {
+        return this._chain.getCallHash('CreatorStaking.withdraw_unstaked') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
+    }
+
+    get asV29(): null {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class DmpQueueServiceOverweightCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -751,6 +1049,27 @@ export class DomainsRegisterDomainCall {
         assert(this.isV13)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Registers a domain ([full_domain]) using origin with [content],
+     * and set the domain to expire in [expires_in] number of blocks.
+     * [full_domain] is a full domain name including a dot (.) and TLD.
+     * Example of a [full_domain]: `mytoken.ksm`
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Domains.register_domain') === '5914989362247029cfb46a31a7fb339782e83ea6f8cd3a9baf7170a44990fcf8'
+    }
+
+    /**
+     * Registers a domain ([full_domain]) using origin with [content],
+     * and set the domain to expire in [expires_in] number of blocks.
+     * [full_domain] is a full domain name including a dot (.) and TLD.
+     * Example of a [full_domain]: `mytoken.ksm`
+     */
+    get asV27(): {altRecipient: (v27.MultiAddress | undefined), fullDomain: Uint8Array, content: v27.Content, expiresIn: number} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class DomainsReserveWordsCall {
@@ -880,6 +1199,52 @@ export class DomainsSetOuterValueCall {
      */
     get asV7(): {domain: Uint8Array, valueOpt: (Uint8Array | undefined)} {
         assert(this.isV7)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class DomainsSetPaymentBeneficiaryCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Domains.set_payment_beneficiary')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV27(): boolean {
+        return this._chain.getCallHash('Domains.set_payment_beneficiary') === '94f106c8624f96590eb42132a42ad18dbc86d162b4b1beccae25889dc978ef19'
+    }
+
+    get asV27(): {paymentBeneficiary: Uint8Array} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class DomainsSetPricesConfigCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Domains.set_prices_config')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV27(): boolean {
+        return this._chain.getCallHash('Domains.set_prices_config') === 'b19a158b365eb60de5eaef6e97895894f6bef206b9b0c1670b7507ebaf072012'
+    }
+
+    get asV27(): {newPricesConfig: [number, bigint][]} {
+        assert(this.isV27)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3102,6 +3467,76 @@ export class ProxyProxyCall {
         assert(this.isV23)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Proxy.proxy') === '09ca65b10dacf775079be22b602c8fc61a979f5509fc4613dfacf347c1edb2d3'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get asV27(): {real: v27.MultiAddress, forceProxyType: (v27.ProxyType | undefined), call: v27.Call} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Proxy.proxy') === '517bad174a6a558b07aad39a48434169ff1ddbfe3f8dac82f38e5d48d4deeafb'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get asV29(): {real: v29.MultiAddress, forceProxyType: (v29.ProxyType | undefined), call: v29.Call} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ProxyProxyAnnouncedCall {
@@ -3325,6 +3760,76 @@ export class ProxyProxyAnnouncedCall {
      */
     get asV23(): {delegate: v23.MultiAddress, real: v23.MultiAddress, forceProxyType: (v23.ProxyType | undefined), call: v23.Call} {
         assert(this.isV23)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Proxy.proxy_announced') === 'a9bf86eceb1539deb4e972aa67d64690541ec75173d4324c42be0674810e4c6b'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get asV27(): {delegate: v27.MultiAddress, real: v27.MultiAddress, forceProxyType: (v27.ProxyType | undefined), call: v27.Call} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Proxy.proxy_announced') === '242efab5cdd483857569c0d558b826828225a5f4b6e1bc4896df015354a280ad'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get asV29(): {delegate: v29.MultiAddress, real: v29.MultiAddress, forceProxyType: (v29.ProxyType | undefined), call: v29.Call} {
+        assert(this.isV29)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4892,6 +5397,72 @@ export class SudoSudoCall {
         assert(this.isV23)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === 'd1aff1461b608edff3d3bea5467be539d36c7b2d0c536ca8bb3a2ee6f13d64b9'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV27(): {call: v27.Call} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === 'c4a08b658d6bceb20cdec789a8500e74047fa3db2aa2ba29c03ec06c786b43c1'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV29(): {call: v29.Call} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoAsCall {
@@ -5326,6 +5897,76 @@ export class SudoSudoAsCall {
         assert(this.isV23)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === '57969ca82cf794b721df45e40e6284e5e929a6abaf96365c154896c97d49f2cc'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV27(): {who: v27.MultiAddress, call: v27.Call} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === 'd773dc32d112a3babf11b58c68c365d7b6b4a3e01eca338850d35eb38166215a'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV29(): {who: v29.MultiAddress, call: v29.Call} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoUncheckedWeightCall {
@@ -5734,6 +6375,72 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV23(): {call: v23.Call, weight: v23.Weight} {
         assert(this.isV23)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '4f0e560bf1fa25a251434c2ba26a19a6e682bcb347f89c9725e3d1b47d483b19'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get asV27(): {call: v27.Call, weight: v27.Weight} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '3e71708f5de9130ad8a898d123716f60c3b93bbb9810be569eeb041c6c7a6f81'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get asV29(): {call: v29.Call, weight: v29.Weight} {
+        assert(this.isV29)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6627,6 +7334,84 @@ export class UtilityAsDerivativeCall {
         assert(this.isV23)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '9b5feafd2fbf9499990a004830cdf4d12145dc889167104d74c9786686adae1a'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asV27(): {index: number, call: v27.Call} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '3875012b48330bd32776399f9381bde8d419e58e6649617d7f49636794117579'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asV29(): {index: number, call: v29.Call} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchCall {
@@ -7151,6 +7936,108 @@ export class UtilityBatchCall {
         assert(this.isV23)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Utility.batch') === '2df8d7dc26152541fc9edb674b2e24875f6e7fcea44df590d7497692e4b5a8a0'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asV27(): {calls: v27.Call[]} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Utility.batch') === 'acb426bf99987a2ef138e662f48f3c7cd417cd2474348b74290a3899ef6f462e'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asV29(): {calls: v29.Call[]} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchAllCall {
@@ -7575,6 +8462,88 @@ export class UtilityBatchAllCall {
         assert(this.isV23)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === '2df8d7dc26152541fc9edb674b2e24875f6e7fcea44df590d7497692e4b5a8a0'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV27(): {calls: v27.Call[]} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === 'acb426bf99987a2ef138e662f48f3c7cd417cd2474348b74290a3899ef6f462e'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV29(): {calls: v29.Call[]} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityDispatchAsCall {
@@ -7919,6 +8888,72 @@ export class UtilityDispatchAsCall {
         assert(this.isV23)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '6176dcf03d4df49e6f9e535afc88c5fd50645315804ab3271308674951264117'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get asV27(): {asOrigin: v27.OriginCaller, call: v27.Call} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === 'f7eb4996d1338a911b5cfe47144099c32464256899d77ccd3172d2bde99d59d9'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get asV29(): {asOrigin: v29.OriginCaller, call: v29.Call} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityForceBatchCall {
@@ -8220,6 +9255,88 @@ export class UtilityForceBatchCall {
         assert(this.isV23)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === '2df8d7dc26152541fc9edb674b2e24875f6e7fcea44df590d7497692e4b5a8a0'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV27(): {calls: v27.Call[]} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === 'acb426bf99987a2ef138e662f48f3c7cd417cd2474348b74290a3899ef6f462e'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV29(): {calls: v29.Call[]} {
+        assert(this.isV29)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityWithWeightCall {
@@ -8282,6 +9399,56 @@ export class UtilityWithWeightCall {
      */
     get asV23(): {call: v23.Call, weight: v23.Weight} {
         assert(this.isV23)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get isV27(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '4f0e560bf1fa25a251434c2ba26a19a6e682bcb347f89c9725e3d1b47d483b19'
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get asV27(): {call: v27.Call, weight: v27.Weight} {
+        assert(this.isV27)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get isV29(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '3e71708f5de9130ad8a898d123716f60c3b93bbb9810be569eeb041c6c7a6f81'
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get asV29(): {call: v29.Call, weight: v29.Weight} {
+        assert(this.isV29)
         return this._chain.decodeCall(this.call)
     }
 }

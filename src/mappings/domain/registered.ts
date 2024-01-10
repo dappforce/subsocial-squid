@@ -13,7 +13,8 @@ export async function domainRegistered(
 
   await setActivity({
     syntheticEventName: EventName.UserNameRegistered,
-    account: handlerResult.account,
+    account: handlerResult.registrarAccount,
+    domainRecipient: handlerResult.recipientAccount,
     username: handlerResult.usernameStr,
     space: handlerResult.space,
     ctx,

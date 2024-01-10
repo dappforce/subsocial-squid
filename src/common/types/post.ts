@@ -25,6 +25,10 @@ type SpaceContentWithAppId = {
   appId?: string;
 };
 
+type SpaceContentWithProfileSource = {
+  profileSource?: string;
+};
+
 type PostContentWithTweet = {
   tweet?: PostTweetDetailsIPFS;
 };
@@ -44,7 +48,8 @@ export type PostContentWithInReplyTo = {
 export type IpfsSpaceContentSummarized = IpfsSpaceContent &
   SummarizedContent &
   SpaceContentWithInterests &
-  SpaceContentWithAppId;
+  SpaceContentWithAppId &
+  SpaceContentWithProfileSource;
 export type IpfsPostContentSummarized = IpfsPostContent &
   SummarizedContent &
   PostContentWithTweet &

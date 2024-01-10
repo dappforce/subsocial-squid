@@ -10,6 +10,8 @@ export interface ProcessorConfig {
   elasticSearchEndpoint: string;
   elasticSearchUsername: string;
   elasticSearchPassword: string;
-  ipfsReadOnlyNodeUrl: string;
+  ipfsSubsocialNodeUrl: string;
   ipfsNodeRequestTimeout: number;
+  ipfsCrustNodeAuthToken: string;
+  ipfsCrustNodeUrl: string;
 }

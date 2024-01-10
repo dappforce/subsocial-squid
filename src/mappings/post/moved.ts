@@ -8,7 +8,7 @@ import {
   EntityProvideFailWarning
 } from '../../common/errors';
 import { PostMovedData, SpaceCountersAction } from '../../common/types';
-import { postFollowed, postUnfollowed } from '../postCommentFollows';
+// import { postFollowed, postUnfollowed } from '../postCommentFollows';
 import { Ctx } from '../../processor';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { ElasticSearchManager } from '../../elasticsearch';
@@ -81,11 +81,11 @@ export async function postMoved(
 
   ElasticSearchManager.index(ctx).addToQueue(post);
 
-  if (!newSpaceInst) {
-    await postUnfollowed(post, ctx);
-  } else if (newSpaceInst && !eventData.fromSpace) {
-    await postFollowed(post, ctx);
-  }
+  // if (!newSpaceInst) {
+  //   await postUnfollowed(post, ctx);
+  // } else if (newSpaceInst && !eventData.fromSpace) {
+  //   await postFollowed(post, ctx);
+  // }
 
   // await updateSpaceForPostChildren(post, newSpaceInst, ctx);
 

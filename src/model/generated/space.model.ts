@@ -4,6 +4,7 @@ import {Account} from "./account.model"
 import {Post} from "./post.model"
 import {SpacePermissions} from "./_spacePermissions"
 import {SpaceFollowers} from "./spaceFollowers.model"
+import {ExtensionPinnedResource} from "./extensionPinnedResource.model"
 
 /**
  * The Space entity
@@ -40,6 +41,12 @@ export class Space {
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
     profileSpace!: Account | undefined | null
+
+    /**
+     * A source of profile data.
+     */
+    @Column_("text", {nullable: true})
+    profileSource!: string | undefined | null
 
     /**
      * The block height when a Space was created.
@@ -238,4 +245,7 @@ export class Space {
     @Index_()
     @Column_("text", {nullable: true})
     username!: string | undefined | null
+
+    @OneToMany_(() => ExtensionPinnedResource, e => e.space)
+    pinnedByExtensions!: ExtensionPinnedResource[]
 }

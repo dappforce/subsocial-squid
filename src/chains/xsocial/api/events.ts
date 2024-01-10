@@ -6,6 +6,8 @@ import {
   PostsPostCreatedEvent,
   PostsPostMovedEvent,
   PostsPostUpdatedEvent,
+  PostFollowsPostFollowedEvent,
+  PostFollowsPostUnfollowedEvent,
   ProfilesProfileUpdatedEvent,
   ReactionsPostReactionCreatedEvent,
   ReactionsPostReactionDeletedEvent,
@@ -24,6 +26,8 @@ import {
   CreatePostEventParsedData,
   UpdatePostEventParsedData,
   MovedPostEventParsedData,
+  FollowPostEventParsedData,
+  UnfollowPostEventParsedData,
   EventContext,
   SpaceCreatedData,
   CreatedSpaceEventParsedData,
@@ -56,14 +60,18 @@ export function parsePostCreatedEventArgs(
 ): CreatePostEventParsedData {
   const event = new PostsPostCreatedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId } = event.asV100;
+  if (event.isV100) {
+    const { account: accountId, postId } = event.asV100;
 
-  const response: CreatePostEventParsedData = {
-    accountId: addressSs58ToString(accountId),
-    postId: postId.toString()
-  };
+    const response: CreatePostEventParsedData = {
+      accountId: addressSs58ToString(accountId),
+      postId: postId.toString()
+    };
 
-  return response;
+    return response;
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parsePostUpdatedEventArgs(
@@ -71,14 +79,15 @@ export function parsePostUpdatedEventArgs(
 ): UpdatePostEventParsedData {
   const event = new PostsPostUpdatedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId } = event.asV100;
-
-  const response: UpdatePostEventParsedData = {
-    accountId: addressSs58ToString(accountId),
-    postId: postId.toString()
-  };
-
-  return response;
+  if (event.isV100) {
+    const { account: accountId, postId } = event.asV100;
+    return {
+      accountId: addressSs58ToString(accountId),
+      postId: postId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parsePostMovedEventArgs(
@@ -86,20 +95,58 @@ export function parsePostMovedEventArgs(
 ): MovedPostEventParsedData {
   const event = new PostsPostMovedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId, toSpace, fromSpace } = event.asV100;
+  if (event.isV100) {
+    const { account: accountId, postId, toSpace, fromSpace } = event.asV100;
 
-  const response: MovedPostEventParsedData = {
-    accountId: addressSs58ToString(accountId),
-    postId: postId.toString(),
-    toSpace:
-      toSpace !== null && toSpace !== undefined ? toSpace.toString() : toSpace,
-    fromSpace:
-      fromSpace !== null && fromSpace !== undefined
-        ? fromSpace.toString()
-        : fromSpace
-  };
+    return {
+      accountId: addressSs58ToString(accountId),
+      postId: postId.toString(),
+      toSpace:
+        toSpace !== null && toSpace !== undefined
+          ? toSpace.toString()
+          : toSpace,
+      fromSpace:
+        fromSpace !== null && fromSpace !== undefined
+          ? fromSpace.toString()
+          : fromSpace
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
+}
 
-  return response;
+export function parsePostFollowedEventArgs(
+  ctx: EventContext
+): FollowPostEventParsedData {
+  const event = new PostFollowsPostFollowedEvent(ctx, ctx.event);
+
+  if (event.isV107) {
+    const { follower: followerId, postId } = event.asV107;
+
+    return {
+      followerId: addressSs58ToString(followerId),
+      postId: postId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
+}
+
+export function parsePostUnfollowedEventArgs(
+  ctx: EventContext
+): UnfollowPostEventParsedData {
+  const event = new PostFollowsPostUnfollowedEvent(ctx, ctx.event);
+
+  if (event.isV107) {
+    const { follower: followerId, postId } = event.asV107;
+
+    return {
+      followerId: addressSs58ToString(followerId),
+      postId: postId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseSpaceCreatedEventArgs(
@@ -107,15 +154,17 @@ export function parseSpaceCreatedEventArgs(
 ): CreatedSpaceEventParsedData {
   const event = new SpacesSpaceCreatedEvent(ctx, ctx.event);
 
-  const { account: accountId, spaceId } = event.asV100;
+  if (event.isV100) {
+    const { account: accountId, spaceId } = event.asV100;
 
-  const response: CreatedSpaceEventParsedData = {
-    accountId: addressSs58ToString(accountId),
-    spaceId:
-      spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
-  };
-
-  return response;
+    return {
+      accountId: addressSs58ToString(accountId),
+      spaceId:
+        spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseSpaceUpdatedEventArgs(
@@ -123,15 +172,17 @@ export function parseSpaceUpdatedEventArgs(
 ): UpdatedSpaceEventParsedData {
   const event = new SpacesSpaceUpdatedEvent(ctx, ctx.event);
 
-  const { account: accountId, spaceId } = event.asV100;
+  if (event.isV100) {
+    const { account: accountId, spaceId } = event.asV100;
 
-  const response: UpdatedSpaceEventParsedData = {
-    accountId: addressSs58ToString(accountId),
-    spaceId:
-      spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
-  };
-
-  return response;
+    return {
+      accountId: addressSs58ToString(accountId),
+      spaceId:
+        spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parsePostReactionCreatedEventArgs(
@@ -139,14 +190,23 @@ export function parsePostReactionCreatedEventArgs(
 ): PostReactionCreatedEventParsedData {
   const event = new ReactionsPostReactionCreatedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId, reactionId, reactionKind } = event.asV102;
+  if (event.isV102) {
+    const {
+      account: accountId,
+      postId,
+      reactionId,
+      reactionKind
+    } = event.asV102;
 
-  return {
-    accountId: addressSs58ToString(accountId),
-    postId: postId.toString(),
-    reactionId: reactionId.toString(),
-    reactionKind: getReactionKindDecorated(reactionKind)
-  };
+    return {
+      accountId: addressSs58ToString(accountId),
+      postId: postId.toString(),
+      reactionId: reactionId.toString(),
+      reactionKind: getReactionKindDecorated(reactionKind)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parsePostReactionUpdatedEventArgs(
@@ -154,14 +214,23 @@ export function parsePostReactionUpdatedEventArgs(
 ): PostReactionUpdatedEventParsedData {
   const event = new ReactionsPostReactionUpdatedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId, reactionId, reactionKind } = event.asV102;
+  if (event.isV102) {
+    const {
+      account: accountId,
+      postId,
+      reactionId,
+      reactionKind
+    } = event.asV102;
 
-  return {
-    accountId: addressSs58ToString(accountId),
-    postId: postId.toString(),
-    reactionId: reactionId.toString(),
-    newReactionKind: getReactionKindDecorated(reactionKind)
-  };
+    return {
+      accountId: addressSs58ToString(accountId),
+      postId: postId.toString(),
+      reactionId: reactionId.toString(),
+      newReactionKind: getReactionKindDecorated(reactionKind)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parsePostReactionDeletedEventArgs(
@@ -169,14 +238,23 @@ export function parsePostReactionDeletedEventArgs(
 ): PostReactionDeletedEventParsedData {
   const event = new ReactionsPostReactionDeletedEvent(ctx, ctx.event);
 
-  const { account: accountId, postId, reactionId, reactionKind } = event.asV102;
+  if (event.isV102) {
+    const {
+      account: accountId,
+      postId,
+      reactionId,
+      reactionKind
+    } = event.asV102;
 
-  return {
-    accountId: addressSs58ToString(accountId),
-    postId: postId.toString(),
-    reactionId: reactionId.toString(),
-    reactionKind: getReactionKindDecorated(reactionKind)
-  };
+    return {
+      accountId: addressSs58ToString(accountId),
+      postId: postId.toString(),
+      reactionId: reactionId.toString(),
+      reactionKind: getReactionKindDecorated(reactionKind)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseProfileUpdatedEventArgs(
@@ -184,13 +262,17 @@ export function parseProfileUpdatedEventArgs(
 ): ProfileUpdatedEventParsedData {
   const event = new ProfilesProfileUpdatedEvent(ctx, ctx.event);
 
-  const { account: accountId, spaceId } = event.asV102;
+  if (event.isV102) {
+    const { account: accountId, spaceId } = event.asV102;
 
-  return {
-    accountId: addressSs58ToString(accountId),
-    spaceId:
-      spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
-  };
+    return {
+      accountId: addressSs58ToString(accountId),
+      spaceId:
+        spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseSpaceFollowedEventArgs(
@@ -198,12 +280,16 @@ export function parseSpaceFollowedEventArgs(
 ): SpaceFollowedEventParsedData {
   const event = new SpaceFollowsSpaceFollowedEvent(ctx, ctx.event);
 
-  const { follower, spaceId } = event.asV100;
+  if (event.isV100) {
+    const { follower, spaceId } = event.asV100;
 
-  return {
-    followerId: addressSs58ToString(follower),
-    spaceId: spaceId.toString()
-  };
+    return {
+      followerId: addressSs58ToString(follower),
+      spaceId: spaceId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseSpaceUnfollowedEventArgs(
@@ -211,12 +297,16 @@ export function parseSpaceUnfollowedEventArgs(
 ): SpaceUnfollowedEventParsedData {
   const event = new SpaceFollowsSpaceUnfollowedEvent(ctx, ctx.event);
 
-  const { follower, spaceId } = event.asV100;
+  if (event.isV100) {
+    const { follower, spaceId } = event.asV100;
 
-  return {
-    followerId: addressSs58ToString(follower),
-    spaceId: spaceId.toString()
-  };
+    return {
+      followerId: addressSs58ToString(follower),
+      spaceId: spaceId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseSpaceOwnershipTransferCreatedEventArgs(
@@ -227,13 +317,17 @@ export function parseSpaceOwnershipTransferCreatedEventArgs(
     ctx.event
   );
 
-  const { currentOwner, newOwner, spaceId } = event.asV102;
+  if (event.isV102) {
+    const { currentOwner, newOwner, spaceId } = event.asV102;
 
-  return {
-    currentOwnerId: addressSs58ToString(currentOwner),
-    newOwnerId: addressSs58ToString(newOwner),
-    spaceId: spaceId.toString()
-  };
+    return {
+      currentOwnerId: addressSs58ToString(currentOwner),
+      newOwnerId: addressSs58ToString(newOwner),
+      spaceId: spaceId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseSpaceOwnershipTransferAcceptedEventArgs(
@@ -244,12 +338,16 @@ export function parseSpaceOwnershipTransferAcceptedEventArgs(
     ctx.event
   );
 
-  const { account, spaceId } = event.asV102;
+  if (event.isV102) {
+    const { account, spaceId } = event.asV102;
 
-  return {
-    accountId: addressSs58ToString(account),
-    spaceId: spaceId.toString()
-  };
+    return {
+      accountId: addressSs58ToString(account),
+      spaceId: spaceId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseAccountFollowedEventArgs(
@@ -257,12 +355,16 @@ export function parseAccountFollowedEventArgs(
 ): AccountFollowedEventParsedData {
   const event = new AccountFollowsAccountFollowedEvent(ctx, ctx.event);
 
-  const { follower, account } = event.asV102;
+  if (event.isV102) {
+    const { follower, account } = event.asV102;
 
-  return {
-    followerId: addressSs58ToString(follower),
-    accountId: addressSs58ToString(account)
-  };
+    return {
+      followerId: addressSs58ToString(follower),
+      accountId: addressSs58ToString(account)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseAccountUnfollowedEventArgs(
@@ -270,12 +372,16 @@ export function parseAccountUnfollowedEventArgs(
 ): AccountUnfollowedEventParsedData {
   const event = new AccountFollowsAccountUnfollowedEvent(ctx, ctx.event);
 
-  const { follower, account } = event.asV102;
+  if (event.isV102) {
+    const { follower, account } = event.asV102;
 
-  return {
-    followerId: addressSs58ToString(follower),
-    accountId: addressSs58ToString(account)
-  };
+    return {
+      followerId: addressSs58ToString(follower),
+      accountId: addressSs58ToString(account)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.event.name);
+  }
 }
 
 export function parseDomainRegisteredEventArgs(

@@ -27,7 +27,8 @@ export const setActivity = async ({
   followingAccount,
   syntheticEventName,
   username,
-  contentExtensionIndex
+  contentExtensionIndex,
+  domainRecipient
 }: {
   account: Account | string;
   ctx: Ctx;
@@ -43,6 +44,7 @@ export const setActivity = async ({
   syntheticEventName?: EventName;
   username?: string;
   contentExtensionIndex?: number;
+  domainRecipient?: Account;
 }): Promise<Activity | null> => {
   const { indexInBlock, name: eventName, blockNumber, timestamp } = eventData;
 
@@ -170,6 +172,28 @@ export const setActivity = async ({
   }
 
   /**
+   * PostFollowed
+   * PostUnfollowed
+   * CommentFollowed
+   * CommentUnfollowed
+   */
+  if (
+    (eventNameDecorated === EventName.PostFollowed ||
+      eventNameDecorated === EventName.PostUnfollowed ||
+      eventNameDecorated === EventName.CommentFollowed ||
+      eventNameDecorated === EventName.CommentUnfollowed) &&
+    post
+  ) {
+    activity = await insertActivityData.insertActivityForPostFollowedUnfollowed(
+      {
+        post,
+        activity,
+        ctx
+      }
+    );
+  }
+
+  /**
    * PostReactionCreated
    * PostReactionUpdated
    * PostReactionDeleted
@@ -277,7 +301,8 @@ export const setActivity = async ({
         space,
         spacePrev,
         username,
-        activity
+        activity,
+        domainRecipient
       });
   }
 
@@ -288,6 +313,7 @@ export const setActivity = async ({
     (eventNameDecorated === EventName.ExtensionDonationCreated ||
       eventNameDecorated === EventName.ExtensionEvmNftShared ||
       eventNameDecorated === EventName.ExtensionImageCreated ||
+      eventNameDecorated === EventName.ExtensionPinnedPostsCreated ||
       eventNameDecorated === EventName.ExtensionSecretBoxCreated) &&
     extension &&
     post
