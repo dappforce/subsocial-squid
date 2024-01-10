@@ -590,6 +590,11 @@ type Space @entity {
   profileSpace: Account
 
   """
+  A source of profile data.
+  """
+  profileSource: String
+
+  """
   The block height when a Space was created.
   """
   createdAtBlock: BigInt

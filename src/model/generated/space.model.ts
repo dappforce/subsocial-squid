@@ -43,6 +43,12 @@ export class Space {
     profileSpace!: Account | undefined | null
 
     /**
+     * A source of profile data.
+     */
+    @Column_("text", {nullable: true})
+    profileSource!: string | undefined | null
+
+    /**
      * The block height when a Space was created.
      */
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})

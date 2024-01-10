@@ -21,7 +21,7 @@ export async function handleUsername(
   const recipientAccount = eventData.recipientId
     ? await getOrCreateAccount(eventData.recipientId, ctx)
     : registrarAccount;
-  const usernameStr = eventData.domain.toString();
+  const usernameStr = eventData.domain.toString().toLowerCase();
   const result: UsernameHandlerResult = {
     registrarAccount,
     recipientAccount,

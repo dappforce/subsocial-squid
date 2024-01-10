@@ -48,6 +48,7 @@ export async function spaceUpdated(
     space.summary = aboutSummary.summary;
     space.isShowMore = aboutSummary.isShowMore;
     space.image = spaceIpfsContent.image ?? null;
+    space.profileSource = spaceIpfsContent.profileSource ?? null;
     // space.appId = spaceIpfsContent.appId ?? null;
 
     space.experimental =

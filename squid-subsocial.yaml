@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: subsocial
-version: 342
+version: 350
 description: |-
   Squid for Subsocial
 build:
@@ -23,4 +23,4 @@ deploy:
         subsocial
     cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "5000", "--dumb-cache-size", "200", "--dumb-cache-max-age", "5000" ]
 scale:
-  dedicated: true
+  dedicated: false

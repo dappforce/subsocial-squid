@@ -95,6 +95,7 @@ export const ensureSpace = async ({
     spaceInst.image = spaceIpfsContent.image ?? null;
     spaceInst.tagsOriginal = null;
     spaceInst.linksOriginal = null;
+    spaceInst.profileSource = spaceIpfsContent.profileSource ?? null;
     // spaceInst.appId = spaceIpfsContent.appId ?? null;
 
     spaceInst.experimental =

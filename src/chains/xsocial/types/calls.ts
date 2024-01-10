@@ -7,6 +7,7 @@ import * as v103 from './v103'
 import * as v104 from './v104'
 import * as v107 from './v107'
 import * as v108 from './v108'
+import * as v110 from './v110'
 
 export class AccountFollowsFollowAccountCall {
     private readonly _chain: Chain
@@ -510,6 +511,29 @@ export class EvmAccountsUnlinkEvmAddressCall {
      */
     get asV108(): {evmAddress: Uint8Array} {
         assert(this.isV108)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class FreeProxyAddFreeProxyCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'FreeProxy.add_free_proxy')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV110(): boolean {
+        return this._chain.getCallHash('FreeProxy.add_free_proxy') === '36931ac47efe90589bd72bbdc30667cce430a05eb7a07ed892312f2d111b35d6'
+    }
+
+    get asV110(): {delegate: v110.MultiAddress, proxyType: v110.ProxyType, delay: number} {
+        assert(this.isV110)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1309,6 +1333,41 @@ export class ProxyProxyCall {
         assert(this.isV108)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Proxy.proxy') === '814fba4f8ea7a2136ff43d97c0be1764d98d6003d640b01d6e3489e526e8e244'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get asV110(): {real: v110.MultiAddress, forceProxyType: (v110.ProxyType | undefined), call: v110.Call} {
+        assert(this.isV110)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ProxyProxyAnnouncedCall {
@@ -1496,6 +1555,41 @@ export class ProxyProxyAnnouncedCall {
      */
     get asV108(): {delegate: v108.MultiAddress, real: v108.MultiAddress, forceProxyType: (v108.ProxyType | undefined), call: v108.Call} {
         assert(this.isV108)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Proxy.proxy_announced') === 'f1c419e376685f9bcb49b4c90bc9e0fd870d0ab649662724bdb214adef9ca221'
+    }
+
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    get asV110(): {delegate: v110.MultiAddress, real: v110.MultiAddress, forceProxyType: (v110.ProxyType | undefined), call: v110.Call} {
+        assert(this.isV110)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2610,6 +2704,39 @@ export class SudoSudoCall {
         assert(this.isV108)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === 'c6a657f127710bf8ce5fa9392b7d57d9e43501361e2ddd5329c6a1fc8e5d51bd'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV110(): {call: v110.Call} {
+        assert(this.isV110)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoAsCall {
@@ -2869,6 +2996,41 @@ export class SudoSudoAsCall {
         assert(this.isV108)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === '1f10b2991d85f3a451f25dbb52a0719a0e7d590d5482dd5eaf46666d0d94bde2'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV110(): {who: v110.MultiAddress, call: v110.Call} {
+        assert(this.isV110)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoUncheckedWeightCall {
@@ -3112,6 +3274,39 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV108(): {call: v108.Call, weight: v108.Weight} {
         assert(this.isV108)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '4f9b56752616dc6850e6a21dcf8a969de336d9565ec21276b076fa2fa0741250'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get asV110(): {call: v110.Call, weight: v110.Weight} {
+        assert(this.isV110)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3666,6 +3861,45 @@ export class UtilityAsDerivativeCall {
         assert(this.isV108)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '3f6cb8db51ea4933cb7ccf402e4ce0dd0012a4a6a21ba284ab0b6d50a5e96a82'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asV110(): {index: number, call: v110.Call} {
+        assert(this.isV110)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchCall {
@@ -3935,6 +4169,57 @@ export class UtilityBatchCall {
         assert(this.isV108)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Utility.batch') === 'd15243ab4c1913b92342ceb7931ee1cea36f07912ab05c744753daa83a590fd9'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asV110(): {calls: v110.Call[]} {
+        assert(this.isV110)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchAllCall {
@@ -4154,6 +4439,47 @@ export class UtilityBatchAllCall {
         assert(this.isV108)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === 'd15243ab4c1913b92342ceb7931ee1cea36f07912ab05c744753daa83a590fd9'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV110(): {calls: v110.Call[]} {
+        assert(this.isV110)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityDispatchAsCall {
@@ -4331,6 +4657,39 @@ export class UtilityDispatchAsCall {
      */
     get asV108(): {asOrigin: v108.OriginCaller, call: v108.Call} {
         assert(this.isV108)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === 'e50837df6313ee9a41a132ccf8ef908b8ff7ac4d0a4c4cc918b27eeab260c5e5'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get asV110(): {asOrigin: v110.OriginCaller, call: v110.Call} {
+        assert(this.isV110)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4552,6 +4911,47 @@ export class UtilityForceBatchCall {
         assert(this.isV108)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === 'd15243ab4c1913b92342ceb7931ee1cea36f07912ab05c744753daa83a590fd9'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV110(): {calls: v110.Call[]} {
+        assert(this.isV110)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityWithWeightCall {
@@ -4689,6 +5089,31 @@ export class UtilityWithWeightCall {
      */
     get asV108(): {call: v108.Call, weight: v108.Weight} {
         assert(this.isV108)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get isV110(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '4f9b56752616dc6850e6a21dcf8a969de336d9565ec21276b076fa2fa0741250'
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get asV110(): {call: v110.Call, weight: v110.Weight} {
+        assert(this.isV110)
         return this._chain.decodeCall(this.call)
     }
 }
