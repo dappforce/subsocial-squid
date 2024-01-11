@@ -5,20 +5,12 @@ import * as v13 from '../types/v13';
 import * as v27 from '../types/v27';
 import { DomainStorageData, StorageForDecode } from '../../../common/types';
 import { storage } from '../types';
-import { Block } from '../../../processor';
 import { Block as SupportBlock } from '../types/support';
 
 export async function getRegisteredDomainMeta(
-  ctx: StorageForDecode,
-  block: Block,
+  block: SupportBlock,
   domainOrList: string | string[]
 ): Promise<(DomainStorageData | undefined)[] | DomainStorageData | undefined> {
-  const storageBlock = {
-    hash: block.header.hash,
-    height: block.header.height,
-    _runtime: block.header._runtime
-  } as SupportBlock;
-
   const decorateMeta = <
     T extends v7.DomainMeta | v13.DomainMeta | v27.DomainMeta | undefined
   >(
@@ -35,52 +27,42 @@ export async function getRegisteredDomainMeta(
     };
   };
 
-  if (storage.domains.registeredDomains.v7.is(ctx)) {
+  if (storage.domains.registeredDomains.v7.is({ _runtime: block._runtime })) {
     if (Array.isArray(domainOrList)) {
       return (
-        await storage.domains.registeredDomains.v7.getMany(
-          storageBlock,
-          domainOrList
-        )
+        await storage.domains.registeredDomains.v7.getMany(block, domainOrList)
       ).map(decorateMeta);
     } else {
       return decorateMeta(
-        await storage.domains.registeredDomains.v7.get(
-          storageBlock,
-          domainOrList
-        )
+        await storage.domains.registeredDomains.v7.get(block, domainOrList)
       );
     }
-  } else if (storage.domains.registeredDomains.v13.is(ctx)) {
+  } else if (
+    storage.domains.registeredDomains.v13.is({
+      _runtime: block._runtime
+    })
+  ) {
     if (Array.isArray(domainOrList)) {
       return (
-        await storage.domains.registeredDomains.v13.getMany(
-          storageBlock,
-          domainOrList
-        )
+        await storage.domains.registeredDomains.v13.getMany(block, domainOrList)
       ).map(decorateMeta);
     } else {
       return decorateMeta(
-        await storage.domains.registeredDomains.v13.get(
-          storageBlock,
-          domainOrList
-        )
+        await storage.domains.registeredDomains.v13.get(block, domainOrList)
       );
     }
-  } else if (storage.domains.registeredDomains.v27.is(ctx)) {
+  } else if (
+    storage.domains.registeredDomains.v27.is({
+      _runtime: block._runtime
+    })
+  ) {
     if (Array.isArray(domainOrList)) {
       return (
-        await storage.domains.registeredDomains.v13.getMany(
-          storageBlock,
-          domainOrList
-        )
+        await storage.domains.registeredDomains.v13.getMany(block, domainOrList)
       ).map(decorateMeta);
     } else {
       return decorateMeta(
-        await storage.domains.registeredDomains.v13.get(
-          storageBlock,
-          domainOrList
-        )
+        await storage.domains.registeredDomains.v13.get(block, domainOrList)
       );
     }
   }

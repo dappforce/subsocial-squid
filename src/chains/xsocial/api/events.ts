@@ -29,7 +29,6 @@ import { EventContext, EventForDecode } from '../../../common/types';
 
 import { UnknownVersionError } from '../../../common/errors';
 
-import { addressSs58ToString } from '../../../common/utils';
 import { getReactionKindDecorated } from './decorators';
 import { toSubsocialAddress } from '@subsocial/utils';
 

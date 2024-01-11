@@ -15,14 +15,17 @@ import {
   TweetAttachmentsDetails,
   PinnedResourceType
 } from '../model';
-import { EventData, HasTitleOrBody, PostTweetDetailsIPFS } from './types';
+import { EventData, HasTitleOrBody } from './types';
+import { PostTweetDetailsIPFS } from '@subsocial/data-hub-sdk';
 import { summarizeMd, nonEmptyStr, summarize } from '@subsocial/utils';
 import { NamedLink } from '@subsocial/api/types/ipfs';
-import { IpfsContent, supportedIpfsContent } from '../storage/types';
+import { IpfsContent } from '../storage/types';
+import { supportedIpfsContentMap } from '@subsocial/data-hub-sdk';
 import { Ctx } from '../processor';
 import { Entity } from '@subsquid/typeorm-store/lib/store';
 // import slugify from '@sindresorhus/slugify';
 import slugify from 'slugify';
+import { stringToU8a } from '@polkadot/util';
 
 let subsocialSs58CodecInst: ss58.Codec | null = null;
 
@@ -128,15 +131,15 @@ export const getSubsocialSs58Codec = (): ss58.Codec => {
   return subsocialSs58CodecInst;
 };
 
-export const addressSs58ToString = (address: Uint8Array) => {
-  const codecInst = getSubsocialSs58Codec();
-  return codecInst.encode(address);
-};
-
-export const addressStringToSs58 = (address: string): Uint8Array => {
-  const codecInst = getSubsocialSs58Codec();
-  return codecInst.decode(address);
-};
+// export const addressSs58ToString = (address: Uint8Array) => {
+//   const codecInst = getSubsocialSs58Codec();
+//   return codecInst.encode(address);
+// };
+//
+// export const addressStringToSs58 = (address: string): Uint8Array => {
+//   const codecInst = getSubsocialSs58Codec();
+//   return codecInst.decode(address);
+// };
 
 export const ensurePositiveOrZeroValue = (inputValue: number): number => {
   return inputValue < 0 ? 0 : inputValue;
@@ -344,7 +347,7 @@ export function getExperimentalFieldsFromIPFSContent<
 
   try {
     for (const contentField of Object.getOwnPropertyNames(srcData)) {
-      if (!supportedIpfsContent.get(entity)!.has(contentField))
+      if (!supportedIpfsContentMap.get(entity)!.has(contentField))
         // @ts-ignore
         experimentalFields[contentField] = srcData[contentField]; // We should ignore type checking here as we don't know field name of experimental field.
     }

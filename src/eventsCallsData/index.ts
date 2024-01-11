@@ -1,5 +1,5 @@
 import { EventName } from '../model';
-import { Block, Ctx, EventItem } from '../processor';
+import { Block, Ctx, Event } from '../processor';
 import {
   ParsedEventsData,
   ParsedEventsDataMap,
@@ -24,10 +24,15 @@ import {
   DomainRegisteredData,
   DomainMetaUpdatedData,
   EvmAddressLinkedToAccountData,
-  EvmAddressUnlinkedFromAccountData
+  EvmAddressUnlinkedFromAccountData,
+  PostFollowedData,
+  PostUnfollowedData
 } from '../common/types';
-import { SubstrateEvent } from '@subsquid/substrate-processor';
+import { getPseudoUuidV4 } from '@subsocial/data-hub-sdk/utils';
 import { getChain } from '../chains';
+import { getCallNameFromCtx, getCallSigner } from '../chains/utils';
+import * as crypto from 'node:crypto';
+import { orderItems } from '../common/blockItemsDriver';
 
 type EventDataType<T> = T extends EventName.SpaceCreated
   ? SpaceCreatedData
@@ -100,19 +105,30 @@ export class ParsedEventsDataScope {
     );
   }
 
+  getAllSectionsData() {
+    const allValues: ParsedEventsData[][] = [];
+
+    this.scope.forEach((sectionDataMap) => {
+      allValues.push([...sectionDataMap.values()]);
+    });
+
+    return allValues.flat();
+  }
+
   entries(): IterableIterator<[EventName, Map<EventId, ParsedEventsData>]> {
     return this.scope.entries();
   }
 }
 
-function getEventMetadata(block: Block, event: SubstrateEvent): EventData {
+function getEventMetadata(block: Block, event: Event): EventData {
   return {
     id: event.id,
-    indexInBlock: event.indexInBlock,
+    indexInBlock: event.index,
     name: event.name,
     blockNumber: block.header.height,
     blockHash: block.header.hash,
-    timestamp: new Date(block.header.timestamp)
+    timestamp: new Date(block.header.timestamp!),
+    runtime: block.header._runtime
   };
 }
 
@@ -122,126 +138,228 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
   const api = getApiDecorated('subsocial');
 
   for (let block of ctx.blocks) {
-    for (let item of block.items) {
-      const eventItem = item as EventItem;
-      const eventHandlerContext = {
-        ...ctx,
-        block: block.header,
-        // @ts-ignore
-        event: eventItem.event as SubstrateEvent
-      } as EventContext;
+    for (let item of orderItems(block)) {
+      if (item.kind !== 'event') continue;
 
-      switch (item.name) {
+      // const eventItem = item as EventItem;
+      // const eventHandlerContext = {
+      //   ...ctx,
+      //   block: block.header,
+      //   // @ts-ignore
+      //   event: eventItem.event as SubstrateEvent
+      // } as EventContext;
+      const eventItem = item.value as Event;
+
+      const callMetadata = {
+        name: getCallNameFromCtx(eventItem),
+        signer: getCallSigner(eventItem) ?? '',
+        // TODO uuid and timestamp fields must be substituted by data from call agrs to be consistent with user's values
+        uuid: crypto.randomUUID(),
+        timestamp: block.header.timestamp || 0
+      };
+
+      switch (eventItem.name) {
         case 'Posts.PostCreated': {
-          const callData =
-            api.calls.parseCreatPostCallArgs(eventHandlerContext);
-          const eventData =
-            api.events.parsePostCreatedEventParams(eventHandlerContext);
+          const callArgs = api.calls.parseCreatPostCallArgs(eventItem);
+          const eventParams = api.events.parsePostCreatedEventParams(eventItem);
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.PostCreated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...callData,
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.postId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              ),
+              args: callArgs
+            }
           });
           totalEventsNumber++;
           break;
         }
 
         case 'Posts.PostUpdated': {
-          const callData =
-            api.calls.parsePostUpdatedCallArgs(eventHandlerContext);
-          const eventData =
-            api.events.parsePostUpdatedEventParams(eventHandlerContext);
+          const callArgs = api.calls.parsePostUpdatedCallArgs(eventItem);
+          const eventParams = api.events.parsePostUpdatedEventParams(eventItem);
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.PostUpdated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData,
-            ...callData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.postId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              ),
+              args: callArgs
+            }
           });
-
           totalEventsNumber++;
           break;
         }
 
         case 'Posts.PostMoved': {
-          const callData = api.calls.parsePostMoveCallArgs(eventHandlerContext);
-          const eventData =
-            api.events.parsePostMovedEventParams(eventHandlerContext);
+          const callArgs = api.calls.parsePostMoveCallArgs(eventItem);
+          const eventParams = api.events.parsePostMovedEventParams(eventItem);
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.PostMoved, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData,
-            ...callData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.postId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              ),
+              args: callArgs
+            }
           });
+
           totalEventsNumber++;
           break;
         }
 
         case 'PostFollows.PostFollowed': {
           const xSocialApi = getApiDecorated('xsocial');
-          const eventData =
-            xSocialApi.events.parsePostFollowedEventParams(eventHandlerContext);
+          const eventParams =
+            xSocialApi.events.parsePostFollowedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.PostFollowed, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.postId}${eventParams.followerId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
           totalEventsNumber++;
           break;
         }
+
         case 'PostFollows.PostUnfollowed': {
           const xSocialApi = getApiDecorated('xsocial');
-          const eventData =
-            xSocialApi.events.parsePostUnfollowedEventParams(eventHandlerContext);
+          const eventParams =
+            xSocialApi.events.parsePostUnfollowedEventParams(eventItem);
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.PostUnfollowed, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.postId}${eventParams.followerId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
           totalEventsNumber++;
           break;
         }
 
         case 'Spaces.SpaceCreated': {
-          const callData =
-            api.calls.parseSpaceCreateCallArgs(eventHandlerContext);
-          const eventData =
-            api.events.parseSpaceCreatedEventParams(eventHandlerContext);
+          const callArgs = api.calls.parseSpaceCreateCallArgs(eventItem);
+          const eventParams =
+            api.events.parseSpaceCreatedEventParams(eventItem);
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.SpaceCreated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData,
-            ...callData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.spaceId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              ),
+              args: callArgs
+            }
           });
           totalEventsNumber++;
           break;
         }
 
         case 'Spaces.SpaceUpdated': {
-          const callData =
-            api.calls.parseSpaceUpdateCallArgs(eventHandlerContext);
-          const eventData =
-            api.events.parseSpaceUpdatedEventParams(eventHandlerContext);
+          const callArgs = api.calls.parseSpaceUpdateCallArgs(eventItem);
+          const eventParams =
+            api.events.parseSpaceUpdatedEventParams(eventItem);
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.SpaceUpdated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData,
-            ...callData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.spaceId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              ),
+              args: callArgs
+            }
           });
           totalEventsNumber++;
           break;
         }
 
         case 'Reactions.PostReactionCreated': {
-          const callData =
-            api.calls.parsePostReactionCreateCallArgs(eventHandlerContext);
-          const eventData =
-            api.events.parsePostReactionCreatedEventParams(eventHandlerContext);
+          const callArgs = api.calls.parsePostReactionCreateCallArgs(eventItem);
+          const eventParams =
+            api.events.parsePostReactionCreatedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.PostReactionCreated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData,
-            ...callData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.reactionId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              ),
+              args: callArgs
+            }
           });
 
           totalEventsNumber++;
@@ -249,15 +367,27 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'Reactions.PostReactionUpdated': {
-          const callData =
-            api.calls.parsePostReactionUpdateCallArgs(eventHandlerContext);
-          const eventData =
-            api.events.parsePostReactionUpdatedEventParams(eventHandlerContext);
+          const callArgs = api.calls.parsePostReactionUpdateCallArgs(eventItem);
+          const eventParams =
+            api.events.parsePostReactionUpdatedEventParams(eventItem);
 
-          parsedData.set(EventName.PostReactionUpdated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData,
-            ...callData
+          const eventMetadata = getEventMetadata(block, eventItem);
+
+          parsedData.set(EventName.PostReactionCreated, {
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.reactionId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              ),
+              args: callArgs
+            }
           });
 
           totalEventsNumber++;
@@ -265,15 +395,27 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'Reactions.PostReactionDeleted': {
-          const callData =
-            api.calls.parsePostReactionDeleteCallArgs(eventHandlerContext);
-          const eventData =
-            api.events.parsePostReactionDeletedEventParams(eventHandlerContext);
+          const callArgs = api.calls.parsePostReactionDeleteCallArgs(eventItem);
+          const eventParams =
+            api.events.parsePostReactionDeletedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.PostReactionDeleted, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData,
-            ...callData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.reactionId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              ),
+              args: callArgs
+            }
           });
 
           totalEventsNumber++;
@@ -281,12 +423,25 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'Profiles.ProfileUpdated': {
-          const eventData =
-            api.events.parseProfileUpdatedEventParams(eventHandlerContext);
+          const eventParams =
+            api.events.parseProfileUpdatedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.ProfileUpdated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.spaceId}${eventParams.accountId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;
@@ -294,12 +449,25 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'SpaceFollows.SpaceFollowed': {
-          const eventData =
-            api.events.parseSpaceFollowedEventParams(eventHandlerContext);
+          const eventParams =
+            api.events.parseSpaceFollowedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.SpaceFollowed, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.spaceId}${eventParams.followerId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;
@@ -307,26 +475,50 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'SpaceFollows.SpaceUnfollowed': {
-          const eventData =
-            api.events.parseSpaceUnfollowedEventParams(eventHandlerContext);
+          const eventParams =
+            api.events.parseSpaceUnfollowedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.SpaceUnfollowed, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.spaceId}${eventParams.followerId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
-
           totalEventsNumber++;
           break;
         }
+
         case 'SpaceOwnership.SpaceOwnershipTransferCreated': {
-          const eventData =
-            api.events.parseSpaceOwnershipTransferCreatedEventParams(
-              eventHandlerContext
-            );
+          const eventParams =
+            api.events.parseSpaceOwnershipTransferCreatedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.SpaceOwnershipTransferCreated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.spaceId}${eventParams.currentOwnerId}${eventParams.newOwnerId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;
@@ -334,14 +526,27 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'SpaceOwnership.SpaceOwnershipTransferAccepted': {
-          const eventData =
+          const eventParams =
             api.events.parseSpaceOwnershipTransferAcceptedEventParams(
-              eventHandlerContext
+              eventItem
             );
 
+          const eventMetadata = getEventMetadata(block, eventItem);
+
           parsedData.set(EventName.SpaceOwnershipTransferAccepted, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.spaceId}${eventParams.accountId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;
@@ -349,24 +554,50 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'AccountFollows.AccountFollowed': {
-          const eventData =
-            api.events.parseAccountFollowedEventParams(eventHandlerContext);
+          const eventParams =
+            api.events.parseAccountFollowedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.AccountFollowed, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.accountId}${eventParams.followerId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
           totalEventsNumber++;
           break;
         }
 
         case 'AccountFollows.AccountUnfollowed': {
-          const eventData =
-            api.events.parseAccountUnfollowedEventParams(eventHandlerContext);
+          const eventParams =
+            api.events.parseAccountUnfollowedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.AccountUnfollowed, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.accountId}${eventParams.followerId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;
@@ -374,39 +605,80 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'Domains.DomainRegistered': {
-          const eventData =
-            api.events.parseDomainRegisteredEventParams(eventHandlerContext);
+          const eventParams =
+            api.events.parseDomainRegisteredEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.UserNameRegistered, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.accountId}${eventParams.recipientId}${eventParams.domain}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;
           break;
         }
+
         case 'Domains.DomainMetaUpdated': {
-          const eventData =
-            api.events.parseDomainMetaUpdatedEventParams(eventHandlerContext);
+          const eventParams =
+            api.events.parseDomainMetaUpdatedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.UserNameUpdated, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.accountId}${eventParams.domain}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;
           break;
         }
+
         case 'EvmAccounts.EvmAddressLinkedToAccount': {
           const xSocialApi = getApiDecorated('xsocial');
-          const eventData =
+          const eventParams =
             xSocialApi.events.parseEvmAddressLinkedToAccountEventParams(
-              eventHandlerContext
+              eventItem
             );
 
+          const eventMetadata = getEventMetadata(block, eventItem);
+
           parsedData.set(EventName.EvmAddressLinkedToAccount, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.substrateAccountId}${eventParams.ethereumAccountId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;
@@ -414,14 +686,26 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
         case 'EvmAccounts.EvmAddressUnlinkedFromAccount': {
           const xSocialApi = getApiDecorated('xsocial');
-          const eventData =
+          const eventParams =
             xSocialApi.events.parseEvmAddressUnlinkedFromAccountEventParams(
-              eventHandlerContext
+              eventItem
             );
+          const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.EvmAddressUnlinkedFromAccount, {
-            ...getEventMetadata(block, item.event as SubstrateEvent),
-            ...eventData
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.substrateAccountId}${eventParams.ethereumAccountId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
           });
 
           totalEventsNumber++;

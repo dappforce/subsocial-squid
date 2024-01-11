@@ -1,4 +1,8 @@
-import { DomainStorageData, EventContext, StorageForDecode } from '../../common/types';
+import {
+  DomainStorageData,
+  EventContext,
+  StorageForDecode
+} from '../../common/types';
 import {
   AccountFollowedEventParsedParams,
   AccountUnfollowedEventParsedParams,
@@ -30,7 +34,7 @@ import {
   PostFollowedEventParsedParams,
   PostUnfollowedEventParsedParams
 } from '@subsocial/data-hub-sdk';
-import { Block, Ctx } from '../../processor';
+import { Block as SupportBlock } from '../subsocial/types/support';
 
 export type ChainApi = {
   events: {
@@ -77,8 +81,7 @@ export type ChainApi = {
 type EventGetter<R> = (ctx: EventContext) => R;
 type CallGetter<R> = (ctx: EventContext) => R;
 type StorageGetter<T extends Array<any>, R> = (
-  ctx: StorageForDecode,
-  block: Block,
+  block: SupportBlock,
   ...args: T
 ) => Promise<R>;
 

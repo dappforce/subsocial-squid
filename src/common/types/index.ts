@@ -113,6 +113,7 @@ export interface EventData {
   timestamp: Date;
   indexInBlock: number;
   name: string;
+  runtime: Runtime
 }
 
 export type ContentSrcDecorated = {
@@ -489,6 +490,11 @@ export interface CallForDecode {
 export interface StorageForDecode {
   _runtime: Runtime;
 }
+
+export type HasTitleOrBody = {
+  title?: string;
+  body: string;
+};
 
 // import {
 //   Space,
@@ -938,7 +944,3 @@ export interface StorageForDecode {
 //   { event: { args: true; call: true; indexInBlock: true } }
 // >;
 //
-// export type HasTitleOrBody = {
-//   title?: string
-//   body: string
-// }

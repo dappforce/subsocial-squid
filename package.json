@@ -16,15 +16,16 @@
     "lint": "npm run lint:prod -- --fix",
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0",
     "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",
-    "test:unit": "jest --config ./tests/jest-unit.json"
+    "test:unit": "jest --config ./tests/jest-unit.json",
+    "dh-sdk-i": "scripts/data-hub-sdk-postinstall.sh"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.6.0",
     "@ipld/dag-cbor": "7.0.3",
     "@polkadot/util-crypto": "^12.2.2",
     "@sindresorhus/slugify": "^2.2.1",
-    "@subsocial/data-hub-sdk": "github:dappforce/subsocial-data-hub-sdk#staging",
     "@subsocial/api": "^0.8.14",
+    "@subsocial/data-hub-sdk": "github:dappforce/subsocial-data-hub-sdk#staging",
     "@subsocial/elasticsearch": "^0.8.1",
     "@subsocial/types": "^0.6.11",
     "@subsocial/utils": "^0.6.11",
