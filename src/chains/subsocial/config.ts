@@ -25,5 +25,8 @@ export const config: ProcessorConfig = {
   ipfsNodeRequestTimeout: 10000,
   ipfsCrustNodeAuthToken: process.env.IPFS_CRUST_NODE_TEST_AUTH_TOKEN || '',
   ipfsCrustNodeUrl:
-    process.env.IPFS_CRUST_NODE_URL || 'https://gw-seattle.crustcloud.io'
+    process.env.IPFS_CRUST_NODE_URL || 'https://gw-seattle.crustcloud.io',
+  offchainServiceUrl:
+    process.env.OFFCHAIN_URL ||
+    'https://app.subsocial.network/network/offchain',
 };

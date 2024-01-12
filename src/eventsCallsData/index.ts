@@ -7,7 +7,7 @@ import {
   PostUpdatedData,
   EventId,
   EventContext,
-  EventData,
+  EventMetadata,
   SpaceCreatedData,
   SpaceUpdatedData,
   SpaceOwnershipTransferAcceptedData,
@@ -120,7 +120,7 @@ export class ParsedEventsDataScope {
   }
 }
 
-function getEventMetadata(block: Block, event: Event): EventData {
+function getEventMetadata(block: Block, event: Event): EventMetadata {
   return {
     id: event.id,
     indexInBlock: event.index,

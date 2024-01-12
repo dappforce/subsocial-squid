@@ -1,4 +1,4 @@
-import { ContentExtensionData, ExtensionPropertiesAll } from './types';
+import { ContentExtensionData, ExtensionPropertiesAll } from '@subsocial/data-hub-sdk';
 import { Ctx } from '../../processor';
 import { EventName, PinnedResourceType, Post } from '../../model';
 import { PostCreatedData, PostUpdatedData } from '../../common/types';
@@ -75,6 +75,6 @@ export async function handlePinnedPosts({
     extension,
     post: parentPost,
     ctx,
-    eventData
+    eventMetadata: eventData.eventData.metadata
   });
 }

@@ -5,7 +5,6 @@ import { isAddress as isEthAddress } from 'ethers';
 
 import * as ss58 from '@subsquid/ss58';
 import md5 from 'md5';
-import { EventHandlerContext } from './contexts';
 import {
   EventName,
   PostKind,
@@ -15,7 +14,7 @@ import {
   TweetAttachmentsDetails,
   PinnedResourceType
 } from '../model';
-import { EventData, HasTitleOrBody } from './types';
+import { EventMetadata, HasTitleOrBody, ParsedEventsData } from './types';
 import { PostTweetDetailsIPFS } from '@subsocial/data-hub-sdk';
 import { summarizeMd, nonEmptyStr, summarize } from '@subsocial/utils';
 import { NamedLink } from '@subsocial/api/types/ipfs';
@@ -28,12 +27,6 @@ import slugify from 'slugify';
 import { stringToU8a } from '@polkadot/util';
 
 let subsocialSs58CodecInst: ss58.Codec | null = null;
-
-export const validateEventHandlerInputs = (ctx: EventHandlerContext) => {
-  if (ctx.event.extrinsic === undefined) {
-    throw new Error(`No extrinsic has been provided`);
-  }
-};
 
 export function isEvmAddress(maybeAddress?: string): boolean {
   if (!maybeAddress) return false;
@@ -261,11 +254,15 @@ export async function batchCaller<T>({
   await Promise.all(promises);
 }
 
-export function getOrderedListByBlockNumber<T extends EventData>(
+export function getOrderedListByBlockNumber<T extends ParsedEventsData>(
   eventsList: Array<T>
 ): Array<T> {
   return eventsList.sort((a, b) =>
-    a.blockNumber < b.blockNumber ? -1 : b.blockNumber < a.blockNumber ? 1 : 0
+    a.eventData.metadata.blockNumber < b.eventData.metadata.blockNumber
+      ? -1
+      : b.eventData.metadata.blockNumber < a.eventData.metadata.blockNumber
+      ? 1
+      : 0
   );
 }
 

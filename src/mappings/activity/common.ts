@@ -11,12 +11,12 @@ import { getActivityEntityId, decorateEventName } from '../../common/utils';
 import { getOrCreateAccount } from '../account';
 import * as insertActivityData from './activityUtils';
 import { Ctx } from '../../processor';
-import { EventData } from '../../common/types';
+import { EventMetadata } from '../../common/types';
 
 export const setActivity = async ({
   account,
   ctx,
-  eventData,
+  eventMetadata,
   space,
   oldOwner,
   newOwner,
@@ -32,7 +32,7 @@ export const setActivity = async ({
 }: {
   account: Account | string;
   ctx: Ctx;
-  eventData: EventData;
+  eventMetadata: EventMetadata;
   space?: Space;
   spacePrev?: Space;
   oldOwner?: Account;
@@ -46,7 +46,7 @@ export const setActivity = async ({
   contentExtensionIndex?: number;
   domainRecipient?: Account;
 }): Promise<Activity | null> => {
-  const { indexInBlock, name: eventName, blockNumber, timestamp } = eventData;
+  const { indexInBlock, name: eventName, blockNumber, timestamp } = eventMetadata;
 
   const eventNameDecorated =
     EventName[

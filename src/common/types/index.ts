@@ -93,12 +93,12 @@ export type CallParsedData<T = undefined> = {
 
 export type EventParsedData<T> = {
   name: string;
-  metadata: EventData;
+  metadata: EventMetadata;
   params: T;
 };
 
 export type ParsedEventCallData<
-  E extends { metadata: EventData },
+  E extends { metadata: EventMetadata },
   C extends { signer: string }
 > = {
   id: string;
@@ -106,7 +106,7 @@ export type ParsedEventCallData<
   eventData: E;
 };
 
-export interface EventData {
+export interface EventMetadata {
   id: string; // Event ID
   blockNumber: number;
   blockHash: string;

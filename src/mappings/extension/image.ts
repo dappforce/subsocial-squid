@@ -1,4 +1,4 @@
-import { ContentExtensionData } from './types';
+import { ContentExtensionData } from '@subsocial/data-hub-sdk';
 import { Ctx } from '../../processor';
 import { EventName, Post } from '../../model';
 import { PostCreatedData, PostUpdatedData } from '../../common/types';
@@ -34,6 +34,6 @@ export async function handleImage({
     extension,
     post: parentPost,
     ctx,
-    eventData: postCreatedEventData
+    eventMetadata: postCreatedEventData.eventData.metadata
   });
 }

@@ -1,18 +1,16 @@
 import { Account, Post, Reaction, ReactionKind, Status } from '../../model';
 
 import { getOrCreateAccount } from '../account';
-import { EventHandlerContext } from '../../common/contexts';
 import {
   CommonCriticalError,
   EntityProvideFailWarning
 } from '../../common/errors';
-import { EventData, PostReactionCreatedData } from '../../common/types';
+import { EventMetadata, PostReactionCreatedData } from '../../common/types';
 import { Ctx } from '../../processor';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 
 export function getReactionKindFromCall(
-  eventName: string,
-  ctx: EventHandlerContext
+  eventName: string
 ): ReactionKind | null {
   // assert(ctx.event.call);
   //

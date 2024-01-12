@@ -1,4 +1,3 @@
-import { EventHandlerContext } from '../../common/contexts';
 import {
   Post,
   Account,

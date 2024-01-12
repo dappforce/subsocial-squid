@@ -18,6 +18,6 @@ export async function domainRegistered(
     username: handlerResult.usernameStr,
     space: handlerResult.space,
     ctx,
-    eventData
+    eventMetadata: eventData.eventData.metadata
   });
 }

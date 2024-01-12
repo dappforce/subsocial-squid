@@ -14,4 +14,5 @@ export interface ProcessorConfig {
   ipfsNodeRequestTimeout: number;
   ipfsCrustNodeAuthToken: string;
   ipfsCrustNodeUrl: string;
+  offchainServiceUrl: string;
 }

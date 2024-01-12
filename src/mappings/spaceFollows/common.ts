@@ -4,14 +4,14 @@ import {
   decorateEventName
 } from '../../common/utils';
 import { getOrCreateAccount } from '../account';
-import { EventData } from '../../common/types';
+import { EventMetadata } from '../../common/types';
 import { Ctx } from '../../processor';
 
 export async function processSpaceFollowingUnfollowingRelations(
   follower: Account | string,
   space: Space,
   ctx: Ctx,
-  eventData: EventData
+  eventData: EventMetadata
 ): Promise<void> {
   if (!space) return;
   const followerAccountInst =

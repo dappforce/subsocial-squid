@@ -1,13 +1,14 @@
 import { SubsocialApi } from '@subsocial/api';
-import config from '../config';
-
-const { ipfsSubsocialNodeUrl, offchainUrl, chainNode } = config;
 
 let subsocial: SubsocialApi;
 
+import { getChain } from '../chains';
+
+const { config } = getChain();
+
 const ipfsConfig = {
-  ipfsNodeUrl: ipfsSubsocialNodeUrl,
-  offchainUrl
+  ipfsNodeUrl: config.ipfsSubsocialNodeUrl,
+  offchainUrl: config.offchainServiceUrl
 };
 
 export const resolveSubsocialApi = async (): Promise<SubsocialApi> => {
@@ -15,7 +16,7 @@ export const resolveSubsocialApi = async (): Promise<SubsocialApi> => {
 
   if (subsocial) return subsocial;
   subsocial = await SubsocialApi.create({
-    substrateNodeUrl: chainNode,
+    substrateNodeUrl: config.dataSource.chain,
     ...ipfsConfig
   });
 

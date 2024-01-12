@@ -7,20 +7,20 @@ import { AccountFollowers, EvmSubstrateAccountLink } from '../../model';
 
 export async function accountLinked(
   ctx: Ctx,
-  eventData: EvmAddressLinkedToAccountData
+  { eventData }: EvmAddressLinkedToAccountData
 ): Promise<void> {
   const substrateAccount = await getOrCreateAccount(
-    eventData.substrateAccountId,
+    eventData.params.substrateAccountId,
     ctx
   );
   const evmAccount = await getOrCreateEvmAccount(
-    eventData.ethereumAccountId,
+    eventData.params.ethereumAccountId,
     ctx
   );
 
   const evmSubstrateAccountLinkEntityId = getEvmSubstrateAccountLinkEntityId(
-    eventData.ethereumAccountId,
-    eventData.substrateAccountId
+    eventData.params.ethereumAccountId,
+    eventData.params.substrateAccountId
   );
   const evmSubstrateAccountLinkEntity = await ctx.store.get(
     EvmSubstrateAccountLink,
@@ -39,8 +39,8 @@ export async function accountLinked(
     evmAccount: evmAccount,
     substrateAccount: substrateAccount,
     active: true,
-    createdAtBlock: BigInt(eventData.blockNumber.toString()),
-    createdAtTime: new Date(eventData.timestamp)
+    createdAtBlock: BigInt(eventData.metadata.blockNumber.toString()),
+    createdAtTime: new Date(eventData.metadata.timestamp)
   });
 
   await ctx.store.save(newLinkEntity);

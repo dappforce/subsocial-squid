@@ -1,6 +1,5 @@
 import { IpfsCommonContent } from '@subsocial/api/types/ipfs';
 import axios from 'axios';
-import envConfig from '../config';
 import { create, IPFSHTTPClient } from 'ipfs-http-client';
 import { CID_KIND, IpfsCid, Headers } from './types';
 import { asIpfsCid } from './utils';

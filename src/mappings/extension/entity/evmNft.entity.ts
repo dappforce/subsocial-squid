@@ -3,7 +3,7 @@ import {
   ContentExtensionSchemaId,
   Post
 } from '../../../model';
-import { ContentExtensionData, ExtensionPropertiesAll } from '../types';
+import { ContentExtensionData, ExtensionPropertiesAll } from '@subsocial/data-hub-sdk';
 import { Ctx } from '../../../processor';
 import { getEntityWithRelations } from '../../../common/gettersWithRelations';
 
