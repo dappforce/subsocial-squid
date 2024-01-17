@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: xsocial
-version: 349
+version: 400
 description: |-
   Squid for xSocial
 build:

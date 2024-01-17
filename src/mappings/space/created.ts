@@ -27,8 +27,6 @@ export async function spaceCreated(ctx: Ctx, eventCallData: SpaceCreatedData) {
 
   await ctx.store.save(space);
 
-  console.log(`Space ${space.id} has been saved.`);
-
   ElasticSearchManager.index(ctx).addToQueue(space);
 
   await processSpaceFollowingUnfollowingRelations(
