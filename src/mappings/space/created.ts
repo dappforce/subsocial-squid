@@ -13,16 +13,21 @@ import { Activity, EventName } from '../../model';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
-export async function spaceCreated(ctx: Ctx, eventData: SpaceCreatedData) {
-  const account = await getOrCreateAccount(eventData.accountId, ctx);
+export async function spaceCreated(ctx: Ctx, eventCallData: SpaceCreatedData) {
+  const account = await getOrCreateAccount(
+    eventCallData.eventData.params.accountId,
+    ctx
+  );
 
   const space = await ensureSpace({
-    spaceId: eventData.spaceId,
+    spaceId: eventCallData.eventData.params.spaceId,
     ctx,
-    eventData
+    eventCallData
   });
 
   await ctx.store.save(space);
+
+  console.log(`Space ${space.id} has been saved.`);
 
   ElasticSearchManager.index(ctx).addToQueue(space);
 
@@ -30,18 +35,23 @@ export async function spaceCreated(ctx: Ctx, eventData: SpaceCreatedData) {
     account,
     space,
     ctx,
-    eventData
+    eventCallData.eventData.metadata
   );
 
   const activity = await setActivity({
     account,
     space,
     ctx,
-    eventData
+    eventMetadata: eventCallData.eventData.metadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(
+      Activity,
+      'new',
+      ctx,
+      eventCallData.eventData.metadata
+    );
     throw new CommonCriticalError();
   }
 

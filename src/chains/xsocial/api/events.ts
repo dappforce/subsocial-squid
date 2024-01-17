@@ -344,7 +344,7 @@ export function parseDomainRegisteredEventParams(
 ): DomainRegisteredEventParsedParams {
   return {
     accountId: '',
-    domain: new Uint8Array(8)
+    domain: ''
   };
 }
 
@@ -353,7 +353,7 @@ export function parseDomainMetaUpdatedEventParams(
 ): DomainMetaUpdatedEventParsedParams {
   return {
     accountId: '',
-    domain: new Uint8Array(8)
+    domain: ''
   };
 }
 

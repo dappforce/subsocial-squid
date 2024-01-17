@@ -25,7 +25,7 @@ import { UnknownVersionError } from '../../../common/errors';
 
 import { getReactionKindDecorated } from './decorators';
 import { toSubsocialAddress } from '@subsocial/utils';
-import { stringToU8a } from '@polkadot/util';
+import { hexToString, stringToU8a } from '@polkadot/util';
 
 export function parsePostCreatedEventParams(
   ctx: EventForDecode
@@ -309,7 +309,7 @@ export function parseDomainRegisteredEventParams(
 
     return {
       accountId: toSubsocialAddress(who)!,
-      domain: stringToU8a(domain)
+      domain: hexToString(domain)
     };
   } else if (events.domains.domainRegistered.v27.is(ctx)) {
     const { who, domain, recipient } =
@@ -318,7 +318,7 @@ export function parseDomainRegisteredEventParams(
     return {
       accountId: toSubsocialAddress(who)!,
       recipientId: toSubsocialAddress(recipient)!,
-      domain: stringToU8a(domain)
+      domain: hexToString(domain)
     };
   } else {
     throw new UnknownVersionError(ctx.name);
@@ -333,7 +333,7 @@ export function parseDomainMetaUpdatedEventParams(
 
     return {
       accountId: toSubsocialAddress(who)!,
-      domain: stringToU8a(domain)
+      domain: hexToString(domain)
     };
   } else {
     throw new UnknownVersionError(ctx.name);

@@ -17,36 +17,45 @@ import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postReactionUpdated(
   ctx: Ctx,
-  eventData: PostReactionUpdatedData
+  eventCallData: PostReactionUpdatedData
 ): Promise<void> {
   const {
-    accountId,
-    reactionId,
-    postId,
-    newReactionKind,
-    timestamp,
-    blockNumber
-  } = eventData;
+    eventData: { params: eventParams, metadata: eventMetadata },
+    callData: { args: callArgs }
+  } = eventCallData;
 
-  const account = await getOrCreateAccount(accountId, ctx);
-
-  const reaction = await ctx.store.get(Reaction, reactionId);
-
-  if (!reaction) {
-    new EntityProvideFailWarning(Reaction, reactionId, ctx, eventData);
+  if (!callArgs) {
+    new EntityProvideFailWarning(Post, 'new', ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 
-  reaction.kind = newReactionKind;
-  reaction.updatedAtTime = timestamp;
-  reaction.updatedAtBlock = BigInt(blockNumber.toString());
+  const account = await getOrCreateAccount(eventParams.accountId, ctx);
+
+  const reaction = await ctx.store.get(Reaction, eventParams.reactionId);
+
+  if (!reaction) {
+    new EntityProvideFailWarning(
+      Reaction,
+      eventParams.reactionId,
+      ctx,
+      eventMetadata
+    );
+    throw new CommonCriticalError();
+  }
+
+  reaction.kind = callArgs.newReactionKind;
+  reaction.updatedAtTime = eventMetadata.timestamp;
+  reaction.updatedAtBlock = BigInt(eventMetadata.blockNumber.toString());
 
   await ctx.store.save(reaction);
 
-  const post = await getEntityWithRelations.post({ postId, ctx });
+  const post = await getEntityWithRelations.post({
+    postId: eventParams.postId,
+    ctx
+  });
 
   if (!post) {
-    new EntityProvideFailWarning(Post, postId, ctx, eventData);
+    new EntityProvideFailWarning(Post, eventParams.postId, ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 
@@ -70,11 +79,11 @@ export async function postReactionUpdated(
     reaction,
     post,
     ctx,
-    eventData
+    eventMetadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 

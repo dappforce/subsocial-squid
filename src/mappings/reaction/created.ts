@@ -14,17 +14,30 @@ import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postReactionCreated(
   ctx: Ctx,
-  eventData: PostReactionCreatedData
+  eventCallData: PostReactionCreatedData
 ): Promise<void> {
-  const { postId, reactionId } = eventData;
+  const {
+    eventData: { params: eventParams, metadata: eventMetadata },
+    callData: { args: callArgs }
+  } = eventCallData;
+
+  if (!callArgs) {
+    new EntityProvideFailWarning(Post, 'new', ctx, eventMetadata);
+    throw new CommonCriticalError();
+  }
 
   const reaction = await ensureReaction({
     ctx,
-    eventData
+    eventCallData
   });
 
   if (!reaction) {
-    new EntityProvideFailWarning(Reaction, reactionId, ctx, eventData);
+    new EntityProvideFailWarning(
+      Reaction,
+      eventParams.reactionId,
+      ctx,
+      eventMetadata
+    );
     throw new CommonCriticalError();
   }
 
@@ -33,7 +46,7 @@ export async function postReactionCreated(
   const postInst = reaction.post;
 
   if (!postInst) {
-    new EntityProvideFailWarning(Post, postId, ctx, eventData);
+    new EntityProvideFailWarning(Post, eventParams.postId, ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 
@@ -53,9 +66,9 @@ export async function postReactionCreated(
   await ctx.store.save(postInst);
 
   const accountInst = await getOrCreateAccount(
-    eventData.forced && eventData.forcedData
-      ? eventData.forcedData.account
-      : eventData.accountId,
+    callArgs.forced && callArgs.forcedData
+      ? callArgs.forcedData.account
+      : eventParams.accountId,
     ctx
   );
 
@@ -69,11 +82,11 @@ export async function postReactionCreated(
     post: postInst,
     reaction,
     ctx,
-    eventData
+    eventMetadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 

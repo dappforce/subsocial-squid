@@ -22,21 +22,42 @@ import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function postReactionDeleted(
   ctx: Ctx,
-  eventData: PostReactionDeletedData
+  eventCallData: PostReactionDeletedData
 ): Promise<void> {
-  const { forced, forcedData, postId, reactionId, reactionKind } = eventData;
+  const {
+    eventData: { params: eventParams, metadata: eventMetadata },
+    callData: { args: callArgs }
+  } = eventCallData;
 
-  const reaction = await ctx.store.get(Reaction, reactionId);
-
-  if (!reaction) {
-    new EntityProvideFailWarning(Reaction, reactionId, ctx, eventData);
+  if (!callArgs) {
+    new EntityProvideFailWarning(Post, 'new', ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 
-  const post = await getEntityWithRelations.post({ postId, ctx });
+  const reaction = await ctx.store.get(Reaction, eventParams.reactionId);
+
+  if (!reaction) {
+    new EntityProvideFailWarning(
+      Reaction,
+      eventParams.reactionId,
+      ctx,
+      eventMetadata
+    );
+    throw new CommonCriticalError();
+  }
+
+  const post = await getEntityWithRelations.post({
+    postId: eventParams.postId,
+    ctx
+  });
 
   if (!post) {
-    new EntityProvideFailWarning(Reaction, postId, ctx, eventData);
+    new EntityProvideFailWarning(
+      Reaction,
+      eventParams.postId,
+      ctx,
+      eventMetadata
+    );
     throw new CommonCriticalError();
   }
 
@@ -44,9 +65,9 @@ export async function postReactionDeleted(
 
   await ctx.store.save(reaction);
 
-  if (reactionKind === ReactionKind.Upvote) {
+  if (eventParams.reactionKind === ReactionKind.Upvote) {
     post.upvotesCount! -= 1;
-  } else if (reactionKind === ReactionKind.Downvote) {
+  } else if (eventParams.reactionKind === ReactionKind.Downvote) {
     post.downvotesCount! -= 1;
   }
   post.reactionsCount! -= 1;
@@ -54,7 +75,9 @@ export async function postReactionDeleted(
   await ctx.store.save(post);
 
   const accountInst = await getOrCreateAccount(
-    forced && forcedData ? forcedData.account : eventData.accountId,
+    callArgs.forced && callArgs.forcedData
+      ? callArgs.forcedData.account
+      : eventParams.accountId,
     ctx
   );
 
@@ -69,11 +92,11 @@ export async function postReactionDeleted(
     post,
     reaction,
     ctx,
-    eventData
+    eventMetadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 

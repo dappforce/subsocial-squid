@@ -1,7 +1,7 @@
 import { IpfsPostContent, IpfsSpaceContent } from '@subsocial/api/types/ipfs';
 import { SummarizedContent } from '@subsocial/api/types/dto';
 import { TweetAttachmentV2, ReferencedTweetV2 } from 'twitter-api-v2';
-import { ContentExtensionData } from '../../mappings/extension/types';
+import { ContentExtensionData } from '@subsocial/data-hub-sdk';
 import { InReplyToKind } from '../../model';
 
 export type PostTweetDetailsIPFS = {

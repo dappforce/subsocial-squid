@@ -41,36 +41,46 @@ export function getReactionKindFromCall(
 
 export async function ensureReaction({
   ctx,
-  eventData
+  eventCallData
 }: {
   ctx: Ctx;
-  eventData: PostReactionCreatedData;
+  eventCallData: PostReactionCreatedData;
 }): Promise<Reaction | null> {
+  const {
+    eventData: { params: eventParams, metadata: eventMetadata },
+    callData: { args: callArgs }
+  } = eventCallData;
+
+  if (!callArgs) {
+    new EntityProvideFailWarning(Post, 'new', ctx, eventMetadata);
+    throw new CommonCriticalError();
+  }
+
   const accountInst = await getOrCreateAccount(
-    eventData.forced && eventData.forcedData
-      ? eventData.forcedData.account
-      : eventData.accountId,
+    callArgs.forced && callArgs.forcedData
+      ? callArgs.forcedData.account
+      : eventParams.accountId,
     ctx
   );
 
   const postInst = await getEntityWithRelations.post({
-    postId: eventData.postId,
+    postId: eventParams.postId,
     ctx
   });
 
   if (!postInst) {
-    new EntityProvideFailWarning(Post, eventData.postId, ctx, eventData);
+    new EntityProvideFailWarning(Post, eventParams.postId, ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 
   const newReaction = new Reaction();
-  newReaction.id = eventData.reactionId;
+  newReaction.id = eventParams.reactionId;
   newReaction.status = Status.Active;
   newReaction.account = accountInst;
   newReaction.post = postInst;
-  newReaction.kind = eventData.reactionKind;
-  newReaction.createdAtBlock = BigInt(eventData.blockNumber.toString());
-  newReaction.createdAtTime = eventData.timestamp;
+  newReaction.kind = eventParams.reactionKind;
+  newReaction.createdAtBlock = BigInt(eventMetadata.blockNumber.toString());
+  newReaction.createdAtTime = eventMetadata.timestamp;
 
   return newReaction;
 }

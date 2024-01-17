@@ -21,9 +21,8 @@ import {
   IpfsContent
 } from './types';
 import { getChain } from '../chains';
-import { u8aToString } from '@polkadot/util';
+import { stringToHex } from '@polkadot/util';
 import { Block as StorageBlock } from '../chains/subsocial/types/support';
-
 
 const { getApiDecorated } = getChain();
 
@@ -35,13 +34,13 @@ export class StorageDataManager {
     Map<
       BlochHash,
       {
-        block: StorageBlock,
+        block: StorageBlock;
         keys: Set<
           | [EntityId, string | null]
           | [Uint8Array, InnerValue]
           | Uint8Array
           | string
-        >
+        >;
       }
     >
   > = new Map();
@@ -134,19 +133,16 @@ export class StorageDataManager {
           for (const event of [
             ...eventsData.values()
           ] as (DomainRegisteredData & DomainMetaUpdatedData)[]) {
-            this.ensureIdsForFetchContainer(
-              'domain',
-              {
-                hash: event.eventData.metadata.blockHash,
-                height: event.eventData.metadata.blockNumber,
-                _runtime: event.eventData.metadata.runtime
-              }
-            );
+            this.ensureIdsForFetchContainer('domain', {
+              hash: event.eventData.metadata.blockHash,
+              height: event.eventData.metadata.blockNumber,
+              _runtime: event.eventData.metadata.runtime
+            });
 
             this.idsForFetchStorage
               .get('domain')!
-              .get(event.eventData.metadata.blockHash)!.keys
-              .add(u8aToString(event.eventData.params.domain));
+              .get(event.eventData.metadata.blockHash)!
+              .keys.add(stringToHex(event.eventData.params.domain));
           }
           break;
         }
@@ -160,7 +156,9 @@ export class StorageDataManager {
     ]) {
       switch (section) {
         case 'domain': {
-          for (const [blockHash, idsPairsAndBlock] of [...idsListByBlock.entries()]) {
+          for (const [blockHash, idsPairsAndBlock] of [
+            ...idsListByBlock.entries()
+          ]) {
             const domainsList = [...idsPairsAndBlock.keys.values()] as string[];
             const domainsMetaResp = (await api.storage.getRegisteredDomainMeta(
               idsPairsAndBlock.block,

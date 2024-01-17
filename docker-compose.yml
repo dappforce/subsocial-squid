@@ -1,16 +1,28 @@
-version: "3"
+version: '3'
 
 services:
   db:
     container_name: subsocial_squid_db
-    image: postgres:14
+    image: postgres:15
     ports:
-      - "${DB_PORT}:5433"
+      - '${DB_PORT}:5432'
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
       # command: ["postgres", "-c", "log_statement=all"]
-#    volumes:
-#      - ./data/db:/var/lib/postgresql/data
+  #    volumes:
+  #      - ./data/db:/var/lib/postgresql/data
+#  db:
+#    container_name: subsocial_squid_db
+#    image: postgres:14
+#    ports:
+#      - "${DB_PORT}:5433"
+#    environment:
+#      POSTGRES_DB: ${DB_NAME}
+#      POSTGRES_USER: ${DB_USER}
+#      POSTGRES_PASSWORD: ${DB_PASS}
+#      # command: ["postgres", "-c", "log_statement=all"]
+##    volumes:
+##      - ./data/db:/var/lib/postgresql/data
 

@@ -4,6 +4,7 @@ import { getOrCreateAccount } from '../account';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { EventName, Space, Account } from '../../model';
+import { u8aToString } from '@polkadot/util';
 
 type UsernameHandlerResult = {
   space?: Space;
@@ -17,11 +18,15 @@ export async function handleUsername(
   ctx: Ctx,
   { eventData }: DomainRegisteredData
 ): Promise<UsernameHandlerResult> {
-  const registrarAccount = await getOrCreateAccount(eventData.params.accountId, ctx);
+  const registrarAccount = await getOrCreateAccount(
+    eventData.params.accountId,
+    ctx
+  );
   const recipientAccount = eventData.params.recipientId
     ? await getOrCreateAccount(eventData.params.recipientId, ctx)
     : registrarAccount;
-  const usernameStr = eventData.params.domain.toString().toLowerCase();
+  const usernameStr = eventData.params.domain.toLowerCase();
+  console.log(`Username - ${usernameStr}`);
   const result: UsernameHandlerResult = {
     registrarAccount,
     recipientAccount,
