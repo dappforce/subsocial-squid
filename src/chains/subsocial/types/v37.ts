@@ -422,8 +422,6 @@ export const RawOrigin: sts.Type<RawOrigin> = sts.closedEnum(() => {
     }
 })
 
-export const AccountId32 = sts.bytes()
-
 export type RawOrigin = RawOrigin_None | RawOrigin_Root | RawOrigin_Signed
 
 export interface RawOrigin_None {
@@ -6618,3 +6616,5 @@ export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
         Raw: sts.bytes(),
     }
 })
+
+export const AccountId32 = sts.bytes()

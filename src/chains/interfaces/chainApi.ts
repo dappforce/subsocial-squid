@@ -104,7 +104,11 @@ type SubsocialChainEvents =
   | 'parseAccountFollowedEventParams'
   | 'parseAccountUnfollowedEventParams'
   | 'parseDomainRegisteredEventParams'
-  | 'parseDomainMetaUpdatedEventParams';
+  | 'parseDomainMetaUpdatedEventParams'
+  | 'parseEvmAddressLinkedToAccountEventParams'
+  | 'parseEvmAddressUnlinkedFromAccountEventParams'
+  | 'parsePostFollowedEventParams'
+  | 'parsePostUnfollowedEventParams';
 
 type SoonsocialChainEvents =
   | 'parsePostCreatedEventParams'
@@ -173,24 +177,24 @@ export type ChainApiDecorated<C> = {
   events: C extends 'subsocial'
     ? Required<Pick<ChainApi['events'], SubsocialChainEvents>>
     : C extends 'soonsocial'
-    ? Required<Pick<ChainApi['events'], SoonsocialChainEvents>>
-    : C extends 'xsocial'
-    ? Required<Pick<ChainApi['events'], XSocialChainEvents>>
-    : any;
+      ? Required<Pick<ChainApi['events'], SoonsocialChainEvents>>
+      : C extends 'xsocial'
+        ? Required<Pick<ChainApi['events'], XSocialChainEvents>>
+        : any;
   calls: C extends 'subsocial'
     ? Required<Pick<ChainApi['calls'], SubsocialChainCalls>>
     : C extends 'soonsocial'
-    ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
-    : C extends 'xsocial'
-    ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
-    : any;
+      ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
+      : C extends 'xsocial'
+        ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
+        : any;
   storage: C extends 'subsocial'
     ? Required<Pick<ChainApi['storage'], SubsocialChainStorageCalls>>
     : C extends 'soonsocial'
-    ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
-    : C extends 'xsocial'
-    ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
-    : any;
+      ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
+      : C extends 'xsocial'
+        ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
+        : any;
 };
 
 export type ApiDecorator = <C extends ChainName>(

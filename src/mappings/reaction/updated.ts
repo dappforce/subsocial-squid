@@ -43,7 +43,7 @@ export async function postReactionUpdated(
     throw new CommonCriticalError();
   }
 
-  reaction.kind = callArgs.newReactionKind;
+  reaction.kind = eventParams.newReactionKind;
   reaction.updatedAtTime = eventMetadata.timestamp;
   reaction.updatedAtBlock = BigInt(eventMetadata.blockNumber.toString());
 

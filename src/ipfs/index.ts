@@ -199,7 +199,7 @@ export class SubsocialIpfsDataManager {
 
     return new Promise(async (res, rej) => {
       let count = 0;
-      let interval: NodeJS.Timer | undefined = setInterval(() => {
+      let interval: NodeJS.Timeout | undefined = setInterval(() => {
         const cidLog = cid;
         count++;
         if (count >= timeout / 1000) {

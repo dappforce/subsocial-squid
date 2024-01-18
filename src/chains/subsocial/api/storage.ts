@@ -58,11 +58,11 @@ export async function getRegisteredDomainMeta(
   ) {
     if (Array.isArray(domainOrList)) {
       return (
-        await storage.domains.registeredDomains.v13.getMany(block, domainOrList)
+        await storage.domains.registeredDomains.v27.getMany(block, domainOrList)
       ).map(decorateMeta);
     } else {
       return decorateMeta(
-        await storage.domains.registeredDomains.v13.get(block, domainOrList)
+        await storage.domains.registeredDomains.v27.get(block, domainOrList)
       );
     }
   }

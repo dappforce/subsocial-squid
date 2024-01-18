@@ -8,6 +8,12 @@
       "storage": [],
       "constants": []
     },
+    "PostFollows": {
+      "events": ["PostFollowed", "PostUnfollowed"],
+      "calls": true,
+      "storage": [],
+      "constants": []
+    },
     "Reactions": {
       "events": [
         "PostReactionCreated",
@@ -62,6 +68,18 @@
       "calls": true,
       "storage": true,
       "constants": ["RegisteredDomains", "DomainByInnerValue"]
+    },
+    "ResourceDiscussions": {
+      "events": [],
+      "calls": true,
+      "storage": [],
+      "constants": []
+    },
+    "EvmAddresses": {
+      "events": true,
+      "calls": true,
+      "storage": [],
+      "constants": []
     }
   }
 }

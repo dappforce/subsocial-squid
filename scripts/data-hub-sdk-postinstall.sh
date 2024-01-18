@@ -2,7 +2,7 @@
 
 npm remove @subsocial/data-hub-sdk
 
-npm install @subsocial/data-hub-sdk@dappforce/subsocial-data-hub-sdk#staging
+npm install --force @subsocial/data-hub-sdk@dappforce/subsocial-data-hub-sdk#staging
 
 cd node_modules/@subsocial/data-hub-sdk
 

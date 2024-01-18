@@ -17,7 +17,11 @@ import {
   AccountFollowedEventParsedParams,
   AccountUnfollowedEventParsedParams,
   DomainRegisteredEventParsedParams,
-  DomainMetaUpdatedEventParsedParams
+  DomainMetaUpdatedEventParsedParams,
+  PostFollowedEventParsedParams,
+  PostUnfollowedEventParsedParams,
+  EvmAddressLinkedToAccountEventParsedParams,
+  EvmAddressUnlinkedFromAccountEventParsedParams
 } from '@subsocial/data-hub-sdk';
 import { EventForDecode } from '../../../common/types';
 
@@ -81,6 +85,38 @@ export function parsePostMovedEventParams(
         fromSpace !== null && fromSpace !== undefined
           ? fromSpace.toString()
           : fromSpace
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parsePostFollowedEventParams(
+  ctx: EventForDecode
+): PostFollowedEventParsedParams {
+  if (events.postFollows.postFollowed.v37.is(ctx)) {
+    const { follower: followerId, postId } =
+      events.postFollows.postFollowed.v37.decode(ctx);
+
+    return {
+      followerId: toSubsocialAddress(followerId)!,
+      postId: postId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parsePostUnfollowedEventParams(
+  ctx: EventForDecode
+): PostUnfollowedEventParsedParams {
+  if (events.postFollows.postUnfollowed.v37.is(ctx)) {
+    const { follower: followerId, postId } =
+      events.postFollows.postUnfollowed.v37.decode(ctx);
+
+    return {
+      followerId: toSubsocialAddress(followerId)!,
+      postId: postId.toString()
     };
   } else {
     throw new UnknownVersionError(ctx.name);
@@ -334,6 +370,37 @@ export function parseDomainMetaUpdatedEventParams(
     return {
       accountId: toSubsocialAddress(who)!,
       domain: hexToString(domain)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parseEvmAddressLinkedToAccountEventParams(
+  ctx: EventForDecode
+): EvmAddressLinkedToAccountEventParsedParams {
+  if (events.evmAddresses.evmAddressLinkedToAccount.v36.is(ctx)) {
+    const { substrate, ethereum } =
+      events.evmAddresses.evmAddressLinkedToAccount.v36.decode(ctx);
+
+    return {
+      substrateAccountId: toSubsocialAddress(substrate)!,
+      ethereumAccountId: ethereum
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+export function parseEvmAddressUnlinkedFromAccountEventParams(
+  ctx: EventForDecode
+): EvmAddressUnlinkedFromAccountEventParsedParams {
+  if (events.evmAddresses.evmAddressUnlinkedFromAccount.v36.is(ctx)) {
+    const { substrate, ethereum } =
+      events.evmAddresses.evmAddressUnlinkedFromAccount.v36.decode(ctx);
+
+    return {
+      substrateAccountId: toSubsocialAddress(substrate)!,
+      ethereumAccountId: ethereum
     };
   } else {
     throw new UnknownVersionError(ctx.name);

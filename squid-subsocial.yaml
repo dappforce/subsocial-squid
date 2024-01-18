@@ -24,3 +24,5 @@ deploy:
     cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "5000", "--dumb-cache-size", "200", "--dumb-cache-max-age", "5000" ]
 scale:
   dedicated: false
+  api:
+    profile: large

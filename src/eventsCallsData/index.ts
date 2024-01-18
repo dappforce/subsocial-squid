@@ -28,7 +28,7 @@ import {
   PostFollowedData,
   PostUnfollowedData
 } from '../common/types';
-import { getPseudoUuidV4 } from '@subsocial/data-hub-sdk/utils';
+import { getPseudoUuidV4 } from '@subsocial/data-hub-sdk/dist/utils';
 import { getChain } from '../chains';
 import { getCallNameFromCtx, getCallSigner } from '../chains/utils';
 import * as crypto from 'node:crypto';
@@ -37,42 +37,42 @@ import { orderItems } from '../common/blockItemsDriver';
 type EventDataType<T> = T extends EventName.SpaceCreated
   ? SpaceCreatedData
   : T extends EventName.SpaceUpdated
-  ? SpaceUpdatedData
-  : T extends EventName.PostCreated
-  ? PostCreatedData
-  : T extends EventName.PostUpdated
-  ? PostUpdatedData
-  : T extends EventName.PostMoved
-  ? PostMovedData
-  : T extends EventName.AccountFollowed
-  ? AccountFollowedData
-  : T extends EventName.AccountUnfollowed
-  ? AccountUnfollowedData
-  : T extends EventName.SpaceFollowed
-  ? SpaceFollowedData
-  : T extends EventName.SpaceUnfollowed
-  ? SpaceUnfollowedData
-  : T extends EventName.SpaceOwnershipTransferAccepted
-  ? SpaceOwnershipTransferAcceptedData
-  : T extends EventName.SpaceOwnershipTransferCreated
-  ? SpaceOwnershipTransferCreatedData
-  : T extends EventName.ProfileUpdated
-  ? ProfileUpdatedData
-  : T extends EventName.PostReactionCreated
-  ? PostReactionCreatedData
-  : T extends EventName.PostReactionUpdated
-  ? PostReactionUpdatedData
-  : T extends EventName.PostReactionDeleted
-  ? PostReactionDeletedData
-  : T extends EventName.UserNameRegistered
-  ? DomainRegisteredData
-  : T extends EventName.UserNameUpdated
-  ? DomainMetaUpdatedData
-  : T extends EventName.EvmAddressLinkedToAccount
-  ? EvmAddressLinkedToAccountData
-  : T extends EventName.EvmAddressUnlinkedFromAccount
-  ? EvmAddressUnlinkedFromAccountData
-  : never;
+    ? SpaceUpdatedData
+    : T extends EventName.PostCreated
+      ? PostCreatedData
+      : T extends EventName.PostUpdated
+        ? PostUpdatedData
+        : T extends EventName.PostMoved
+          ? PostMovedData
+          : T extends EventName.AccountFollowed
+            ? AccountFollowedData
+            : T extends EventName.AccountUnfollowed
+              ? AccountUnfollowedData
+              : T extends EventName.SpaceFollowed
+                ? SpaceFollowedData
+                : T extends EventName.SpaceUnfollowed
+                  ? SpaceUnfollowedData
+                  : T extends EventName.SpaceOwnershipTransferAccepted
+                    ? SpaceOwnershipTransferAcceptedData
+                    : T extends EventName.SpaceOwnershipTransferCreated
+                      ? SpaceOwnershipTransferCreatedData
+                      : T extends EventName.ProfileUpdated
+                        ? ProfileUpdatedData
+                        : T extends EventName.PostReactionCreated
+                          ? PostReactionCreatedData
+                          : T extends EventName.PostReactionUpdated
+                            ? PostReactionUpdatedData
+                            : T extends EventName.PostReactionDeleted
+                              ? PostReactionDeletedData
+                              : T extends EventName.UserNameRegistered
+                                ? DomainRegisteredData
+                                : T extends EventName.UserNameUpdated
+                                  ? DomainMetaUpdatedData
+                                  : T extends EventName.EvmAddressLinkedToAccount
+                                    ? EvmAddressLinkedToAccountData
+                                    : T extends EventName.EvmAddressUnlinkedFromAccount
+                                      ? EvmAddressUnlinkedFromAccountData
+                                      : never;
 
 const { getApiDecorated } = getChain();
 
@@ -236,9 +236,8 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'PostFollows.PostFollowed': {
-          const xSocialApi = getApiDecorated('xsocial');
           const eventParams =
-            xSocialApi.events.parsePostFollowedEventParams(eventItem);
+            api.events.parsePostFollowedEventParams(eventItem);
 
           const eventMetadata = getEventMetadata(block, eventItem);
 
@@ -262,9 +261,8 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
         }
 
         case 'PostFollows.PostUnfollowed': {
-          const xSocialApi = getApiDecorated('xsocial');
           const eventParams =
-            xSocialApi.events.parsePostUnfollowedEventParams(eventItem);
+            api.events.parsePostUnfollowedEventParams(eventItem);
           const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.PostUnfollowed, {
@@ -373,7 +371,7 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
 
           const eventMetadata = getEventMetadata(block, eventItem);
 
-          parsedData.set(EventName.PostReactionCreated, {
+          parsedData.set(EventName.PostReactionUpdated, {
             id: eventMetadata.id,
             eventData: {
               name: eventMetadata.name,
@@ -656,12 +654,10 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
           break;
         }
 
+        case 'EvmAddresses.EvmAddressLinkedToAccount':
         case 'EvmAccounts.EvmAddressLinkedToAccount': {
-          const xSocialApi = getApiDecorated('xsocial');
           const eventParams =
-            xSocialApi.events.parseEvmAddressLinkedToAccountEventParams(
-              eventItem
-            );
+            api.events.parseEvmAddressLinkedToAccountEventParams(eventItem);
 
           const eventMetadata = getEventMetadata(block, eventItem);
 
@@ -684,12 +680,10 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
           totalEventsNumber++;
           break;
         }
+        case 'EvmAddresses.EvmAddressUnlinkedFromAccount':
         case 'EvmAccounts.EvmAddressUnlinkedFromAccount': {
-          const xSocialApi = getApiDecorated('xsocial');
           const eventParams =
-            xSocialApi.events.parseEvmAddressUnlinkedFromAccountEventParams(
-              eventItem
-            );
+            api.events.parseEvmAddressUnlinkedFromAccountEventParams(eventItem);
           const eventMetadata = getEventMetadata(block, eventItem);
 
           parsedData.set(EventName.EvmAddressUnlinkedFromAccount, {

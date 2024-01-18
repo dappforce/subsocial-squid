@@ -118,6 +118,16 @@ export const processor = new SubstrateBatchProcessor()
     call: true,
     extrinsic: true
   })
+  .addEvent({
+    name: ['EvmAddresses.EvmAddressLinkedToAccount'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['EvmAddresses.EvmAddressUnlinkedFromAccount'],
+    call: true,
+    extrinsic: true
+  })
   .addEvent({ name: ['Proxy.ProxyAdded'], call: true, extrinsic: true })
   .addEvent({ name: ['Proxy.ProxyRemoved'], call: true, extrinsic: true })
   .setFields({

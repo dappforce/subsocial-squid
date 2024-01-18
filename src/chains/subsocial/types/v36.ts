@@ -1,5 +1,29 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
+export const Content: sts.Type<Content> = sts.closedEnum(() => {
+    return  {
+        IPFS: sts.bytes(),
+        None: sts.unit(),
+        Other: sts.bytes(),
+    }
+})
+
+export type Content = Content_IPFS | Content_None | Content_Other
+
+export interface Content_IPFS {
+    __kind: 'IPFS'
+    value: Bytes
+}
+
+export interface Content_None {
+    __kind: 'None'
+}
+
+export interface Content_Other {
+    __kind: 'Other'
+    value: Bytes
+}
+
 export const Call: sts.Type<Call> = sts.closedEnum(() => {
     return  {
         AccountFollows: AccountFollowsCall,
@@ -420,8 +444,6 @@ export const RawOrigin: sts.Type<RawOrigin> = sts.closedEnum(() => {
         Signed: AccountId32,
     }
 })
-
-export const AccountId32 = sts.bytes()
 
 export type RawOrigin = RawOrigin_None | RawOrigin_Root | RawOrigin_Signed
 
@@ -1479,22 +1501,6 @@ export interface SpacePermission_Upvote {
     __kind: 'Upvote'
 }
 
-export type Content = Content_IPFS | Content_None | Content_Other
-
-export interface Content_IPFS {
-    __kind: 'IPFS'
-    value: Bytes
-}
-
-export interface Content_None {
-    __kind: 'None'
-}
-
-export interface Content_Other {
-    __kind: 'Other'
-    value: Bytes
-}
-
 export const WhoAndWhen: sts.Type<WhoAndWhen> = sts.struct(() => {
     return  {
         account: AccountId32,
@@ -1551,14 +1557,6 @@ export const SpacePermission: sts.Type<SpacePermission> = sts.closedEnum(() => {
         UpdateSpace: sts.unit(),
         UpdateSpaceSettings: sts.unit(),
         Upvote: sts.unit(),
-    }
-})
-
-export const Content: sts.Type<Content> = sts.closedEnum(() => {
-    return  {
-        IPFS: sts.bytes(),
-        None: sts.unit(),
-        Other: sts.bytes(),
     }
 })
 
@@ -5726,8 +5724,6 @@ export const EvmAddressesCall: sts.Type<EvmAddressesCall> = sts.closedEnum(() =>
     }
 })
 
-export const H160 = sts.bytes()
-
 /**
  * Contains one variant per dispatchable that can be called by an extrinsic.
  */
@@ -6583,3 +6579,7 @@ export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
         Raw: sts.bytes(),
     }
 })
+
+export const AccountId32 = sts.bytes()
+
+export const H160 = sts.bytes()
