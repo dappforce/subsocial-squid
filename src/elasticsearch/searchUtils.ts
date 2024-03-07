@@ -124,7 +124,14 @@ export const buildElasticSearchQuery = (
     ...baseSearchProps,
     body: {
       query: searchBody
-    }
+    },
+    sort: [
+      {
+        dateField: {
+          order: "desc"
+        }
+      }
+    ]
   };
 
   sqdLogger.debug(searchReq, 'Final ElasticSearch query:');
