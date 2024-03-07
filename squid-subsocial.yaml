@@ -4,7 +4,6 @@ version: 400
 description: |-
   Squid for Subsocial
 build:
-
 deploy:
   secrets:
     - SUBSOCIAL_ELASTIC_SEARCH_ENDPOINT
@@ -14,14 +13,27 @@ deploy:
     postgres:
   processor:
     env:
-      CHAIN:
-        subsocial
-    cmd: [ "node", "lib/processor" ]
+      CHAIN: subsocial
+    cmd: ['node', 'lib/processor']
   api:
     env:
-      CHAIN:
-        subsocial
-    cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "5000", "--dumb-cache-size", "200", "--dumb-cache-max-age", "5000" ]
+      CHAIN: subsocial
+    cmd:
+      [
+        'npx',
+        'squid-graphql-server',
+        '--dumb-cache',
+        'in-memory',
+        '--dumb-cache-ttl',
+        '5000',
+        '--dumb-cache-size',
+        '200',
+        '--dumb-cache-max-age',
+        '5000',
+        '--subscriptions',
+        '--subscription-poll-interval',
+        '1000'
+      ]
 scale:
   dedicated: false
   api:
