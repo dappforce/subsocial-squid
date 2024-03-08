@@ -1,4 +1,4 @@
-import { ContentExtensionData } from './types';
+import { ContentExtensionData } from '@subsocial/data-hub-sdk';
 import { Ctx } from '../../processor';
 import {
   Account,
@@ -55,11 +55,16 @@ export async function handleSecretBox({
     extension,
     post: parentPost,
     ctx,
-    eventData: postCreatedEventData
+    eventMetadata: postCreatedEventData.eventData.metadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, postCreatedEventData);
+    new EntityProvideFailWarning(
+      Activity,
+      'new',
+      ctx,
+      postCreatedEventData.eventData.metadata
+    );
     return;
   }
 

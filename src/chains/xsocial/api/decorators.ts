@@ -1,4 +1,4 @@
-import { SpacePermissionsScope } from '../../../common/types';
+import { SpacePermissionsScope } from '@subsocial/data-hub-sdk';
 import { SpacePermissionMap } from '@subsocial/api/types/dto';
 import * as v102 from '../types/v102';
 import { ReactionKind } from '../../../model';

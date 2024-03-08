@@ -1,4 +1,4 @@
-import { Activity, EventName, Space } from '../../model';
+import { Activity, EventName, Post, Space } from '../../model';
 import {
   CommonCriticalError,
   EntityProvideFailWarning,
@@ -20,12 +20,27 @@ import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function spaceUpdated(
   ctx: Ctx,
-  eventData: SpaceUpdatedData
+  eventCallData: SpaceUpdatedData
 ): Promise<void> {
-  const space = await getEntityWithRelations.space(eventData.spaceId, ctx);
+  const {
+    eventData: { params: eventParams, metadata: eventMetadata },
+    callData: { args: callArgs }
+  } = eventCallData;
+
+  if (!callArgs) {
+    new EntityProvideFailWarning(Post, 'new', ctx, eventMetadata);
+    throw new CommonCriticalError();
+  }
+
+  const space = await getEntityWithRelations.space(eventParams.spaceId, ctx);
 
   if (!space) {
-    new EntityProvideFailWarning(Space, eventData.spaceId, ctx, eventData);
+    new EntityProvideFailWarning(
+      Space,
+      eventParams.spaceId,
+      ctx,
+      eventMetadata
+    );
     throw new CommonCriticalError();
   }
 
@@ -33,12 +48,12 @@ export async function spaceUpdated(
 
   const spaceIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'space',
-    eventData.ipfsSrc
+    callArgs.ipfsSrc || null
   );
 
-  space.updatedAtTime = eventData.timestamp;
+  space.updatedAtTime = eventMetadata.timestamp;
 
-  space.updatedAtBlock = BigInt(eventData.blockNumber);
+  space.updatedAtBlock = BigInt(eventMetadata.blockNumber);
 
   if (spaceIpfsContent) {
     const aboutSummary = getBodySummary(spaceIpfsContent.about);
@@ -71,14 +86,14 @@ export async function spaceUpdated(
   ElasticSearchManager.index(ctx).addToQueue(space);
 
   const activity = await setActivity({
-    account: eventData.accountId,
+    account: eventParams.accountId,
     space,
     ctx,
-    eventData
+    eventMetadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventMetadata);
     throw new CommonCriticalError();
   }
 

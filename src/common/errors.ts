@@ -1,4 +1,4 @@
-import { DbEntity, EventData } from './types';
+import { DbEntity, EventMetadata } from './types';
 import { Ctx } from '../processor';
 
 export class UnknownVersionError extends Error {
@@ -14,14 +14,14 @@ export class CommonCriticalError extends Error {
 }
 
 export class EntityProvideFailWarning {
-  constructor(entity: DbEntity, entityId: string, ctx: Ctx, event: EventData) {
+  constructor(entity: DbEntity, entityId: string, ctx: Ctx, event: EventMetadata) {
     const msg = `WARNING ::: Entity ${entity.name} (id: ${entityId}) can not be provided at block ${event.blockNumber}[e# - ${event.indexInBlock}], method "${event.name}"`;
     ctx.log.warn(msg);
   }
 }
 
 export class MissingSubsocialApiEntity {
-  constructor(entityName: string, ctx: Ctx, event: EventData) {
+  constructor(entityName: string, ctx: Ctx, event: EventMetadata) {
     const msg = `WARNING ::: Missing Subsocial API record for ${entityName} at block ${event.blockNumber}, method "${event.name}"`;
     ctx.log.warn(msg);
   }

@@ -10,16 +10,22 @@ import { NotificationsManager } from '../notification/notifiactionsManager';
 
 export async function accountFollowed(
   ctx: Ctx,
-  eventData: AccountFollowedData
+  { eventData }: AccountFollowedData
 ): Promise<void> {
-  const followerAccount = await getOrCreateAccount(eventData.followerId, ctx);
-  const followingAccount = await getOrCreateAccount(eventData.accountId, ctx);
+  const followerAccount = await getOrCreateAccount(
+    eventData.params.followerId,
+    ctx
+  );
+  const followingAccount = await getOrCreateAccount(
+    eventData.params.accountId,
+    ctx
+  );
 
   const activity = await setActivity({
     account: followerAccount,
     followingAccount,
     ctx,
-    eventData
+    eventMetadata: eventData.metadata
   });
 
   if (!activity) return;

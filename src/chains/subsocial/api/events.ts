@@ -1,97 +1,81 @@
-import { ChainContext, Event } from '../types/support';
-import {
-  AccountFollowsAccountFollowedEvent,
-  AccountFollowsAccountUnfollowedEvent,
-  DomainsDomainMetaUpdatedEvent,
-  DomainsDomainRegisteredEvent,
-  PostsPostCreatedEvent,
-  PostsPostMovedEvent,
-  PostsPostUpdatedEvent,
-  ProfilesProfileUpdatedEvent,
-  ReactionsPostReactionCreatedEvent,
-  ReactionsPostReactionDeletedEvent,
-  ReactionsPostReactionUpdatedEvent,
-  SpaceFollowsSpaceFollowedEvent,
-  SpaceFollowsSpaceUnfollowedEvent,
-  SpaceOwnershipSpaceOwnershipTransferAcceptedEvent,
-  SpaceOwnershipSpaceOwnershipTransferCreatedEvent,
-  SpacesSpaceCreatedEvent,
-  SpacesSpaceUpdatedEvent
-} from '../types/events';
+import { events } from '../types';
 
 import {
-  CreatePostEventParsedData,
-  UpdatePostEventParsedData,
-  MovedPostEventParsedData,
-  EventContext,
-  SpaceCreatedData,
-  CreatedSpaceEventParsedData,
-  UpdatedSpaceEventParsedData,
-  PostReactionCreatedEventParsedData,
-  PostReactionUpdatedEventParsedData,
-  PostReactionDeletedEventParsedData,
-  ProfileUpdatedEventParsedData,
-  SpaceUnfollowedEventParsedData,
-  SpaceFollowedEventParsedData,
-  AccountFollowedEventParsedData,
-  AccountUnfollowedEventParsedData,
-  SpaceOwnershipTransferAcceptedEventParsedData,
-  DomainRegisteredData,
-  DomainRegisteredEventParsedData,
-  DomainMetaUpdatedEventParsedData,
-  SpaceOwnershipTransferCreatedEventParsedData
-} from '../../../common/types';
+  PostCreatedEventParsedParams,
+  PostUpdatedEventParsedParams,
+  PostMovedEventParsedParams,
+  SpaceCreatedEventParsedParams,
+  SpaceUpdatedEventParsedParams,
+  PostReactionCreatedEventParsedParams,
+  PostReactionUpdatedEventParsedParams,
+  PostReactionDeletedEventParsedParams,
+  ProfileUpdatedEventParsedParams,
+  SpaceFollowedEventParsedParams,
+  SpaceUnfollowedEventParsedParams,
+  SpaceOwnershipTransferAcceptedEventParsedParams,
+  SpaceOwnershipTransferCreatedEventParsedParams,
+  AccountFollowedEventParsedParams,
+  AccountUnfollowedEventParsedParams,
+  DomainRegisteredEventParsedParams,
+  DomainMetaUpdatedEventParsedParams,
+  PostFollowedEventParsedParams,
+  PostUnfollowedEventParsedParams,
+  EvmAddressLinkedToAccountEventParsedParams,
+  EvmAddressUnlinkedFromAccountEventParsedParams
+} from '@subsocial/data-hub-sdk';
+import { EventForDecode } from '../../../common/types';
 
 import { UnknownVersionError } from '../../../common/errors';
 
-import { addressSs58ToString } from '../../../common/utils';
 import { getReactionKindDecorated } from './decorators';
-import { toHex } from '@subsquid/util-internal-hex';
+import { toSubsocialAddress } from '@subsocial/utils';
+import { hexToString, stringToU8a } from '@polkadot/util';
 
-export function parsePostCreatedEventArgs(
-  ctx: EventContext
-): CreatePostEventParsedData {
-  const event = new PostsPostCreatedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { account: accountId, postId } = event.asV13;
+export function parsePostCreatedEventParams(
+  ctx: EventForDecode
+): PostCreatedEventParsedParams {
+  if (events.posts.postCreated.v13.is(ctx)) {
+    const { account: accountId, postId } =
+      events.posts.postCreated.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      accountId: toSubsocialAddress(accountId)!,
       postId: postId.toString()
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parsePostUpdatedEventArgs(
-  ctx: EventContext
-): UpdatePostEventParsedData {
-  const event = new PostsPostUpdatedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { account: accountId, postId } = event.asV13;
+export function parsePostUpdatedEventParams(
+  ctx: EventForDecode
+): PostUpdatedEventParsedParams {
+  if (events.posts.postUpdated.v13.is(ctx)) {
+    const { account: accountId, postId } =
+      events.posts.postUpdated.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      accountId: toSubsocialAddress(accountId)!,
       postId: postId.toString()
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parsePostMovedEventArgs(
-  ctx: EventContext
-): MovedPostEventParsedData {
-  const event = new PostsPostMovedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { account: accountId, postId, toSpace, fromSpace } = event.asV13;
+export function parsePostMovedEventParams(
+  ctx: EventForDecode
+): PostMovedEventParsedParams {
+  if (events.posts.postMoved.v13.is(ctx)) {
+    const {
+      account: accountId,
+      postId,
+      toSpace,
+      fromSpace
+    } = events.posts.postMoved.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      accountId: toSubsocialAddress(accountId)!,
       postId: postId.toString(),
       toSpace:
         toSpace !== null && toSpace !== undefined
@@ -103,282 +87,322 @@ export function parsePostMovedEventArgs(
           : fromSpace
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseSpaceCreatedEventArgs(
-  ctx: EventContext
-): CreatedSpaceEventParsedData {
-  const event = new SpacesSpaceCreatedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { account: accountId, spaceId } = event.asV13;
+export function parsePostFollowedEventParams(
+  ctx: EventForDecode
+): PostFollowedEventParsedParams {
+  if (events.postFollows.postFollowed.v37.is(ctx)) {
+    const { follower: followerId, postId } =
+      events.postFollows.postFollowed.v37.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      followerId: toSubsocialAddress(followerId)!,
+      postId: postId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parsePostUnfollowedEventParams(
+  ctx: EventForDecode
+): PostUnfollowedEventParsedParams {
+  if (events.postFollows.postUnfollowed.v37.is(ctx)) {
+    const { follower: followerId, postId } =
+      events.postFollows.postUnfollowed.v37.decode(ctx);
+
+    return {
+      followerId: toSubsocialAddress(followerId)!,
+      postId: postId.toString()
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parseSpaceCreatedEventParams(
+  ctx: EventForDecode
+): SpaceCreatedEventParsedParams {
+  if (events.spaces.spaceCreated.v13.is(ctx)) {
+    const { account: accountId, spaceId } =
+      events.spaces.spaceCreated.v13.decode(ctx);
+
+    return {
+      accountId: toSubsocialAddress(accountId)!,
       spaceId:
         spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseSpaceUpdatedEventArgs(
-  ctx: EventContext
-): UpdatedSpaceEventParsedData {
-  const event = new SpacesSpaceUpdatedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { account: accountId, spaceId } = event.asV13;
+export function parseSpaceUpdatedEventParams(
+  ctx: EventForDecode
+): SpaceUpdatedEventParsedParams {
+  if (events.spaces.spaceUpdated.v13.is(ctx)) {
+    const { account: accountId, spaceId } =
+      events.spaces.spaceUpdated.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      accountId: toSubsocialAddress(accountId)!,
       spaceId:
         spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parsePostReactionCreatedEventArgs(
-  ctx: EventContext
-): PostReactionCreatedEventParsedData {
-  const event = new ReactionsPostReactionCreatedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
+export function parsePostReactionCreatedEventParams(
+  ctx: EventForDecode
+): PostReactionCreatedEventParsedParams {
+  if (events.reactions.postReactionCreated.v13.is(ctx)) {
     const {
       account: accountId,
       postId,
       reactionId,
       reactionKind
-    } = event.asV13;
+    } = events.reactions.postReactionCreated.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      accountId: toSubsocialAddress(accountId)!,
       postId: postId.toString(),
       reactionId: reactionId.toString(),
       reactionKind: getReactionKindDecorated(reactionKind)
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parsePostReactionUpdatedEventArgs(
-  ctx: EventContext
-): PostReactionUpdatedEventParsedData {
-  const event = new ReactionsPostReactionUpdatedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
+export function parsePostReactionUpdatedEventParams(
+  ctx: EventForDecode
+): PostReactionUpdatedEventParsedParams {
+  if (events.reactions.postReactionUpdated.v13.is(ctx)) {
     const {
       account: accountId,
       postId,
       reactionId,
       reactionKind
-    } = event.asV13;
+    } = events.reactions.postReactionUpdated.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      accountId: toSubsocialAddress(accountId)!,
       postId: postId.toString(),
       reactionId: reactionId.toString(),
       newReactionKind: getReactionKindDecorated(reactionKind)
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parsePostReactionDeletedEventArgs(
-  ctx: EventContext
-): PostReactionDeletedEventParsedData {
-  const event = new ReactionsPostReactionDeletedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
+export function parsePostReactionDeletedEventParams(
+  ctx: EventForDecode
+): PostReactionDeletedEventParsedParams {
+  if (events.reactions.postReactionDeleted.v13.is(ctx)) {
     const {
       account: accountId,
       postId,
       reactionId,
       reactionKind
-    } = event.asV13;
+    } = events.reactions.postReactionDeleted.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      accountId: toSubsocialAddress(accountId)!,
       postId: postId.toString(),
       reactionId: reactionId.toString(),
       reactionKind: getReactionKindDecorated(reactionKind)
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseProfileUpdatedEventArgs(
-  ctx: EventContext
-): ProfileUpdatedEventParsedData {
-  const event = new ProfilesProfileUpdatedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { account: accountId, spaceId } = event.asV13;
+export function parseProfileUpdatedEventParams(
+  ctx: EventForDecode
+): ProfileUpdatedEventParsedParams {
+  if (events.profiles.profileUpdated.v13.is(ctx)) {
+    const { account: accountId, spaceId } =
+      events.profiles.profileUpdated.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(accountId),
+      accountId: toSubsocialAddress(accountId)!,
       spaceId:
         spaceId !== null && spaceId !== undefined ? spaceId.toString() : spaceId
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseSpaceFollowedEventArgs(
-  ctx: EventContext
-): SpaceFollowedEventParsedData {
-  const event = new SpaceFollowsSpaceFollowedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { follower, spaceId } = event.asV13;
+export function parseSpaceFollowedEventParams(
+  ctx: EventForDecode
+): SpaceFollowedEventParsedParams {
+  if (events.spaceFollows.spaceFollowed.v13.is(ctx)) {
+    const { follower, spaceId } =
+      events.spaceFollows.spaceFollowed.v13.decode(ctx);
 
     return {
-      followerId: addressSs58ToString(follower),
+      followerId: toSubsocialAddress(follower)!,
       spaceId: spaceId.toString()
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseSpaceUnfollowedEventArgs(
-  ctx: EventContext
-): SpaceUnfollowedEventParsedData {
-  const event = new SpaceFollowsSpaceUnfollowedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { follower, spaceId } = event.asV13;
+export function parseSpaceUnfollowedEventParams(
+  ctx: EventForDecode
+): SpaceUnfollowedEventParsedParams {
+  if (events.spaceFollows.spaceUnfollowed.v13.is(ctx)) {
+    const { follower, spaceId } =
+      events.spaceFollows.spaceUnfollowed.v13.decode(ctx);
 
     return {
-      followerId: addressSs58ToString(follower),
+      followerId: toSubsocialAddress(follower)!,
       spaceId: spaceId.toString()
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseSpaceOwnershipTransferAcceptedEventArgs(
-  ctx: EventContext
-): SpaceOwnershipTransferAcceptedEventParsedData {
-  const event = new SpaceOwnershipSpaceOwnershipTransferAcceptedEvent(
-    ctx,
-    ctx.event
-  );
-
-  if (event.isV13) {
-    const { account, spaceId } = event.asV13;
+export function parseSpaceOwnershipTransferCreatedEventParams(
+  ctx: EventForDecode
+): SpaceOwnershipTransferCreatedEventParsedParams {
+  if (events.spaceOwnership.spaceOwnershipTransferCreated.v13.is(ctx)) {
+    const { currentOwner, newOwner, spaceId } =
+      events.spaceOwnership.spaceOwnershipTransferCreated.v13.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(account),
+      currentOwnerId: toSubsocialAddress(currentOwner)!,
+      newOwnerId: toSubsocialAddress(newOwner)!,
       spaceId: spaceId.toString()
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
-export function parseSpaceOwnershipTransferCreatedEventArgs(
-  ctx: EventContext
-): SpaceOwnershipTransferCreatedEventParsedData {
-  const event = new SpaceOwnershipSpaceOwnershipTransferCreatedEvent(
-    ctx,
-    ctx.event
-  );
 
-  if (event.isV13) {
-    const { currentOwner, newOwner, spaceId } = event.asV13;
+export function parseSpaceOwnershipTransferAcceptedEventParams(
+  ctx: EventForDecode
+): SpaceOwnershipTransferAcceptedEventParsedParams {
+  if (events.spaceOwnership.spaceOwnershipTransferAccepted.v13.is(ctx)) {
+    const { account, spaceId } =
+      events.spaceOwnership.spaceOwnershipTransferAccepted.v13.decode(ctx);
 
     return {
-      currentOwnerId: addressSs58ToString(currentOwner),
-      newOwnerId: addressSs58ToString(newOwner),
+      accountId: toSubsocialAddress(account)!,
       spaceId: spaceId.toString()
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseAccountFollowedEventArgs(
-  ctx: EventContext
-): AccountFollowedEventParsedData {
-  const event = new AccountFollowsAccountFollowedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { follower, account } = event.asV13;
+export function parseAccountFollowedEventParams(
+  ctx: EventForDecode
+): AccountFollowedEventParsedParams {
+  if (events.accountFollows.accountFollowed.v13.is(ctx)) {
+    const { follower, account } =
+      events.accountFollows.accountFollowed.v13.decode(ctx);
 
     return {
-      followerId: addressSs58ToString(follower),
-      accountId: addressSs58ToString(account)
+      followerId: toSubsocialAddress(follower)!,
+      accountId: toSubsocialAddress(account)!
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseAccountUnfollowedEventArgs(
-  ctx: EventContext
-): AccountUnfollowedEventParsedData {
-  const event = new AccountFollowsAccountUnfollowedEvent(ctx, ctx.event);
-
-  if (event.isV13) {
-    const { follower, account } = event.asV13;
+export function parseAccountUnfollowedEventParams(
+  ctx: EventForDecode
+): AccountUnfollowedEventParsedParams {
+  if (events.accountFollows.accountUnfollowed.v13.is(ctx)) {
+    const { follower, account } =
+      events.accountFollows.accountUnfollowed.v13.decode(ctx);
 
     return {
-      followerId: addressSs58ToString(follower),
-      accountId: addressSs58ToString(account)
+      followerId: toSubsocialAddress(follower)!,
+      accountId: toSubsocialAddress(account)!
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseDomainRegisteredEventArgs(
-  ctx: EventContext
-): DomainRegisteredEventParsedData {
-  const event = new DomainsDomainRegisteredEvent(ctx, ctx.event);
-
-  if (event.isV7) {
-    const { who, domain } = event.asV7;
+export function parseDomainRegisteredEventParams(
+  ctx: EventForDecode
+): DomainRegisteredEventParsedParams {
+  if (events.domains.domainRegistered.v7.is(ctx)) {
+    const { who, domain } = events.domains.domainRegistered.v7.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(who),
-      domain
+      accountId: toSubsocialAddress(who)!,
+      domain: hexToString(domain)
     };
-  } else if (event.isV27) {
-    const { who, domain, recipient } = event.asV27;
+  } else if (events.domains.domainRegistered.v27.is(ctx)) {
+    const { who, domain, recipient } =
+      events.domains.domainRegistered.v27.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(who),
-      recipientId: addressSs58ToString(recipient),
-      domain
+      accountId: toSubsocialAddress(who)!,
+      recipientId: toSubsocialAddress(recipient)!,
+      domain: hexToString(domain)
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
   }
 }
 
-export function parseDomainMetaUpdatedEventArgs(
-  ctx: EventContext
-): DomainMetaUpdatedEventParsedData {
-  const event = new DomainsDomainMetaUpdatedEvent(ctx, ctx.event);
-
-  if (event.isV7) {
-    const { who, domain } = event.asV7;
+export function parseDomainMetaUpdatedEventParams(
+  ctx: EventForDecode
+): DomainMetaUpdatedEventParsedParams {
+  if (events.domains.domainMetaUpdated.v7.is(ctx)) {
+    const { who, domain } = events.domains.domainMetaUpdated.v7.decode(ctx);
 
     return {
-      accountId: addressSs58ToString(who),
-      domain
+      accountId: toSubsocialAddress(who)!,
+      domain: hexToString(domain)
     };
   } else {
-    throw new UnknownVersionError(ctx.event.name);
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parseEvmAddressLinkedToAccountEventParams(
+  ctx: EventForDecode
+): EvmAddressLinkedToAccountEventParsedParams {
+  if (events.evmAddresses.evmAddressLinkedToAccount.v36.is(ctx)) {
+    const { substrate, ethereum } =
+      events.evmAddresses.evmAddressLinkedToAccount.v36.decode(ctx);
+
+    return {
+      substrateAccountId: toSubsocialAddress(substrate)!,
+      ethereumAccountId: ethereum
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+export function parseEvmAddressUnlinkedFromAccountEventParams(
+  ctx: EventForDecode
+): EvmAddressUnlinkedFromAccountEventParsedParams {
+  if (events.evmAddresses.evmAddressUnlinkedFromAccount.v36.is(ctx)) {
+    const { substrate, ethereum } =
+      events.evmAddresses.evmAddressUnlinkedFromAccount.v36.decode(ctx);
+
+    return {
+      substrateAccountId: toSubsocialAddress(substrate)!,
+      ethereumAccountId: ethereum
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
   }
 }

@@ -2,8 +2,11 @@ import { Ctx } from '../../processor';
 import { SpaceFollowedData } from '../../common/types';
 import { getOrCreateAccount } from '../account';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
-import { EntityProvideFailWarning } from '../../common/errors';
-import { Activity, EventName, Space } from '../../model';
+import {
+  CommonCriticalError,
+  EntityProvideFailWarning
+} from '../../common/errors';
+import { Activity, EventName, Post, Space } from '../../model';
 import { setActivity } from '../activity';
 import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
@@ -11,13 +14,22 @@ import { processSpaceFollowingUnfollowingRelations } from './common';
 
 export async function spaceFollowed(
   ctx: Ctx,
-  eventData: SpaceFollowedData
+  eventCallData: SpaceFollowedData
 ): Promise<void> {
-  const followerAccount = await getOrCreateAccount(eventData.followerId, ctx);
+  const {
+    eventData: { params: eventParams, metadata: eventMetadata }
+  } = eventCallData;
+
+  const followerAccount = await getOrCreateAccount(eventParams.followerId, ctx);
   let { followingSpacesCount } = followerAccount;
-  const space = await getEntityWithRelations.space(eventData.spaceId, ctx);
+  const space = await getEntityWithRelations.space(eventParams.spaceId, ctx);
   if (!space) {
-    new EntityProvideFailWarning(Space, eventData.spaceId, ctx, eventData);
+    new EntityProvideFailWarning(
+      Space,
+      eventParams.spaceId,
+      ctx,
+      eventMetadata
+    );
     return;
   }
 
@@ -25,17 +37,17 @@ export async function spaceFollowed(
     followerAccount,
     space,
     ctx,
-    eventData
+    eventMetadata
   );
 
   const activity = await setActivity({
     account: followerAccount,
     ctx,
     space,
-    eventData
+    eventMetadata
   });
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventMetadata);
     return;
   }
 

@@ -34,8 +34,8 @@ export function getChain(): {
       return withDecorator(require('./xsocial'));
     case 'subsocial':
       return withDecorator(require('./subsocial'));
-    case 'soonsocial':
-      return withDecorator(require('./soonsocial'));
+    // case 'soonsocial':
+    //   return withDecorator(require('./soonsocial'));
     default:
       throw new Error(`Unsupported chain ${process.env.CHAIN}`);
   }

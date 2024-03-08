@@ -11,7 +11,6 @@ import {
 import { getOrCreateAccount } from '../account';
 import { updatePostsCountersInSpace } from '../space';
 import { setActivity } from '../activity';
-// import { postFollowed } from '../postCommentFollows';
 import {
   CommonCriticalError,
   EntityProvideFailWarning
@@ -24,26 +23,35 @@ import { NotificationsManager } from '../notification/notifiactionsManager';
 import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 import { processContentExtensions } from '../extension';
 import { StorageDataManager } from '../../storage';
-import { ContentExtensionData } from '../extension/types';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
 import { PostContentWithInReplyTo } from '../../common/types/post';
 
 export async function postCreated(
   ctx: Ctx,
-  eventData: PostCreatedData
+  eventCallData: PostCreatedData
 ): Promise<void> {
-  const account = await getOrCreateAccount(eventData.accountId, ctx);
+  const {
+    eventData: { params: eventParams, metadata: eventMetadata },
+    callData: { args: callArgs }
+  } = eventCallData;
+
+  if (!callArgs) {
+    new EntityProvideFailWarning(Post, 'new', ctx, eventMetadata);
+    throw new CommonCriticalError();
+  }
+
+  const account = await getOrCreateAccount(eventParams.accountId, ctx);
 
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
   const postIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'post',
-    eventData.ipfsSrc,
+    callArgs.ipfsSrc ?? null,
     async (errorMsg: string | null) => {
       await ctx.store.save(
         new IpfsFetchLog({
-          id: eventData.postId,
-          cid: eventData.ipfsSrc,
-          blockHeight: eventData.blockNumber,
+          id: eventParams.postId,
+          cid: callArgs.ipfsSrc,
+          blockHeight: eventMetadata.blockNumber,
           errorMsg: errorMsg
         })
       );
@@ -58,15 +66,15 @@ export async function postCreated(
   )
     await mutateEventDataForSoftReply(
       postIpfsContent.inReplyTo,
-      eventData,
+      eventCallData,
       ctx
     );
 
   const post = await ensurePost({
-    postId: eventData.postId,
+    postId: eventParams.postId,
     postContent: postIpfsContent ?? undefined,
     ctx,
-    eventData
+    eventCallData
   });
 
   await ctx.store.save(post);
@@ -75,7 +83,7 @@ export async function postCreated(
     await processContentExtensions(
       postIpfsContent.extensions,
       post,
-      eventData,
+      eventCallData,
       ctx
     );
 
@@ -90,7 +98,7 @@ export async function postCreated(
 
   await ctx.store.save(post.ownedByAccount);
 
-  if (post.sharedPost) await handlePostShare(post, account, ctx, eventData);
+  if (post.sharedPost) await handlePostShare(post, account, ctx, eventCallData);
 
   await updatePostsCountersInSpace({
     space: post.space ?? null,
@@ -109,11 +117,11 @@ export async function postCreated(
     account,
     post,
     ctx,
-    eventData
+    eventMetadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventMetadata);
     return;
   }
 
@@ -139,7 +147,7 @@ async function handlePostShare(
   newPost: Post,
   callerAccount: Account,
   ctx: Ctx,
-  eventData: PostCreatedData
+  eventCallData: PostCreatedData
 ): Promise<void> {
   if (!newPost.sharedPost) return;
 
@@ -158,11 +166,16 @@ async function handlePostShare(
     post: newPost,
     syntheticEventName,
     ctx,
-    eventData
+    eventMetadata: eventCallData.eventData.metadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(
+      Activity,
+      'new',
+      ctx,
+      eventCallData.eventData.metadata
+    );
     throw new CommonCriticalError();
   }
 
@@ -196,17 +209,17 @@ async function mutateEventDataForSoftReply(
   });
   if (!repliedPostEntity) return;
 
-  if (eventData.postKind === PostKind.RegularPost) {
+  if (eventData.callData.args!.postKind === PostKind.RegularPost) {
     // Regular Post -> Comment
-    eventData.postKind = PostKind.Comment;
-    eventData.rootPostId = inReplyToPost.id;
+    eventData.callData.args!.postKind = PostKind.Comment;
+    eventData.callData.args!.rootPostId = inReplyToPost.id;
     return;
   } else if (
-    eventData.postKind === PostKind.Comment &&
-    !eventData.parentPostId
+    eventData.callData.args!.postKind === PostKind.Comment &&
+    !eventData.callData.args!.parentPostId
   ) {
     // Comment -> Comment Reply
-    eventData.parentPostId = inReplyToPost.id;
+    eventData.callData.args!.parentPostId = inReplyToPost.id;
     return;
   }
 }

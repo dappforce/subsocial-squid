@@ -36,10 +36,10 @@ export interface Content_None {
 
 export interface Content_Other {
   __kind: 'Other';
-  value: Uint8Array;
+  value: string;
 }
 
 export interface Content_IPFS {
   __kind: 'IPFS';
-  value: Uint8Array;
+  value: string;
 }

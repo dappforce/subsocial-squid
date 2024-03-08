@@ -123,7 +123,19 @@ export const buildElasticSearchQuery = (
   const searchReq = {
     ...baseSearchProps,
     body: {
-      query: searchBody
+      query: searchBody,
+      sort: [
+        {
+          "_script": {
+            type: "number",
+            script: {
+              lang: "painless",
+              source: "Integer.parseInt(doc['_id'].value)"
+            },
+            order: "desc"
+          }
+        }
+      ]
     }
   };
 

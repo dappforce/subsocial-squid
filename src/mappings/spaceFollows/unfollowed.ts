@@ -12,13 +12,24 @@ import { processSpaceFollowingUnfollowingRelations } from './common';
 
 export async function spaceUnfollowed(
   ctx: Ctx,
-  eventData: SpaceUnfollowedData
+  { eventData }: SpaceUnfollowedData
 ): Promise<void> {
-  const followerAccount = await getOrCreateAccount(eventData.followerId, ctx);
+  const followerAccount = await getOrCreateAccount(
+    eventData.params.followerId,
+    ctx
+  );
   let { followingSpacesCount } = followerAccount;
-  const space = await getEntityWithRelations.space(eventData.spaceId, ctx);
+  const space = await getEntityWithRelations.space(
+    eventData.params.spaceId,
+    ctx
+  );
   if (!space) {
-    new EntityProvideFailWarning(Space, eventData.spaceId, ctx, eventData);
+    new EntityProvideFailWarning(
+      Space,
+      eventData.params.spaceId,
+      ctx,
+      eventData.metadata
+    );
     return;
   }
 
@@ -26,17 +37,17 @@ export async function spaceUnfollowed(
     followerAccount,
     space,
     ctx,
-    eventData
+    eventData.metadata
   );
 
   const activity = await setActivity({
     account: followerAccount,
     ctx,
     space,
-    eventData
+    eventMetadata: eventData.metadata
   });
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventData.metadata);
     return;
   }
 

@@ -8,7 +8,7 @@ import {
   SpaceFollowers,
   EventName
 } from '../../../model';
-import { getNewsFeedEntityId } from '../../../common/utils';
+import { getNewsFeedEntityId, splitIntoBatches } from '../../../common/utils';
 import { Ctx } from '../../../processor';
 import { getOrCreateAccount } from '../../account';
 import { In, Not } from 'typeorm';
@@ -148,13 +148,16 @@ export const deleteAllSpacePostsFromSpaceFollower = async (
     accountFollowers.map((af) => af.followingAccount.id)
   );
 
-  await ctx.store.remove(
+  for (const batch of splitIntoBatches(
     relatedFeedItems.filter(
       (f) =>
         f.activity.post &&
         !accountsToIgnore.has(f.activity.post.ownedByAccount.id)
-    )
-  );
+    ),
+    500
+  )) {
+    await ctx.store.remove(batch);
+  }
 };
 
 // TODO add additional check to avoid redundant removes (removing wrong items in case target account has cross-following)
@@ -178,7 +181,9 @@ async function deleteAllSpacePostsFromAllSpaceFollowers(
     }
   });
 
-  await ctx.store.remove(feedsForDelete);
+  for (const batch of splitIntoBatches(feedsForDelete, 500)) {
+    await ctx.store.remove(batch);
+  }
 }
 
 async function deleteAllAccountPostsFromAccountFollower(
@@ -219,11 +224,14 @@ async function deleteAllAccountPostsFromAccountFollower(
     spaceFollowers.map((sf) => sf.followingSpace.id)
   );
 
-  await ctx.store.remove(
+  for (const batch of splitIntoBatches(
     feedsForDelete.filter(
       (f) => f.activity.space && !spacesToIgnore.has(f.activity.space.id)
-    )
-  );
+    ),
+    500
+  )) {
+    await ctx.store.remove(batch);
+  }
 }
 
 // TODO add additional check to avoid redundant removes (removing wrong items in case target account has cross-following)
@@ -243,7 +251,9 @@ async function deleteAllAccountPostsFromAllAccountFollowers(
     }
   });
 
-  await ctx.store.remove(feedsForDelete);
+  for (const batch of splitIntoBatches(feedsForDelete, 500)) {
+    await ctx.store.remove(batch);
+  }
 }
 
 export const feedPublicationHelpers = {

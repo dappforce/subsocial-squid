@@ -27,14 +27,20 @@ import { getUrlFromText } from './common';
 
 export async function postUpdated(
   ctx: Ctx,
-  eventData: PostUpdatedData
+  eventCallData: PostUpdatedData
 ): Promise<void> {
+  const { eventData, callData } = eventCallData;
   const post = await getEntityWithRelations.post({
-    postId: eventData.postId,
+    postId: eventData.params.postId,
     ctx
   });
-  if (!post) {
-    new EntityProvideFailWarning(Post, eventData.postId, ctx, eventData);
+  if (!post || !callData.args) {
+    new EntityProvideFailWarning(
+      Post,
+      eventData.params.postId,
+      ctx,
+      eventData.metadata
+    );
     throw new CommonCriticalError();
   }
 
@@ -43,13 +49,13 @@ export async function postUpdated(
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
   const postIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'post',
-    eventData.ipfsSrc,
+    callData.args.ipfsSrc ?? null,
     async (errorMsg: string | null) => {
       await ctx.store.save(
         new IpfsFetchLog({
-          id: eventData.postId,
-          cid: eventData.ipfsSrc,
-          blockHeight: eventData.blockNumber,
+          id: eventData.params.postId,
+          cid: callData.args?.ipfsSrc ?? '',
+          blockHeight: eventData.metadata.blockNumber,
           errorMsg: errorMsg
         })
       );
@@ -57,15 +63,16 @@ export async function postUpdated(
   );
 
   const ownedByAccount = await getOrCreateAccount(
-    post.ownedByAccount.id || eventData.accountId,
+    post.ownedByAccount.id || eventData.params.accountId,
     ctx
   );
 
-  if (typeof eventData.hidden === 'boolean') post.hidden = eventData.hidden;
-  if (eventData.ipfsSrc) post.content = eventData.ipfsSrc;
+  if (typeof callData.args.hidden === 'boolean')
+    post.hidden = callData.args.hidden;
+  if (callData.args.ipfsSrc) post.content = callData.args.ipfsSrc;
 
   post.ownedByAccount = ownedByAccount;
-  post.updatedAtTime = eventData.timestamp;
+  post.updatedAtTime = eventData.metadata.timestamp;
 
   if (postIpfsContent) {
     const bodySummary = getBodySummary(postIpfsContent.body);
@@ -86,8 +93,8 @@ export async function postUpdated(
     post.isShowMore = bodySummary.isShowMore;
     post.slug =
       !postIpfsContent.title && !postIpfsContent.body
-        ? eventData.postId
-        : createPostSlug(eventData.postId, {
+        ? eventData.params.postId
+        : createPostSlug(eventData.params.postId, {
             title: postIpfsContent.title,
             body: postIpfsContent.body
           }) ?? null;
@@ -113,7 +120,7 @@ export async function postUpdated(
     //   post.proposalIndex = meta[0].proposalIndex;
     // }
   } else {
-    post.slug = eventData.postId;
+    post.slug = eventData.params.postId;
   }
 
   await ctx.store.save(post);
@@ -122,7 +129,7 @@ export async function postUpdated(
     await processContentExtensions(
       postIpfsContent.extensions,
       post,
-      eventData,
+      eventCallData,
       ctx
     );
 
@@ -140,10 +147,10 @@ export async function postUpdated(
 
   const activity = await setActivity({
     syntheticEventName,
-    account: eventData.accountId,
+    account: eventData.params.accountId,
     post,
     ctx,
-    eventData
+    eventMetadata: eventData.metadata
   });
 
   if (!activity) return;

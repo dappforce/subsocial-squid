@@ -1,18 +1,19 @@
-
 import {
   getDateWithoutTime,
   getBodySummary,
   getJoinedList,
   getTweetDetailsEntity,
   isTweetDetailsIPFSValid,
-  getExperimentalFieldsFromIPFSContent, createPostSlug
+  getExperimentalFieldsFromIPFSContent,
+  createPostSlug
 } from '../../common/utils';
 import {
   Post,
   PostKind,
   Space,
   IpfsFetchLog,
-  InReplyToKind
+  InReplyToKind,
+  Activity
 } from '../../model';
 import { getOrCreateAccount } from '../account';
 import {
@@ -23,6 +24,10 @@ import {
 import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
 import { getEntityWithRelations } from '../../common/gettersWithRelations';
+import {
+  CommonCriticalError,
+  EntityProvideFailWarning
+} from '../../common/errors';
 
 const updatePostReplyCount = async (
   targetPost: Post,
@@ -73,26 +78,36 @@ export const ensurePost = async ({
   postId,
   postContent,
   ctx,
-  eventData
+  eventCallData
 }: {
   postId: string;
   postContent?: IpfsPostContentSummarized;
   ctx: Ctx;
-  eventData: PostCreatedData;
+  eventCallData: PostCreatedData;
 }): Promise<Post> => {
+  const {
+    eventData,
+    callData: { args: callArgs }
+  } = eventCallData;
+
+  if (!callArgs) {
+    new EntityProvideFailWarning(Post, 'new', ctx, eventData.metadata);
+    throw new CommonCriticalError();
+  }
+
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
 
   const postIpfsContent =
     postContent ??
     (await storageDataManagerInst.fetchIpfsContentByCid(
       'post',
-      eventData.ipfsSrc,
+      callArgs.ipfsSrc ?? null,
       async (errorMsg: string | null) => {
         await ctx.store.save(
           new IpfsFetchLog({
             id: postId,
-            cid: eventData.ipfsSrc,
-            blockHeight: eventData.blockNumber,
+            cid: callArgs!.ipfsSrc,
+            blockHeight: eventData.metadata.blockNumber,
             errorMsg: errorMsg
           })
         );
@@ -102,10 +117,10 @@ export const ensurePost = async ({
   let space = null;
 
   if (
-    eventData.postKind === PostKind.RegularPost ||
-    (eventData.postKind === PostKind.SharedPost && !eventData.rootPostId)
+    callArgs.postKind === PostKind.RegularPost ||
+    (callArgs.postKind === PostKind.SharedPost && !callArgs.rootPostId)
   ) {
-    space = await getEntityWithRelations.space(eventData.spaceId, ctx);
+    space = await getEntityWithRelations.space(callArgs.spaceId, ctx);
   }
   /**
    * TODO We won't add space to child posts (comment/replies) to avoid redundant processing in root PostMoved event
@@ -128,30 +143,33 @@ export const ensurePost = async ({
   //     space = await ctx.store.get(Space, rootSpacePost.space.id, false);
   // }
 
-  const signerAccountInst = await getOrCreateAccount(eventData.accountId, ctx);
+  const signerAccountInst = await getOrCreateAccount(
+    eventData.params.accountId,
+    ctx
+  );
 
   const post = new Post();
 
-  if (eventData.forced && eventData.forcedData) {
-    post.hidden = eventData.forcedData.hidden;
+  if (callArgs.forced && callArgs.forcedData) {
+    post.hidden = callArgs.forcedData.hidden;
     post.ownedByAccount = await getOrCreateAccount(
-      eventData.forcedData.owner,
+      callArgs.forcedData.owner,
       ctx
     );
     post.createdByAccount = await getOrCreateAccount(
-      eventData.forcedData.account,
+      callArgs.forcedData.account,
       ctx
     );
-    post.createdAtBlock = BigInt(eventData.forcedData.block.toString());
-    post.createdAtTime = eventData.forcedData.time;
-    post.createdOnDay = getDateWithoutTime(eventData.forcedData.time);
+    post.createdAtBlock = BigInt(callArgs.forcedData.block.toString());
+    post.createdAtTime = new Date(+callArgs.forcedData.time);
+    post.createdOnDay = getDateWithoutTime(new Date(+callArgs.forcedData.time));
   } else {
     post.hidden = false;
     post.ownedByAccount = signerAccountInst;
     post.createdByAccount = signerAccountInst;
-    post.createdAtBlock = BigInt(eventData.blockNumber.toString());
-    post.createdAtTime = eventData.timestamp;
-    post.createdOnDay = getDateWithoutTime(eventData.timestamp);
+    post.createdAtBlock = BigInt(eventData.metadata.blockNumber.toString());
+    post.createdAtTime = eventData.metadata.timestamp;
+    post.createdOnDay = getDateWithoutTime(eventData.metadata.timestamp);
   }
 
   post.hiddenRepliesCount = 0;
@@ -164,21 +182,21 @@ export const ensurePost = async ({
   post.followersCount = 0;
 
   post.id = postId;
-  post.isComment = eventData.postKind === PostKind.Comment;
-  post.content = eventData.ipfsSrc;
+  post.isComment = callArgs.postKind === PostKind.Comment;
+  post.content = callArgs.ipfsSrc;
   post.updatedAtTime = null;
   post.space = space;
-  post.kind = eventData.postKind;
+  post.kind = callArgs.postKind;
 
   switch (post.kind) {
     case PostKind.Comment:
       post.rootPost = await getEntityWithRelations.post({
-        postId: eventData.rootPostId,
+        postId: callArgs.rootPostId,
         ctx,
         rootOrParentPost: true
       });
       post.parentPost = await getEntityWithRelations.post({
-        postId: eventData.parentPostId,
+        postId: callArgs.parentPostId,
         ctx,
         rootOrParentPost: true
       });
@@ -190,7 +208,7 @@ export const ensurePost = async ({
 
     case PostKind.SharedPost:
       post.sharedPost = await getEntityWithRelations.post({
-        postId: eventData.originalPost,
+        postId: callArgs.originalPost,
         ctx
       });
 

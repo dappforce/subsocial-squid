@@ -9,7 +9,10 @@ import {
   Reaction
 } from '../../../model';
 import { getOrCreateAccount } from '../../account';
-import { getNotificationEntityId } from '../../../common/utils';
+import {
+  getNotificationEntityId,
+  splitIntoBatches
+} from '../../../common/utils';
 import { Ctx } from '../../../processor';
 import { FindManyOptions, Entity } from '@subsquid/typeorm-store/src/store';
 
@@ -85,8 +88,9 @@ export const deleteAllNotificationsAboutSpace = async (
       }
     ]
   });
-
-  await ctx.store.remove(relatedNotifications);
+  for (const batch of splitIntoBatches(relatedNotifications, 500)) {
+    await ctx.store.remove(batch);
+  }
   return null;
 };
 
@@ -106,7 +110,9 @@ export const deleteAllNotificationsAboutAccount = async (
   };
   const relatedNotifications = await ctx.store.find(Notification, findQuery);
 
-  await ctx.store.remove(relatedNotifications);
+  for (const batch of splitIntoBatches(relatedNotifications, 500)) {
+    await ctx.store.remove(batch);
+  }
   return null;
 };
 
@@ -131,7 +137,9 @@ export const deleteAllNotificationsAboutReaction = async (
     ]
   });
 
-  await ctx.store.remove(relatedNotifications);
+  for (const batch of splitIntoBatches(relatedNotifications, 500)) {
+    await ctx.store.remove(batch);
+  }
   return null;
 };
 

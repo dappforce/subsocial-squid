@@ -25,21 +25,30 @@ import { NotificationsManager } from '../notification/notifiactionsManager';
 
 export async function postUnfollowed(
   ctx: Ctx,
-  eventData: PostUnfollowedData
+  eventCallData: PostUnfollowedData
 ): Promise<void> {
-  const followerAccount = await getOrCreateAccount(eventData.followerId, ctx);
+  const { eventData, callData } = eventCallData;
+  const followerAccount = await getOrCreateAccount(
+    eventData.params.followerId,
+    ctx
+  );
   const post = await getEntityWithRelations.post({
-    postId: eventData.postId,
+    postId: eventData.params.postId,
     ctx
   });
 
   if (!post) {
-    new EntityProvideFailWarning(Post, eventData.postId, ctx, eventData);
+    new EntityProvideFailWarning(
+      Post,
+      eventData.params.postId,
+      ctx,
+      eventData.metadata
+    );
     throw new CommonCriticalError();
   }
 
   const postFollowersEntityId = getPostFollowersEntityId(
-    eventData.followerId,
+    eventData.params.followerId,
     post.id
   );
 
@@ -99,11 +108,11 @@ export async function postUnfollowed(
     account: followerAccount,
     post,
     ctx,
-    eventData
+    eventMetadata: eventData.metadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventData.metadata);
     return;
   }
 

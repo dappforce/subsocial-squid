@@ -5,19 +5,16 @@ import {
   getExperimentalFieldsFromIPFSContent,
   getJoinedList
 } from '../../common/utils';
-import {
-  SpaceCountersAction,
-  SpaceCreatedData,
-  SpacePermissionsScope
-} from '../../common/types';
+import { SpaceCountersAction, SpaceCreatedData } from '../../common/types';
+import { SpacePermissionsScope } from '@subsocial/data-hub-sdk';
 import { Post, Space, SpacePermissions } from '../../model';
 import { getOrCreateAccount } from '../account';
-import {
-  CommonCriticalError,
-  MissingSubsocialApiEntity
-} from '../../common/errors';
 import { Ctx } from '../../processor';
 import { StorageDataManager } from '../../storage';
+import {
+  CommonCriticalError,
+  EntityProvideFailWarning
+} from '../../common/errors';
 
 /**
  * Provides Space data. Merges data from Squid DB and Subsocial API. If Space entity is not existing in Squid DB, new
@@ -29,47 +26,62 @@ import { StorageDataManager } from '../../storage';
 export const ensureSpace = async ({
   spaceId,
   ctx,
-  eventData
+  eventCallData
 }: {
   spaceId: string;
   ctx: Ctx;
-  eventData: SpaceCreatedData;
+  eventCallData: SpaceCreatedData;
 }): Promise<Space> => {
+  const {
+    eventData: { params: eventParams, metadata: eventMetadata },
+    callData: { args: callArgs }
+  } = eventCallData;
+
+  if (!callArgs) {
+    new EntityProvideFailWarning(Post, 'new', ctx, eventMetadata);
+    throw new CommonCriticalError();
+  }
+
   const storageDataManagerInst = StorageDataManager.getInstance(ctx);
 
   const spaceIpfsContent = await storageDataManagerInst.fetchIpfsContentByCid(
     'space',
-    eventData.ipfsSrc
+    callArgs.ipfsSrc ?? null
   );
 
   const spaceInst = new Space();
 
-  const signerAccountInst = await getOrCreateAccount(eventData.accountId, ctx);
+  const signerAccountInst = await getOrCreateAccount(
+    eventParams.accountId,
+    ctx
+  );
 
-  if (eventData.forced && eventData.forcedData) {
-    spaceInst.hidden = eventData.forcedData.hidden;
+  if (callArgs.forced && callArgs.forcedData) {
+    spaceInst.hidden = callArgs.forcedData.hidden;
     spaceInst.ownedByAccount = await getOrCreateAccount(
-      eventData.forcedData.owner,
+      callArgs.forcedData.owner,
       ctx
     );
     spaceInst.createdByAccount = await getOrCreateAccount(
-      eventData.forcedData.account,
+      callArgs.forcedData.account,
       ctx
     );
-    spaceInst.createdAtBlock = BigInt(eventData.forcedData.block.toString());
-    spaceInst.createdAtTime = eventData.forcedData.time;
-    spaceInst.createdOnDay = getDateWithoutTime(eventData.forcedData.time);
+    spaceInst.createdAtBlock = BigInt(callArgs.forcedData.block.toString());
+    spaceInst.createdAtTime = new Date(+callArgs.forcedData.time);
+    spaceInst.createdOnDay = getDateWithoutTime(
+      new Date(+callArgs.forcedData.time)
+    );
   } else {
     spaceInst.hidden = false;
     spaceInst.ownedByAccount = signerAccountInst;
     spaceInst.createdByAccount = signerAccountInst;
-    spaceInst.createdAtBlock = BigInt(eventData.blockNumber.toString());
-    spaceInst.createdAtTime = eventData.timestamp;
-    spaceInst.createdOnDay = getDateWithoutTime(eventData.timestamp);
+    spaceInst.createdAtBlock = BigInt(eventMetadata.blockNumber.toString());
+    spaceInst.createdAtTime = eventMetadata.timestamp;
+    spaceInst.createdOnDay = getDateWithoutTime(eventMetadata.timestamp);
   }
 
   spaceInst.id = spaceId;
-  spaceInst.content = eventData.ipfsSrc;
+  spaceInst.content = callArgs.ipfsSrc;
   spaceInst.handle = null;
 
   spaceInst.postsCount = 0; // Initial value for counter
@@ -77,13 +89,13 @@ export const ensureSpace = async ({
   spaceInst.publicPostsCount = 0; // Initial value for counter
   spaceInst.followersCount = 0; // Initial value for counter
 
-  spaceInst.canFollowerCreatePosts = eventData.permissions.follower.CreatePosts;
-  spaceInst.canEveryoneCreatePosts = eventData.permissions.everyone.CreatePosts;
+  spaceInst.canFollowerCreatePosts = callArgs.permissions.follower.CreatePosts;
+  spaceInst.canEveryoneCreatePosts = callArgs.permissions.everyone.CreatePosts;
 
-  spaceInst.nonePermissions = getSpacePermissions(eventData.permissions);
-  spaceInst.everyonePermissions = getSpacePermissions(eventData.permissions);
-  spaceInst.followerPermissions = getSpacePermissions(eventData.permissions);
-  spaceInst.spaceOwnerPermissions = getSpacePermissions(eventData.permissions);
+  spaceInst.nonePermissions = getSpacePermissions(callArgs.permissions);
+  spaceInst.everyonePermissions = getSpacePermissions(callArgs.permissions);
+  spaceInst.followerPermissions = getSpacePermissions(callArgs.permissions);
+  spaceInst.spaceOwnerPermissions = getSpacePermissions(callArgs.permissions);
 
   if (spaceIpfsContent) {
     const aboutSummary = getBodySummary(spaceIpfsContent.about);

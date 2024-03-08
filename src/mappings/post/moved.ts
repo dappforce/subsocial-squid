@@ -17,22 +17,27 @@ import { NotificationsManager } from '../notification/notifiactionsManager';
 
 export async function postMoved(
   ctx: Ctx,
-  eventData: PostMovedData
+  { eventData, callData }: PostMovedData
 ): Promise<void> {
-  const account = await getOrCreateAccount(eventData.accountId, ctx);
+  const account = await getOrCreateAccount(eventData.params.accountId, ctx);
 
   const post = await getEntityWithRelations.post({
-    postId: eventData.postId,
+    postId: eventData.params.postId,
     ctx
   });
 
   if (!post) {
-    new EntityProvideFailWarning(Post, eventData.postId, ctx, eventData);
+    new EntityProvideFailWarning(
+      Post,
+      eventData.params.postId,
+      ctx,
+      eventData.metadata
+    );
     throw new CommonCriticalError();
   }
 
   const prevSpaceInst = await getEntityWithRelations.space(
-    eventData.fromSpace,
+    eventData.params.fromSpace,
     ctx
   );
 
@@ -40,7 +45,7 @@ export async function postMoved(
    * Update counters for previous space. Will be skipped if post is restored
    * ("space" was null)
    */
-  if (eventData.fromSpace)
+  if (eventData.params.fromSpace)
     await updatePostsCountersInSpace({
       space: prevSpaceInst,
       post,
@@ -50,15 +55,18 @@ export async function postMoved(
 
   let newSpaceInst = null;
 
-  if (eventData.toSpace && eventData.toSpace !== '0') {
-    newSpaceInst = await getEntityWithRelations.space(eventData.toSpace, ctx);
+  if (eventData.params.toSpace && eventData.params.toSpace !== '0') {
+    newSpaceInst = await getEntityWithRelations.space(
+      eventData.params.toSpace,
+      ctx
+    );
 
     if (!newSpaceInst) {
       new EntityProvideFailWarning(
         Space,
-        eventData.toSpace || 'null',
+        eventData.params.toSpace || 'null',
         ctx,
-        eventData
+        eventData.metadata
       );
       throw new CommonCriticalError();
     }
@@ -97,11 +105,11 @@ export async function postMoved(
     account,
     post,
     ctx,
-    eventData
+    eventMetadata: eventData.metadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventData.metadata);
     throw new CommonCriticalError();
   }
 

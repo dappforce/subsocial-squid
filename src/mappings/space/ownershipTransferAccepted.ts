@@ -13,14 +13,25 @@ import { FeedPublicationsManager } from '../newsFeed/feedPublicationsManager';
 
 export async function spaceOwnershipTransferAccepted(
   ctx: Ctx,
-  eventData: SpaceOwnershipTransferAcceptedData
+  { callData, eventData }: SpaceOwnershipTransferAcceptedData
 ): Promise<void> {
-  const newOwnerAccount = await getOrCreateAccount(eventData.accountId, ctx);
+  const newOwnerAccount = await getOrCreateAccount(
+    eventData.params.accountId,
+    ctx
+  );
 
-  const space = await getEntityWithRelations.space(eventData.spaceId, ctx);
+  const space = await getEntityWithRelations.space(
+    eventData.params.spaceId,
+    ctx
+  );
 
   if (!space) {
-    new EntityProvideFailWarning(Space, eventData.spaceId, ctx, eventData);
+    new EntityProvideFailWarning(
+      Space,
+      eventData.params.spaceId,
+      ctx,
+      eventData.metadata
+    );
     throw new CommonCriticalError();
   }
 
@@ -31,15 +42,15 @@ export async function spaceOwnershipTransferAccepted(
   await ctx.store.save(space);
 
   const activity = await setActivity({
-    account: eventData.accountId,
+    account: eventData.params.accountId,
     oldOwner: oldOwnerAccount,
     space,
     ctx,
-    eventData
+    eventMetadata: eventData.metadata
   });
 
   if (!activity) {
-    new EntityProvideFailWarning(Activity, 'new', ctx, eventData);
+    new EntityProvideFailWarning(Activity, 'new', ctx, eventData.metadata);
     throw new CommonCriticalError();
   }
 

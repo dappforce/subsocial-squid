@@ -1,85 +1,78 @@
-import { Block, ChainContext, Event } from '../subsocial/types/support';
 import {
-  AccountFollowedEventParsedData,
-  AccountUnfollowedEventParsedData,
-  CreatedSpaceEventParsedData,
-  CreatePostCallParsedData,
-  CreatePostEventParsedData,
-  CreateSpaceCallParsedData,
-  DomainMetaUpdatedEventParsedData,
-  DomainRegisteredEventParsedData,
   DomainStorageData,
   EventContext,
-  EvmAddressLinkedToAccountEventParsedData,
-  EvmAddressUnlinkedFromAccountEventParsedData,
-  FollowPostEventParsedData,
-  MovedPostEventParsedData,
-  MovePostCallParsedData,
-  PostReactionCreateCallParsedData,
-  PostReactionCreatedEventParsedData,
-  PostReactionDeleteCallParsedData,
-  PostReactionDeletedEventParsedData,
-  PostReactionUpdateCallParsedData,
-  PostReactionUpdatedEventParsedData,
-  ProfileUpdatedEventParsedData,
-  SpaceFollowedEventParsedData,
-  SpaceOwnershipTransferAcceptedEventParsedData,
-  SpaceOwnershipTransferCreatedEventParsedData,
-  SpaceUnfollowedEventParsedData,
-  UnfollowPostEventParsedData,
-  UpdatedSpaceEventParsedData,
-  UpdatePostCallParsedData,
-  UpdatePostEventParsedData,
-  UpdateSpaceCallParsedData
+  StorageForDecode
 } from '../../common/types';
-import * as v7 from '../subsocial/types/v7';
-import { InnerValue } from './sharedTypes';
-import { getRegisteredDomainMeta } from '../subsocial/api/storage';
-import { parseSpaceOwnershipTransferCreatedEventArgs } from '../subsocial/api/events';
 import {
-  parseEvmAddressLinkedToAccountEventArgs,
-  parseEvmAddressUnlinkedFromAccountEventArgs,
-  parsePostFollowedEventArgs,
-  parsePostUnfollowedEventArgs
-} from '../xsocial/api/events';
+  AccountFollowedEventParsedParams,
+  AccountUnfollowedEventParsedParams,
+  SpaceCreatedEventParsedParams,
+  CreatePostCallParsedArgs,
+  PostCreatedEventParsedParams,
+  CreateSpaceCallParsedArgs,
+  DomainMetaUpdatedEventParsedParams,
+  DomainRegisteredEventParsedParams,
+  EvmAddressLinkedToAccountEventParsedParams,
+  EvmAddressUnlinkedFromAccountEventParsedParams,
+  PostMovedEventParsedParams,
+  MovePostCallParsedArgs,
+  PostReactionCreateCallParsedArgs,
+  PostReactionCreatedEventParsedParams,
+  PostReactionDeleteCallParsedArgs,
+  PostReactionDeletedEventParsedParams,
+  PostReactionUpdateCallParsedArgs,
+  PostReactionUpdatedEventParsedParams,
+  ProfileUpdatedEventParsedParams,
+  SpaceFollowedEventParsedParams,
+  SpaceOwnershipTransferAcceptedEventParsedParams,
+  SpaceOwnershipTransferCreatedEventParsedParams,
+  SpaceUnfollowedEventParsedParams,
+  SpaceUpdatedEventParsedParams,
+  UpdatePostCallParsedArgs,
+  PostUpdatedEventParsedParams,
+  UpdateSpaceCallParsedArgs,
+  PostFollowedEventParsedParams,
+  PostUnfollowedEventParsedParams
+} from '@subsocial/data-hub-sdk';
+import { Block as SupportBlock } from '../subsocial/types/support';
 
 export type ChainApi = {
   events: {
-    parsePostCreatedEventArgs?: EventGetter<CreatePostEventParsedData>;
-    parsePostUpdatedEventArgs?: EventGetter<UpdatePostEventParsedData>;
-    parsePostMovedEventArgs?: EventGetter<MovedPostEventParsedData>;
-    parseSpaceCreatedEventArgs?: EventGetter<CreatedSpaceEventParsedData>;
-    parseSpaceUpdatedEventArgs?: EventGetter<UpdatedSpaceEventParsedData>;
-    parsePostReactionCreatedEventArgs?: EventGetter<PostReactionCreatedEventParsedData>;
-    parsePostReactionUpdatedEventArgs?: EventGetter<PostReactionUpdatedEventParsedData>;
-    parsePostReactionDeletedEventArgs?: EventGetter<PostReactionDeletedEventParsedData>;
-    parseProfileUpdatedEventArgs?: EventGetter<ProfileUpdatedEventParsedData>;
-    parseSpaceFollowedEventArgs?: EventGetter<SpaceFollowedEventParsedData>;
-    parseSpaceUnfollowedEventArgs?: EventGetter<SpaceUnfollowedEventParsedData>;
-    parseSpaceOwnershipTransferAcceptedEventArgs?: EventGetter<SpaceOwnershipTransferAcceptedEventParsedData>;
-    parseSpaceOwnershipTransferCreatedEventArgs?: EventGetter<SpaceOwnershipTransferCreatedEventParsedData>;
-    parseAccountFollowedEventArgs?: EventGetter<AccountFollowedEventParsedData>;
-    parseAccountUnfollowedEventArgs?: EventGetter<AccountUnfollowedEventParsedData>;
-    parseDomainRegisteredEventArgs?: EventGetter<DomainRegisteredEventParsedData>;
-    parseDomainMetaUpdatedEventArgs?: EventGetter<DomainMetaUpdatedEventParsedData>;
-    parseEvmAddressLinkedToAccountEventArgs?: EventGetter<EvmAddressLinkedToAccountEventParsedData>;
-    parseEvmAddressUnlinkedFromAccountEventArgs?: EventGetter<EvmAddressUnlinkedFromAccountEventParsedData>;
-    parsePostFollowedEventArgs?: EventGetter<FollowPostEventParsedData>;
-    parsePostUnfollowedEventArgs?: EventGetter<UnfollowPostEventParsedData>;
+    parsePostCreatedEventParams?: EventGetter<PostCreatedEventParsedParams>;
+    parsePostUpdatedEventParams?: EventGetter<PostUpdatedEventParsedParams>;
+    parsePostMovedEventParams?: EventGetter<PostMovedEventParsedParams>;
+    parseSpaceCreatedEventParams?: EventGetter<SpaceCreatedEventParsedParams>;
+    parseSpaceUpdatedEventParams?: EventGetter<SpaceUpdatedEventParsedParams>;
+    parsePostReactionCreatedEventParams?: EventGetter<PostReactionCreatedEventParsedParams>;
+    parsePostReactionUpdatedEventParams?: EventGetter<PostReactionUpdatedEventParsedParams>;
+    parsePostReactionDeletedEventParams?: EventGetter<PostReactionDeletedEventParsedParams>;
+    parseProfileUpdatedEventParams?: EventGetter<ProfileUpdatedEventParsedParams>;
+    parseSpaceFollowedEventParams?: EventGetter<SpaceFollowedEventParsedParams>;
+    parseSpaceUnfollowedEventParams?: EventGetter<SpaceUnfollowedEventParsedParams>;
+    parseSpaceOwnershipTransferAcceptedEventParams?: EventGetter<SpaceOwnershipTransferAcceptedEventParsedParams>;
+    parseSpaceOwnershipTransferCreatedEventParams?: EventGetter<SpaceOwnershipTransferCreatedEventParsedParams>;
+    parseAccountFollowedEventParams?: EventGetter<AccountFollowedEventParsedParams>;
+    parseAccountUnfollowedEventParams?: EventGetter<AccountUnfollowedEventParsedParams>;
+    parseDomainRegisteredEventParams?: EventGetter<DomainRegisteredEventParsedParams>;
+    parseDomainMetaUpdatedEventParams?: EventGetter<DomainMetaUpdatedEventParsedParams>;
+    parseEvmAddressLinkedToAccountEventParams?: EventGetter<EvmAddressLinkedToAccountEventParsedParams>;
+    parseEvmAddressUnlinkedFromAccountEventParams?: EventGetter<EvmAddressUnlinkedFromAccountEventParsedParams>;
+    parsePostFollowedEventParams?: EventGetter<PostFollowedEventParsedParams>;
+    parsePostUnfollowedEventParams?: EventGetter<PostUnfollowedEventParsedParams>;
   };
   calls: {
-    parsePostCreatedCallArgs?: CallGetter<CreatePostCallParsedData>;
-    parsePostUpdatedCallArgs?: CallGetter<UpdatePostCallParsedData>;
-    parsePostMoveCallArgs?: CallGetter<MovePostCallParsedData>;
-    parseSpaceCreateCallArgs?: CallGetter<CreateSpaceCallParsedData>;
-    parseSpaceUpdateCallArgs?: CallGetter<UpdateSpaceCallParsedData>;
-    parsePostReactionCreateCallArgs?: CallGetter<PostReactionCreateCallParsedData>;
-    parsePostReactionUpdateCallArgs?: CallGetter<PostReactionUpdateCallParsedData>;
-    parsePostReactionDeleteCallArgs?: CallGetter<PostReactionDeleteCallParsedData>;
+    parseCreatPostCallArgs?: CallGetter<CreatePostCallParsedArgs>;
+    parsePostUpdatedCallArgs?: CallGetter<UpdatePostCallParsedArgs>;
+    parsePostMoveCallArgs?: CallGetter<MovePostCallParsedArgs>;
+    parseSpaceCreateCallArgs?: CallGetter<CreateSpaceCallParsedArgs>;
+    parseSpaceUpdateCallArgs?: CallGetter<UpdateSpaceCallParsedArgs>;
+    parsePostReactionCreateCallArgs?: CallGetter<PostReactionCreateCallParsedArgs>;
+    parsePostReactionUpdateCallArgs?: CallGetter<PostReactionUpdateCallParsedArgs>;
+    parsePostReactionDeleteCallArgs?: CallGetter<PostReactionDeleteCallParsedArgs>;
   };
   storage: {
     getRegisteredDomainMeta?: StorageGetter<
-      [Uint8Array | Uint8Array[]],
+      [string | string[]],
       (DomainStorageData | undefined)[] | DomainStorageData | undefined
     >;
   };
@@ -88,77 +81,80 @@ export type ChainApi = {
 type EventGetter<R> = (ctx: EventContext) => R;
 type CallGetter<R> = (ctx: EventContext) => R;
 type StorageGetter<T extends Array<any>, R> = (
-  ctx: ChainContext,
-  block: Block,
+  block: SupportBlock,
   ...args: T
 ) => Promise<R>;
 
 export type ChainName = 'subsocial' | 'soonsocial' | 'xsocial';
 
 type SubsocialChainEvents =
-  | 'parsePostCreatedEventArgs'
-  | 'parsePostUpdatedEventArgs'
-  | 'parsePostMovedEventArgs'
-  | 'parseSpaceCreatedEventArgs'
-  | 'parseSpaceUpdatedEventArgs'
-  | 'parsePostReactionCreatedEventArgs'
-  | 'parsePostReactionUpdatedEventArgs'
-  | 'parsePostReactionDeletedEventArgs'
-  | 'parseProfileUpdatedEventArgs'
-  | 'parseSpaceFollowedEventArgs'
-  | 'parseSpaceUnfollowedEventArgs'
-  | 'parseSpaceOwnershipTransferAcceptedEventArgs'
-  | 'parseSpaceOwnershipTransferCreatedEventArgs'
-  | 'parseAccountFollowedEventArgs'
-  | 'parseAccountUnfollowedEventArgs'
-  | 'parseDomainRegisteredEventArgs'
-  | 'parseDomainMetaUpdatedEventArgs';
+  | 'parsePostCreatedEventParams'
+  | 'parsePostUpdatedEventParams'
+  | 'parsePostMovedEventParams'
+  | 'parseSpaceCreatedEventParams'
+  | 'parseSpaceUpdatedEventParams'
+  | 'parsePostReactionCreatedEventParams'
+  | 'parsePostReactionUpdatedEventParams'
+  | 'parsePostReactionDeletedEventParams'
+  | 'parseProfileUpdatedEventParams'
+  | 'parseSpaceFollowedEventParams'
+  | 'parseSpaceUnfollowedEventParams'
+  | 'parseSpaceOwnershipTransferAcceptedEventParams'
+  | 'parseSpaceOwnershipTransferCreatedEventParams'
+  | 'parseAccountFollowedEventParams'
+  | 'parseAccountUnfollowedEventParams'
+  | 'parseDomainRegisteredEventParams'
+  | 'parseDomainMetaUpdatedEventParams'
+  | 'parseEvmAddressLinkedToAccountEventParams'
+  | 'parseEvmAddressUnlinkedFromAccountEventParams'
+  | 'parsePostFollowedEventParams'
+  | 'parsePostUnfollowedEventParams';
 
 type SoonsocialChainEvents =
-  | 'parsePostCreatedEventArgs'
-  | 'parsePostUpdatedEventArgs'
-  | 'parsePostMovedEventArgs'
-  | 'parseSpaceCreatedEventArgs'
-  | 'parseSpaceUpdatedEventArgs'
-  | 'parsePostReactionCreatedEventArgs'
-  | 'parsePostReactionUpdatedEventArgs'
-  | 'parsePostReactionDeletedEventArgs'
-  | 'parseProfileUpdatedEventArgs'
-  | 'parseSpaceFollowedEventArgs'
-  | 'parseSpaceUnfollowedEventArgs'
-  | 'parseSpaceOwnershipTransferAcceptedEventArgs'
-  | 'parseSpaceOwnershipTransferCreatedEventArgs'
-  | 'parseAccountFollowedEventArgs'
-  | 'parseAccountUnfollowedEventArgs'
-  | 'parseDomainRegisteredEventArgs'
-  | 'parseDomainMetaUpdatedEventArgs';
+  | 'parsePostCreatedEventParams'
+  | 'parsePostUpdatedEventParams'
+  | 'parsePostMovedEventParams'
+  | 'parseSpaceCreatedEventParams'
+  | 'parseSpaceUpdatedEventParams'
+  | 'parsePostReactionCreatedEventParams'
+  | 'parsePostReactionUpdatedEventParams'
+  | 'parsePostReactionDeletedEventParams'
+  | 'parseProfileUpdatedEventParams'
+  | 'parseSpaceFollowedEventParams'
+  | 'parseSpaceUnfollowedEventParams'
+  | 'parseSpaceOwnershipTransferAcceptedEventParams'
+  | 'parseSpaceOwnershipTransferCreatedEventParams'
+  | 'parseAccountFollowedEventParams'
+  | 'parseAccountUnfollowedEventParams'
+  | 'parseDomainRegisteredEventParams'
+  | 'parseDomainMetaUpdatedEventParams';
 
 type XSocialChainEvents =
-  | 'parsePostCreatedEventArgs'
-  | 'parsePostUpdatedEventArgs'
-  | 'parsePostMovedEventArgs'
-  | 'parseSpaceCreatedEventArgs'
-  | 'parseSpaceUpdatedEventArgs'
-  | 'parsePostReactionCreatedEventArgs'
-  | 'parsePostReactionUpdatedEventArgs'
-  | 'parsePostReactionDeletedEventArgs'
-  | 'parseProfileUpdatedEventArgs'
-  | 'parseSpaceFollowedEventArgs'
-  | 'parseSpaceUnfollowedEventArgs'
-  | 'parseSpaceOwnershipTransferAcceptedEventArgs'
-  | 'parseSpaceOwnershipTransferCreatedEventArgs'
-  | 'parseAccountFollowedEventArgs'
-  | 'parseAccountUnfollowedEventArgs'
-  | 'parseEvmAddressLinkedToAccountEventArgs'
-  | 'parseEvmAddressUnlinkedFromAccountEventArgs'
-  | 'parsePostFollowedEventArgs'
-  | 'parsePostUnfollowedEventArgs';
+  | 'parsePostCreatedEventParams'
+  | 'parsePostUpdatedEventParams'
+  | 'parsePostMovedEventParams'
+  | 'parseSpaceCreatedEventParams'
+  | 'parseSpaceUpdatedEventParams'
+  | 'parsePostReactionCreatedEventParams'
+  | 'parsePostReactionUpdatedEventParams'
+  | 'parsePostReactionDeletedEventParams'
+  | 'parseProfileUpdatedEventParams'
+  | 'parseSpaceFollowedEventParams'
+  | 'parseSpaceUnfollowedEventParams'
+  | 'parseSpaceOwnershipTransferAcceptedEventParams'
+  | 'parseSpaceOwnershipTransferCreatedEventParams'
+  | 'parseAccountFollowedEventParams'
+  | 'parseAccountUnfollowedEventParams'
+  | 'parseEvmAddressLinkedToAccountEventParams'
+  | 'parseEvmAddressUnlinkedFromAccountEventParams'
+  | 'parsePostFollowedEventParams'
+  | 'parsePostUnfollowedEventParams';
 
 type SubsocialChainStorageCalls = 'getRegisteredDomainMeta';
 type SoonsocialChainStorageCalls = 'getRegisteredDomainMeta';
 
 type SubsocialChainCalls =
-  | 'parsePostCreatedCallArgs'
+  | 'parseCreatPostCallArgs'
   | 'parsePostUpdatedCallArgs'
   | 'parsePostMoveCallArgs'
   | 'parseSpaceCreateCallArgs'
@@ -168,7 +164,7 @@ type SubsocialChainCalls =
   | 'parsePostReactionDeleteCallArgs';
 
 type SoonsocialChainCalls =
-  | 'parsePostCreatedCallArgs'
+  | 'parseCreatPostCallArgs'
   | 'parsePostUpdatedCallArgs'
   | 'parsePostMoveCallArgs'
   | 'parseSpaceCreateCallArgs'
@@ -181,24 +177,24 @@ export type ChainApiDecorated<C> = {
   events: C extends 'subsocial'
     ? Required<Pick<ChainApi['events'], SubsocialChainEvents>>
     : C extends 'soonsocial'
-    ? Required<Pick<ChainApi['events'], SoonsocialChainEvents>>
-    : C extends 'xsocial'
-    ? Required<Pick<ChainApi['events'], XSocialChainEvents>>
-    : any;
+      ? Required<Pick<ChainApi['events'], SoonsocialChainEvents>>
+      : C extends 'xsocial'
+        ? Required<Pick<ChainApi['events'], XSocialChainEvents>>
+        : any;
   calls: C extends 'subsocial'
     ? Required<Pick<ChainApi['calls'], SubsocialChainCalls>>
     : C extends 'soonsocial'
-    ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
-    : C extends 'xsocial'
-    ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
-    : any;
+      ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
+      : C extends 'xsocial'
+        ? Required<Pick<ChainApi['calls'], SoonsocialChainCalls>>
+        : any;
   storage: C extends 'subsocial'
     ? Required<Pick<ChainApi['storage'], SubsocialChainStorageCalls>>
     : C extends 'soonsocial'
-    ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
-    : C extends 'xsocial'
-    ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
-    : any;
+      ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
+      : C extends 'xsocial'
+        ? Required<Pick<ChainApi['storage'], SoonsocialChainStorageCalls>>
+        : any;
 };
 
 export type ApiDecorator = <C extends ChainName>(

@@ -12,7 +12,6 @@ import {
   DomainStorageData
 } from '../common/types';
 import { InnerValue } from '../chains/interfaces/sharedTypes';
-import { addressStringToSs58 } from '../common/utils';
 import { SubsocialIpfsDataManager } from '../ipfs';
 import {
   StorageSection,
@@ -22,6 +21,8 @@ import {
   IpfsContent
 } from './types';
 import { getChain } from '../chains';
+import { stringToHex } from '@polkadot/util';
+import { Block as StorageBlock } from '../chains/subsocial/types/support';
 
 const { getApiDecorated } = getChain();
 
@@ -32,7 +33,15 @@ export class StorageDataManager {
     StorageSection,
     Map<
       BlochHash,
-      Set<[EntityId, string | null] | [Uint8Array, InnerValue] | Uint8Array>
+      {
+        block: StorageBlock;
+        keys: Set<
+          | [EntityId, string | null]
+          | [Uint8Array, InnerValue]
+          | Uint8Array
+          | string
+        >;
+      }
     >
   > = new Map();
 
@@ -92,12 +101,15 @@ export class StorageDataManager {
 
   private ensureIdsForFetchContainer(
     section: StorageSection,
-    blockHash: string
+    block: StorageBlock
   ) {
     if (!this.idsForFetchStorage.has(section))
       this.idsForFetchStorage.set(section, new Map());
-    if (!this.idsForFetchStorage.get(section)!.has(blockHash))
-      this.idsForFetchStorage.get(section)!.set(blockHash, new Set());
+    if (!this.idsForFetchStorage.get(section)!.has(block.hash))
+      this.idsForFetchStorage.get(section)!.set(block.hash, {
+        keys: new Set(),
+        block
+      });
   }
   private ensureStorageDataCacheContainer(
     section: StorageSection,
@@ -121,12 +133,16 @@ export class StorageDataManager {
           for (const event of [
             ...eventsData.values()
           ] as (DomainRegisteredData & DomainMetaUpdatedData)[]) {
-            this.ensureIdsForFetchContainer('domain', event.blockHash);
+            this.ensureIdsForFetchContainer('domain', {
+              hash: event.eventData.metadata.blockHash,
+              height: event.eventData.metadata.blockNumber,
+              _runtime: event.eventData.metadata.runtime
+            });
 
             this.idsForFetchStorage
               .get('domain')!
-              .get(event.blockHash)!
-              .add(event.domain);
+              .get(event.eventData.metadata.blockHash)!
+              .keys.add(stringToHex(event.eventData.params.domain));
           }
           break;
         }
@@ -140,11 +156,12 @@ export class StorageDataManager {
     ]) {
       switch (section) {
         case 'domain': {
-          for (const [blockHash, idsPairs] of [...idsListByBlock.entries()]) {
-            const domainsList = [...idsPairs.values()] as Uint8Array[];
+          for (const [blockHash, idsPairsAndBlock] of [
+            ...idsListByBlock.entries()
+          ]) {
+            const domainsList = [...idsPairsAndBlock.keys.values()] as string[];
             const domainsMetaResp = (await api.storage.getRegisteredDomainMeta(
-              this.context,
-              { hash: blockHash },
+              idsPairsAndBlock.block,
               domainsList
             )) as (DomainStorageData | undefined)[] | undefined;
 

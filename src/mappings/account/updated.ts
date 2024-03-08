@@ -6,21 +6,21 @@ import { getEntityWithRelations } from '../../common/gettersWithRelations';
 
 export async function accountUpdated(
   ctx: Ctx,
-  eventData: ProfileUpdatedData
+  { eventData }: ProfileUpdatedData
 ): Promise<void> {
-  const account = await getOrCreateAccount(eventData.accountId, ctx);
+  const account = await getOrCreateAccount(eventData.params.accountId, ctx);
 
-  account.updatedAtTime = eventData.timestamp;
-  account.updatedAtBlock = BigInt(eventData.blockNumber.toString());
+  account.updatedAtTime = eventData.metadata.timestamp;
+  account.updatedAtBlock = BigInt(eventData.metadata.blockNumber.toString());
 
   if (
-    (eventData.spaceId && !account.profileSpace) ||
-    (eventData.spaceId &&
+    (eventData.params.spaceId && !account.profileSpace) ||
+    (eventData.params.spaceId &&
       account.profileSpace &&
-      account.profileSpace.id !== eventData.spaceId)
+      account.profileSpace.id !== eventData.params.spaceId)
   ) {
     const accountSpace = await getEntityWithRelations.space(
-      eventData.spaceId,
+      eventData.params.spaceId,
       ctx
     );
 
@@ -39,6 +39,6 @@ export async function accountUpdated(
   await setActivity({
     account,
     ctx,
-    eventData
+    eventMetadata: eventData.metadata
   });
 }

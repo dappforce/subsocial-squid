@@ -18,6 +18,6 @@ export async function domainUpdated(
     space: handlerResult.space,
     spacePrev: handlerResult.spacePrev,
     ctx,
-    eventData
+    eventMetadata: eventData.eventData.metadata
   });
 }

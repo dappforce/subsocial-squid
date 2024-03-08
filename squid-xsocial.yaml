@@ -1,14 +1,14 @@
 manifestVersion: subsquid.io/v0.1
 name: xsocial
-version: 349
+version: 400
 description: |-
   Squid for xSocial
 build:
 deploy:
-  secrets:
-    - XSOCIAL_ELASTIC_SEARCH_ENDPOINT
-    - XSOCIAL_ELASTIC_SEARCH_USERNAME
-    - XSOCIAL_ELASTIC_SEARCH_PASSWORD
+#  secrets:
+#    - XSOCIAL_ELASTIC_SEARCH_ENDPOINT
+#    - XSOCIAL_ELASTIC_SEARCH_USERNAME
+#    - XSOCIAL_ELASTIC_SEARCH_PASSWORD
   addons:
     postgres:
   processor:

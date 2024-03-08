@@ -1,6 +1,6 @@
 import { handleDonation } from './donation';
 import { handleEvmNft } from './evmNft';
-import { ContentExtensionData, ContentExtensionId } from './types';
+import { ContentExtensionData, ContentExtensionId } from '@subsocial/data-hub-sdk';
 import { Ctx } from '../../processor';
 import { Post } from '../../model';
 import { PostCreatedData, PostUpdatedData } from '../../common/types';
@@ -8,7 +8,6 @@ import { handleImage } from './image';
 import { handleSecretBox } from './secretBox';
 import { handlePinnedPosts } from './pinnedPosts';
 
-// @ts-ignore
 const extensionHandlers = new Map([
   [ContentExtensionId['subsocial-donations'], handleDonation],
   [ContentExtensionId['subsocial-evm-nft'], handleEvmNft],

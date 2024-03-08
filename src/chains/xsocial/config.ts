@@ -6,8 +6,9 @@ export const config: ProcessorConfig = {
   chainName: 'subsocial',
   prefix: 'subsocial',
   dataSource: {
-    archive: 'https://xsocial.archive.subsquid.io/graphql',
-    chain: 'wss://xsocial.subsocial.network'
+    archive: 'https://v2.archive.subsquid.io/network/xsocial',
+    chain: 'wss://xsocial.subsocial.network',
+    chainRateLimit: 10
   },
   elasticSearchSyncDisabled: !!(
     process.env.XSOCIAL_ELASTIC_SEARCH_SYNC_DISABLED &&
@@ -24,5 +25,7 @@ export const config: ProcessorConfig = {
     'https://ipfs.subsocial.network',
   ipfsCrustNodeAuthToken: process.env.IPFS_CRUST_NODE_TEST_AUTH_TOKEN || '',
   ipfsCrustNodeUrl:
-    process.env.IPFS_CRUST_NODE_URL || 'https://gw-seattle.crustcloud.io'
+    process.env.IPFS_CRUST_NODE_URL || 'https://gw-seattle.crustcloud.io',
+  offchainServiceUrl:
+    process.env.OFFCHAIN_URL || 'https://app.subsocial.network/network/offchain'
 };
