@@ -124,7 +124,19 @@ export const buildElasticSearchQuery = (
     ...baseSearchProps,
     body: {
       query: searchBody
-    }
+    },
+    sort: [
+      {
+        "_script": {
+          type: "number",
+          script: {
+            lang: "painless",
+            source: "Integer.parseInt(doc['_id'].value)"
+          },
+          order: "desc"
+        }
+      }
+    ]
   };
 
   sqdLogger.debug(searchReq, 'Final ElasticSearch query:');
