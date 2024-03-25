@@ -107,9 +107,32 @@ export class NotificationsManager extends NotificationsHandlersManager {
     }
   }
 
+  isTargetAccountActionInitiator(
+    params: NotificationHandlerParamsWithTarget
+  ): boolean {
+    switch (params.activity.event) {
+      case EventName.CommentCreated:
+      case EventName.CommentUpdated:
+      case EventName.CommentDeleted:
+      case EventName.CommentReplyCreated:
+      case EventName.CommentReplyUpdated:
+      case EventName.CommentReplyDeleted:
+        return !!(
+          params.activity.account?.id ===
+            params.activity.post?.rootPost?.ownedByAccount?.id ||
+          params.activity.account?.id ===
+            params.activity.post?.parentPost?.ownedByAccount?.id
+        );
+      default:
+        return false;
+    }
+  }
+
   async addNotificationForAccount(
     params: NotificationHandlerParamsWithTarget
   ): Promise<string[]> {
+    if (this.isTargetAccountActionInitiator(params)) return [];
+
     let targetAccount: Account | string | null =
       getTargetAccForNotificationForAcc(params);
 
