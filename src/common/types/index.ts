@@ -48,7 +48,13 @@ import {
   UpdateSpaceCallParsedArgs,
   PostFollowedEventParsedParams,
   PostUnfollowedEventParsedParams,
-  SpacePermissionsScope
+  SpacePermissionsScope,
+  OwnershipTransferCreatedEventParsedParams,
+  OwnershipTransferOwnershipCallParsedArgs,
+  OwnershipTransferAcceptedEventParsedParams,
+  OwnershipAcceptPendingOwnershipCallParsedArgs,
+  OwnershipTransferRejectedEventParsedParams,
+  OwnershipRejectPendingOwnershipCallParsedArgs
 } from '@subsocial/data-hub-sdk';
 
 export {
@@ -113,7 +119,7 @@ export interface EventMetadata {
   timestamp: Date;
   indexInBlock: number;
   name: string;
-  runtime: Runtime
+  runtime: Runtime;
 }
 
 export type ContentSrcDecorated = {
@@ -348,6 +354,51 @@ export type SpaceOwnershipTransferAcceptedData = ParsedEventCallData<
 >;
 
 /**
+ * :::::: OWNERSHIP TRANSFER CREATED ::::::
+ */
+
+export type OwnershipTransferOwnershipCallParsedData =
+  CallParsedData<OwnershipTransferOwnershipCallParsedArgs>;
+
+export type OwnershipTransferCreatedEventParsedData =
+  EventParsedData<OwnershipTransferCreatedEventParsedParams>;
+
+export type OwnershipTransferOwnershipCreatedData = ParsedEventCallData<
+  OwnershipTransferCreatedEventParsedData,
+  OwnershipTransferOwnershipCallParsedData
+>;
+
+/**
+ * :::::: OWNERSHIP TRANSFER ACCEPTED ::::::
+ */
+
+export type OwnershipAcceptPendingOwnershipCallParsedData =
+  CallParsedData<OwnershipAcceptPendingOwnershipCallParsedArgs>;
+
+export type OwnershipTransferAcceptedEventParsedData =
+  EventParsedData<OwnershipTransferAcceptedEventParsedParams>;
+
+export type OwnershipTransferAcceptedData = ParsedEventCallData<
+  OwnershipTransferAcceptedEventParsedData,
+  OwnershipAcceptPendingOwnershipCallParsedData
+>;
+
+/**
+ * :::::: OWNERSHIP TRANSFER REJECTED ::::::
+ */
+
+export type OwnershipRejectPendingOwnershipCallParsedData =
+  CallParsedData<OwnershipRejectPendingOwnershipCallParsedArgs>;
+
+export type OwnershipTransferRejectedEventParsedData =
+  EventParsedData<OwnershipTransferRejectedEventParsedParams>;
+
+export type OwnershipTransferRejectedData = ParsedEventCallData<
+  OwnershipTransferRejectedEventParsedData,
+  OwnershipRejectPendingOwnershipCallParsedData
+>;
+
+/**
  * :::::: ACCOUNT FOLLOWED ::::::
  */
 
@@ -446,6 +497,9 @@ export type ParsedEventsData =
   | SpaceUpdatedData
   | SpaceOwnershipTransferAcceptedData
   | SpaceOwnershipTransferCreatedData
+  | OwnershipTransferOwnershipCreatedData
+  | OwnershipTransferAcceptedData
+  | OwnershipTransferRejectedData
   | PostReactionCreatedData
   | PostReactionUpdatedData
   | PostReactionDeletedData

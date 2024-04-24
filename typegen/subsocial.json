@@ -80,6 +80,12 @@
       "calls": true,
       "storage": [],
       "constants": []
+    },
+    "Ownership": {
+      "events": true,
+      "calls": true,
+      "storage": [],
+      "constants": []
     }
   }
 }

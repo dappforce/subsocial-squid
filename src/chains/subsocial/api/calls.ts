@@ -9,9 +9,13 @@ import {
   UpdateSpaceCallParsedArgs,
   PostReactionCreateCallParsedArgs,
   PostReactionUpdateCallParsedArgs,
-  PostReactionDeleteCallParsedArgs
+  PostReactionDeleteCallParsedArgs,
+  OwnershipTransferOwnershipCallParsedArgs,
+  OwnershipAcceptPendingOwnershipCallParsedArgs,
+  OwnershipRejectPendingOwnershipCallParsedArgs
 } from '@subsocial/data-hub-sdk';
 import {
+  getEntityWithOwnershipDecorated,
   getReactionKindDecorated,
   getSpacePermissionsDecorated
 } from './decorators';
@@ -67,6 +71,29 @@ export function parseCreatPostCallArgs(ctx: Event): CreatePostCallParsedArgs {
       };
       break;
     }
+
+    case 'ResourceDiscussions.create_resource_discussion': {
+      if (
+        !calls.resourceDiscussions.createResourceDiscussion.v36.is(
+          callForDecode
+        )
+      )
+        throw Error(`Unexpected call ${ctx.call!.name}`);
+
+      const { content, spaceId, resourceId } =
+        calls.resourceDiscussions.createResourceDiscussion.v36.decode(
+          callForDecode
+        );
+      extensionData = { __kind: 'RegularPost' };
+
+      response = {
+        ...response,
+        ...getContentSrcDecorated(content),
+        spaceId: ensureSpaceId(spaceId)
+      };
+      break;
+    }
+
     default: {
       if (!calls.posts.createPost.v13.is(callForDecode))
         throw Error(`Unexpected call ${ctx.call!.name}`);
@@ -346,4 +373,65 @@ export function parsePostReactionDeleteCallArgs(
   }
 
   return response;
+}
+
+export function parseOwnershipTransferOwnershipCallArgs(
+  ctx: EventContext
+): OwnershipTransferOwnershipCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
+
+  if (!calls.ownership.transferOwnership.v42.is(callForDecode))
+    throw new UnknownVersionError(ctx.name);
+
+  const { entity, newOwner } =
+    calls.ownership.transferOwnership.v42.decode(callForDecode);
+
+  console.log('parseOwnershipTransferOwnershipCallArgs :: entity');
+  console.dir(entity, { depth: null });
+  console.dir(getEntityWithOwnershipDecorated(entity), { depth: null });
+
+  return {
+    transferToAccountId: toSubsocialAddress(newOwner)!,
+    entity: getEntityWithOwnershipDecorated(entity)
+  };
+}
+
+export function parseOwnershipAcceptPendingOwnershipCallArgs(
+  ctx: EventContext
+): OwnershipAcceptPendingOwnershipCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
+
+  if (!calls.ownership.acceptPendingOwnership.v42.is(callForDecode))
+    throw new UnknownVersionError(ctx.name);
+
+  const { entity } =
+    calls.ownership.acceptPendingOwnership.v42.decode(callForDecode);
+
+  console.log('parseOwnershipAcceptPendingOwnershipCallArgs :: entity');
+  console.dir(entity, { depth: null });
+  console.dir(getEntityWithOwnershipDecorated(entity), { depth: null });
+
+  return {
+    entity: getEntityWithOwnershipDecorated(entity)
+  };
+}
+
+export function parseOwnershipRejectPendingOwnershipCallArgs(
+  ctx: EventContext
+): OwnershipRejectPendingOwnershipCallParsedArgs {
+  const callForDecode = ctx.getCall() as CallForDecode;
+
+  if (!calls.ownership.rejectPendingOwnership.v42.is(callForDecode))
+    throw new UnknownVersionError(ctx.name);
+
+  const { entity } =
+    calls.ownership.rejectPendingOwnership.v42.decode(callForDecode);
+
+  console.log('parseOwnershipRejectPendingOwnershipCallArgs :: entity');
+  console.dir(entity, { depth: null });
+  console.dir(getEntityWithOwnershipDecorated(entity), { depth: null });
+
+  return {
+    entity: getEntityWithOwnershipDecorated(entity)
+  };
 }

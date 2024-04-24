@@ -21,13 +21,19 @@ import {
   PostFollowedEventParsedParams,
   PostUnfollowedEventParsedParams,
   EvmAddressLinkedToAccountEventParsedParams,
-  EvmAddressUnlinkedFromAccountEventParsedParams
+  EvmAddressUnlinkedFromAccountEventParsedParams,
+  OwnershipTransferCreatedEventParsedParams,
+  OwnershipTransferAcceptedEventParsedParams,
+  OwnershipTransferRejectedEventParsedParams
 } from '@subsocial/data-hub-sdk';
 import { EventForDecode } from '../../../common/types';
 
 import { UnknownVersionError } from '../../../common/errors';
 
-import { getReactionKindDecorated } from './decorators';
+import {
+  getEntityWithOwnershipDecorated,
+  getReactionKindDecorated
+} from './decorators';
 import { toSubsocialAddress } from '@subsocial/utils';
 import { hexToString, stringToU8a } from '@polkadot/util';
 
@@ -401,6 +407,59 @@ export function parseEvmAddressUnlinkedFromAccountEventParams(
     return {
       substrateAccountId: toSubsocialAddress(substrate)!,
       ethereumAccountId: ethereum
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parseOwnershipTransferCreatedEventParams(
+  ctx: EventForDecode
+): OwnershipTransferCreatedEventParsedParams {
+  if (events.ownership.ownershipTransferCreated.v42.is(ctx)) {
+    const { currentOwner, newOwner, entity } =
+      events.ownership.ownershipTransferCreated.v42.decode(ctx);
+
+    console.log('parseOwnershipTransferCreatedEventParams');
+    console.dir(entity, { depth: null });
+    console.dir(getEntityWithOwnershipDecorated(entity), { depth: null });
+
+    return {
+      currentOwnerId: toSubsocialAddress(currentOwner)!,
+      newOwnerId: toSubsocialAddress(newOwner)!,
+      entity: getEntityWithOwnershipDecorated(entity)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parseOwnershipTransferAcceptedEventParams(
+  ctx: EventForDecode
+): OwnershipTransferAcceptedEventParsedParams {
+  if (events.ownership.ownershipTransferAccepted.v42.is(ctx)) {
+    const { entity, account } =
+      events.ownership.ownershipTransferAccepted.v42.decode(ctx);
+
+    return {
+      accountId: toSubsocialAddress(account)!,
+      entity: getEntityWithOwnershipDecorated(entity)
+    };
+  } else {
+    throw new UnknownVersionError(ctx.name);
+  }
+}
+
+export function parseOwnershipTransferRejectedEventParams(
+  ctx: EventForDecode
+): OwnershipTransferRejectedEventParsedParams {
+  if (events.ownership.ownershipTransferRejected.v42.is(ctx)) {
+    const { entity, account } =
+      events.ownership.ownershipTransferRejected.v42.decode(ctx);
+
+    return {
+      accountId: toSubsocialAddress(account)!,
+      entity: getEntityWithOwnershipDecorated(entity)
     };
   } else {
     throw new UnknownVersionError(ctx.name);

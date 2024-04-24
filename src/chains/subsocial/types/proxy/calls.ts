@@ -12,6 +12,7 @@ import * as v34 from '../v34'
 import * as v35 from '../v35'
 import * as v36 from '../v36'
 import * as v37 from '../v37'
+import * as v42 from '../v42'
 
 export const proxy =  {
     name: 'Proxy.proxy',
@@ -288,6 +289,25 @@ export const proxy =  {
             real: v37.MultiAddress,
             forceProxyType: sts.option(() => v37.ProxyType),
             call: v37.Call,
+        })
+    ),
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    v42: new CallType(
+        'Proxy.proxy',
+        sts.struct({
+            real: v42.MultiAddress,
+            forceProxyType: sts.option(() => v42.ProxyType),
+            call: v42.Call,
         })
     ),
 }
@@ -1149,6 +1169,28 @@ export const proxyAnnounced =  {
             real: v37.MultiAddress,
             forceProxyType: sts.option(() => v37.ProxyType),
             call: v37.Call,
+        })
+    ),
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    v42: new CallType(
+        'Proxy.proxy_announced',
+        sts.struct({
+            delegate: v42.MultiAddress,
+            real: v42.MultiAddress,
+            forceProxyType: sts.option(() => v42.ProxyType),
+            call: v42.Call,
         })
     ),
 }

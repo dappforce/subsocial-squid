@@ -12,4 +12,4 @@ find "./" -mindepth 1 -maxdepth 1 ! -name 'dist' -exec rm -r {} \;
 
 cp -r "$package_folder/dist/." "$package_folder"
 
-rm -r "$package_folder/dist"
+#rm -r "$package_folder/dist"

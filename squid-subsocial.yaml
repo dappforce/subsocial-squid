@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: subsocial
-version: 400
+version: 401
 description: |-
   Squid for Subsocial
 build:
@@ -35,6 +35,4 @@ deploy:
         '1000'
       ]
 scale:
-  dedicated: false
-  api:
-    profile: large
+  dedicated: true

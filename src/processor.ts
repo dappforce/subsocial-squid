@@ -30,6 +30,7 @@ import { getChain } from './chains';
 import { NotificationsManager } from './mappings/notification/notifiactionsManager';
 import { handleEvmSubstrateAccountLinks } from './mappings/evmSubstrateAccountLink';
 import { handlePostFollowUnfollow } from './mappings/postCommentFollows';
+import { handleOwnership } from './mappings/ownership';
 
 const chainConfig = getChain();
 
@@ -89,6 +90,21 @@ export const processor = new SubstrateBatchProcessor()
   })
   .addEvent({
     name: ['SpaceOwnership.SpaceOwnershipTransferCreated'],
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['Ownership.OwnershipTransferCreated'], // TODO refactor pallet naming after renaming
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['Ownership.OwnershipTransferAccepted'], // TODO refactor pallet naming after renaming
+    call: true,
+    extrinsic: true
+  })
+  .addEvent({
+    name: ['Ownership.OwnershipTransferRejected'], // TODO refactor pallet naming after renaming
     call: true,
     extrinsic: true
   })
@@ -185,7 +201,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
   // TODO improve for work with different chains (subsocial || soonsocial || xsocial)
   for (const blocksBatch of splitIntoBatches(
     currentBlocksListFull,
-    ctx.blocks[ctx.blocks.length - 1].header.height > 11000000
+    ctx.blocks[ctx.blocks.length - 1].header.height > 1_100_000
       ? ctx.blocks.length + 1
       : 5
   )) {
@@ -232,6 +248,8 @@ async function blocksBatchHandler(ctx: Ctx) {
   await handleDomains(ctx, parsedEvents);
 
   await handlePostReactions(ctx, parsedEvents);
+
+  await handleOwnership(ctx, parsedEvents);
 
   await NotificationsManager.getInstance().commitInBatchNotifications(ctx);
 

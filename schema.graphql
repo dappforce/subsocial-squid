@@ -94,6 +94,10 @@ enum EventName {
   SpaceOwnershipTransferAccepted
   SpaceOwnershipTransferCreated
 
+  OwnershipTransferCreated
+  OwnershipTransferAccepted
+  OwnershipTransferRejected
+
   AccountFollowed
   AccountUnfollowed
   ProfileUpdated

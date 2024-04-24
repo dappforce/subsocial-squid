@@ -26,7 +26,10 @@ import {
   EvmAddressLinkedToAccountData,
   EvmAddressUnlinkedFromAccountData,
   PostFollowedData,
-  PostUnfollowedData
+  PostUnfollowedData,
+  OwnershipTransferOwnershipCreatedData,
+  OwnershipTransferAcceptedData,
+  OwnershipTransferRejectedData
 } from '../common/types';
 import { getPseudoUuidV4 } from '@subsocial/data-hub-sdk/dist/utils';
 import { getChain } from '../chains';
@@ -56,23 +59,29 @@ type EventDataType<T> = T extends EventName.SpaceCreated
                     ? SpaceOwnershipTransferAcceptedData
                     : T extends EventName.SpaceOwnershipTransferCreated
                       ? SpaceOwnershipTransferCreatedData
-                      : T extends EventName.ProfileUpdated
-                        ? ProfileUpdatedData
-                        : T extends EventName.PostReactionCreated
-                          ? PostReactionCreatedData
-                          : T extends EventName.PostReactionUpdated
-                            ? PostReactionUpdatedData
-                            : T extends EventName.PostReactionDeleted
-                              ? PostReactionDeletedData
-                              : T extends EventName.UserNameRegistered
-                                ? DomainRegisteredData
-                                : T extends EventName.UserNameUpdated
-                                  ? DomainMetaUpdatedData
-                                  : T extends EventName.EvmAddressLinkedToAccount
-                                    ? EvmAddressLinkedToAccountData
-                                    : T extends EventName.EvmAddressUnlinkedFromAccount
-                                      ? EvmAddressUnlinkedFromAccountData
-                                      : never;
+                      : T extends EventName.OwnershipTransferCreated
+                        ? OwnershipTransferOwnershipCreatedData
+                        : T extends EventName.OwnershipTransferAccepted
+                          ? OwnershipTransferAcceptedData
+                          : T extends EventName.OwnershipTransferRejected
+                            ? OwnershipTransferRejectedData
+                            : T extends EventName.ProfileUpdated
+                              ? ProfileUpdatedData
+                              : T extends EventName.PostReactionCreated
+                                ? PostReactionCreatedData
+                                : T extends EventName.PostReactionUpdated
+                                  ? PostReactionUpdatedData
+                                  : T extends EventName.PostReactionDeleted
+                                    ? PostReactionDeletedData
+                                    : T extends EventName.UserNameRegistered
+                                      ? DomainRegisteredData
+                                      : T extends EventName.UserNameUpdated
+                                        ? DomainMetaUpdatedData
+                                        : T extends EventName.EvmAddressLinkedToAccount
+                                          ? EvmAddressLinkedToAccountData
+                                          : T extends EventName.EvmAddressUnlinkedFromAccount
+                                            ? EvmAddressUnlinkedFromAccountData
+                                            : never;
 
 const { getApiDecorated } = getChain();
 
@@ -542,6 +551,82 @@ export function getParsedEventsData(ctx: Ctx): ParsedEventsDataScope {
               ...callMetadata,
               uuid: getPseudoUuidV4(
                 `${eventParams.spaceId}${eventParams.accountId}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
+          });
+
+          totalEventsNumber++;
+          break;
+        }
+
+        case 'Ownership.OwnershipTransferCreated': {
+          const eventParams =
+            api.events.parseOwnershipTransferCreatedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
+
+          parsedData.set(EventName.OwnershipTransferCreated, {
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.currentOwnerId}${eventParams.newOwnerId}${eventParams.entity.id}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
+          });
+
+          totalEventsNumber++;
+          break;
+        }
+        case 'Ownership.OwnershipTransferAccepted': {
+          const eventParams =
+            api.events.parseOwnershipTransferAcceptedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
+
+          parsedData.set(EventName.OwnershipTransferAccepted, {
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.accountId}${eventParams.entity.id}${callMetadata.name}`,
+                block.header.timestamp || 0
+              )
+            }
+          });
+
+          totalEventsNumber++;
+          break;
+        }
+        case 'Ownership.OwnershipTransferRejected': {
+          const eventParams =
+            api.events.parseOwnershipTransferRejectedEventParams(eventItem);
+
+          const eventMetadata = getEventMetadata(block, eventItem);
+
+          parsedData.set(EventName.OwnershipTransferRejected, {
+            id: eventMetadata.id,
+            eventData: {
+              name: eventMetadata.name,
+              metadata: eventMetadata,
+              params: eventParams
+            },
+            callData: {
+              ...callMetadata,
+              uuid: getPseudoUuidV4(
+                `${eventParams.accountId}${eventParams.entity.id}${callMetadata.name}`,
                 block.header.timestamp || 0
               )
             }

@@ -1,7 +1,13 @@
-import { SpacePermissionsScope } from '@subsocial/data-hub-sdk';
+import {
+  OwnableEntity,
+  OwnableEntityKind,
+  SpacePermissionsScope
+} from '@subsocial/data-hub-sdk';
 import { SpacePermissionMap } from '@subsocial/api/types/dto';
 import * as v13 from '../types/v13';
 import { ReactionKind } from '../../../model';
+import * as v42 from '../types/v42';
+import { hexToString } from '@polkadot/util';
 
 function getSpacePermissionsTpl(): Required<SpacePermissionMap> {
   return {
@@ -73,4 +79,22 @@ export function getReactionKindDecorated(
   kindSrc: v13.ReactionKind
 ): ReactionKind {
   return ReactionKind[kindSrc.__kind];
+}
+
+export function getEntityWithOwnershipDecorated(
+  entity: v42.OwnableEntity
+): OwnableEntity {
+  if (entity)
+    return {
+      kind: entity.__kind as OwnableEntityKind,
+      id:
+        entity.__kind === OwnableEntityKind.Domain
+          ? hexToString(entity.value)
+          : entity.value.toString()
+    };
+  // TODO add better fallback
+  return {
+    kind: OwnableEntityKind.Post,
+    id: '0'
+  };
 }
