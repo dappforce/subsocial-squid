@@ -35,4 +35,12 @@ deploy:
         '1000'
       ]
 scale:
-  dedicated: true
+  dedicated: false
+  addons:
+    postgres:
+      profile: large
+      storage: 20G
+  processor:
+    profile: large
+  api:
+    profile: large
