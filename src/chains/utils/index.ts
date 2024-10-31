@@ -47,6 +47,12 @@ export function getCallSigner(eventCtx: Event): string | null {
 
   return null;
 }
+
 export function getCallNameFromCtx(eventCtx: Event): string {
+  const callNameOrigin = eventCtx.call!.name;
+
+  if (callNameOrigin.startsWith('Ownership'))
+    return `ownership_${callNameOrigin.split('.')[1]}`;
+
   return eventCtx.call!.name.split('.')[1];
 }

@@ -55,6 +55,8 @@ export async function spaceUpdated(
 
   space.updatedAtBlock = BigInt(eventMetadata.blockNumber);
 
+  if (callArgs.ipfsSrc) space.content = callArgs.ipfsSrc;
+
   if (spaceIpfsContent) {
     const aboutSummary = getBodySummary(spaceIpfsContent.about);
     space.name = spaceIpfsContent.name ?? null;

@@ -32,7 +32,13 @@ import {
   PostUpdatedEventParsedParams,
   UpdateSpaceCallParsedArgs,
   PostFollowedEventParsedParams,
-  PostUnfollowedEventParsedParams
+  PostUnfollowedEventParsedParams,
+  OwnershipTransferCreatedEventParsedParams,
+  OwnershipTransferAcceptedEventParsedParams,
+  OwnershipTransferRejectedEventParsedParams,
+  OwnershipTransferOwnershipCallParsedArgs,
+  OwnershipAcceptPendingOwnershipCallParsedArgs,
+  OwnershipRejectPendingOwnershipCallParsedArgs
 } from '@subsocial/data-hub-sdk';
 import { Block as SupportBlock } from '../subsocial/types/support';
 
@@ -59,6 +65,9 @@ export type ChainApi = {
     parseEvmAddressUnlinkedFromAccountEventParams?: EventGetter<EvmAddressUnlinkedFromAccountEventParsedParams>;
     parsePostFollowedEventParams?: EventGetter<PostFollowedEventParsedParams>;
     parsePostUnfollowedEventParams?: EventGetter<PostUnfollowedEventParsedParams>;
+    parseOwnershipTransferCreatedEventParams?: EventGetter<OwnershipTransferCreatedEventParsedParams>;
+    parseOwnershipTransferAcceptedEventParams?: EventGetter<OwnershipTransferAcceptedEventParsedParams>;
+    parseOwnershipTransferRejectedEventParams?: EventGetter<OwnershipTransferRejectedEventParsedParams>;
   };
   calls: {
     parseCreatPostCallArgs?: CallGetter<CreatePostCallParsedArgs>;
@@ -69,6 +78,9 @@ export type ChainApi = {
     parsePostReactionCreateCallArgs?: CallGetter<PostReactionCreateCallParsedArgs>;
     parsePostReactionUpdateCallArgs?: CallGetter<PostReactionUpdateCallParsedArgs>;
     parsePostReactionDeleteCallArgs?: CallGetter<PostReactionDeleteCallParsedArgs>;
+    parseOwnershipTransferOwnershipCallArgs?: CallGetter<OwnershipTransferOwnershipCallParsedArgs>;
+    parseOwnershipAcceptPendingOwnershipCallArgs?: CallGetter<OwnershipAcceptPendingOwnershipCallParsedArgs>;
+    parseOwnershipRejectPendingOwnershipCallArgs?: CallGetter<OwnershipRejectPendingOwnershipCallParsedArgs>;
   };
   storage: {
     getRegisteredDomainMeta?: StorageGetter<
@@ -108,7 +120,10 @@ type SubsocialChainEvents =
   | 'parseEvmAddressLinkedToAccountEventParams'
   | 'parseEvmAddressUnlinkedFromAccountEventParams'
   | 'parsePostFollowedEventParams'
-  | 'parsePostUnfollowedEventParams';
+  | 'parsePostUnfollowedEventParams'
+  | 'parseOwnershipTransferCreatedEventParams'
+  | 'parseOwnershipTransferAcceptedEventParams'
+  | 'parseOwnershipTransferRejectedEventParams';
 
 type SoonsocialChainEvents =
   | 'parsePostCreatedEventParams'
@@ -127,7 +142,10 @@ type SoonsocialChainEvents =
   | 'parseAccountFollowedEventParams'
   | 'parseAccountUnfollowedEventParams'
   | 'parseDomainRegisteredEventParams'
-  | 'parseDomainMetaUpdatedEventParams';
+  | 'parseDomainMetaUpdatedEventParams'
+  | 'parseOwnershipTransferCreatedEventParams'
+  | 'parseOwnershipTransferAcceptedEventParams'
+  | 'parseOwnershipTransferRejectedEventParams';
 
 type XSocialChainEvents =
   | 'parsePostCreatedEventParams'
@@ -161,7 +179,10 @@ type SubsocialChainCalls =
   | 'parseSpaceUpdateCallArgs'
   | 'parsePostReactionCreateCallArgs'
   | 'parsePostReactionUpdateCallArgs'
-  | 'parsePostReactionDeleteCallArgs';
+  | 'parsePostReactionDeleteCallArgs'
+  | 'parseOwnershipTransferOwnershipCallArgs'
+  | 'parseOwnershipAcceptPendingOwnershipCallArgs'
+  | 'parseOwnershipRejectPendingOwnershipCallArgs';
 
 type SoonsocialChainCalls =
   | 'parseCreatPostCallArgs'

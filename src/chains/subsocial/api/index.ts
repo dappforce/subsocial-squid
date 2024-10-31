@@ -20,7 +20,10 @@ import {
   parseEvmAddressLinkedToAccountEventParams,
   parseEvmAddressUnlinkedFromAccountEventParams,
   parsePostFollowedEventParams,
-  parsePostUnfollowedEventParams
+  parsePostUnfollowedEventParams,
+  parseOwnershipTransferCreatedEventParams,
+  parseOwnershipTransferAcceptedEventParams,
+  parseOwnershipTransferRejectedEventParams
 } from './events';
 
 import {
@@ -31,7 +34,10 @@ import {
   parseSpaceUpdateCallArgs,
   parsePostReactionCreateCallArgs,
   parsePostReactionUpdateCallArgs,
-  parsePostReactionDeleteCallArgs
+  parsePostReactionDeleteCallArgs,
+  parseOwnershipTransferOwnershipCallArgs,
+  parseOwnershipAcceptPendingOwnershipCallArgs,
+  parseOwnershipRejectPendingOwnershipCallArgs
 } from './calls';
 import { getRegisteredDomainMeta } from './storage';
 
@@ -57,7 +63,10 @@ export const api: ChainApi = {
     parseEvmAddressLinkedToAccountEventParams,
     parseEvmAddressUnlinkedFromAccountEventParams,
     parsePostFollowedEventParams,
-    parsePostUnfollowedEventParams
+    parsePostUnfollowedEventParams,
+    parseOwnershipTransferCreatedEventParams,
+    parseOwnershipTransferAcceptedEventParams,
+    parseOwnershipTransferRejectedEventParams
   },
   calls: {
     parseCreatPostCallArgs,
@@ -67,7 +76,10 @@ export const api: ChainApi = {
     parseSpaceUpdateCallArgs,
     parsePostReactionCreateCallArgs,
     parsePostReactionUpdateCallArgs,
-    parsePostReactionDeleteCallArgs
+    parsePostReactionDeleteCallArgs,
+    parseOwnershipTransferOwnershipCallArgs,
+    parseOwnershipAcceptPendingOwnershipCallArgs,
+    parseOwnershipRejectPendingOwnershipCallArgs
   },
   storage: {
     getRegisteredDomainMeta

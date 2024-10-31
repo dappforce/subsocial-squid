@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: subsocial
-version: 400
+version: 401
 description: |-
   Squid for Subsocial
 build:
@@ -36,5 +36,11 @@ deploy:
       ]
 scale:
   dedicated: false
+  addons:
+    postgres:
+      profile: large
+      storage: 20G
+  processor:
+    profile: large
   api:
     profile: large
